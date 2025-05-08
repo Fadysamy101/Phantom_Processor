@@ -5,87 +5,33 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity ProgramCounter is
     Port (
-        clk : in STD_LOGIC;          
-        rst : in STD_LOGIC;         
-        en : in STD_LOGIC;          
-        PC : out STD_LOGIC_VECTOR (7 downto 0)  
+        clk       : in STD_LOGIC;
+        rst       : in STD_LOGIC;
+        stall     : in STD_LOGIC;  -- Hazard detection
+        branch    : in STD_LOGIC;  -- From EX stage
+        branch_addr : in STD_LOGIC_VECTOR(7 downto 0); -- From ALU
+        PC        : out STD_LOGIC_VECTOR(7 downto 0)
     );
 end ProgramCounter;
 
 architecture Behavioral of ProgramCounter is
-
-    signal counter : UNSIGNED (7 downto 0) := (others => '0');
---    signal rst_sync, en_sync : STD_LOGIC;
---    signal rst_ff, en_ff : STD_LOGIC;
-
-
-
-
-
+    signal counter : UNSIGNED(7 downto 0);
 begin
-
---    process (clk)
---    begin
---        if rising_edge(clk) then
---            rst_ff <= rst;
---            rst_sync <= rst_ff;
---        end if;
---    end process;
-
-
---    process (clk)
---    begin
---        if rising_edge(clk) then
---            en_ff <= en;
---            en_sync <= en_ff;
---        end if;
---    end process;
-
-
-    process (clk, rst)  
+    process(clk, rst)
     begin
-	 
-	 
-		  if rst = '1' then
-            counter <= (others => '0');				
-				
+        if rst = '1' then
+            counter <= (others => '0');
         elsif rising_edge(clk) then
-		     
-            if en = '1' then
-				
-				counter <= counter + 1; 
-				
-				end if;  
-								
+            if stall = '0' then
+                if branch = '1' then
+                    counter <= unsigned(branch_addr);
+                else
+                    counter <= counter + 1;
+                end if;
+            end if;
         end if;
-	 
-	 
-	 
-	 
-	 
---        if  rising_edge(clk) then  
---				if rst = '1' then
---					counter <= (others => '0');		
---            elsif en = '1' then  
---                counter <= counter + 1;
---            end if;
---        end if;
-		  
-		  
-		  
     end process;
-
-
-    PC <= STD_LOGIC_VECTOR(counter); 
-
-
+    PC <= STD_LOGIC_VECTOR(counter);
 end Behavioral;
-
-
-
-
-
-
-
 
 

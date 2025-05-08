@@ -13,7 +13,7 @@ entity Decode_Execute is
           src1_Address_in : out STD_LOGIC_VECTOR(2 downto 0);
           src2_Address_in : out STD_LOGIC_VECTOR(2 downto 0);
 		  dst1_address_in  : in STD_LOGIC_VECTOR (2 downto 0);
-          dst2_address_in  : in std_logic_vector (2 downto 0);
+         
 		  RegWrite 		: in STD_LOGIC;
 		  
 		  
@@ -24,8 +24,18 @@ entity Decode_Execute is
           src1_Address_out : out STD_LOGIC_VECTOR(2 downto 0);
           src2_Address_out : out STD_LOGIC_VECTOR(2 downto 0);
 		  dst1_address_out : out STD_LOGIC_VECTOR (2 downto 0);
-          dst2_address_out : out STD_LOGIC_VECTOR (2 downto 0);
-		  RegWrite_out 	: out STD_LOGIC
+    
+		  RegWrite_out 	: out STD_LOGIC'
+          --Control signals
+          Sp_Inc : in STD_LOGIC; 
+          Sp_Dec : in STD_LOGIC; 
+          Sp_enable : in STD_LOGIC; 
+          Branch : in STD_LOGIC;
+          Mem_Read : in STD_LOGIC;
+          Mem_Write : in STD_LOGIC; 
+          Update_Flag : in STD_LOGIC;
+          J_SC : in STD_LOGIC_VECTOR(1 downto 0);
+         
   
 		  
     );
@@ -49,7 +59,7 @@ begin
         if rst = '1' then
             Opcode_out      <= (others => '0');
             dst1_address_out <= (others => '0');
-            dst2_address_out <= (others => '0');
+          
             RegWrite_out    <= '0';
             src1_data_out  <= (others => '0');
 				src2_data_out  <= (others => '0');
@@ -59,7 +69,7 @@ begin
 		     
                 Opcode_out      <= Opcode;
                 dst1_address_out <= dst1_address_in;
-                dst2_address_out <= dst2_address_in;
+          
                 RegWrite_out    <= RegWrite;
 				src1_data_out   <= src1_data;
 				src2_data_out   <= src2_data;  
