@@ -215,23 +215,30 @@ architecture Behavioral of PiplinedProcessor is
 	 
 	 
 	 -- Decode/Execute signals
-    signal de_opcode        : STD_LOGIC_VECTOR(2 downto 0);
-    signal de_src1_data         : STD_LOGIC_VECTOR(7 downto 0);
-    signal de_src2_data         : STD_LOGIC_VECTOR(7 downto 0);
-    signal de_src1_addr_out     : STD_LOGIC_VECTOR(2 downto 0);
-    signal de_src2_addr_out     : STD_LOGIC_VECTOR(2 downto 0);
-    signal de_dst1_addr_out     : STD_LOGIC_VECTOR(2 downto 0);
-    signal de_dst2_addr_out     : STD_LOGIC_VECTOR(2 downto 0);
+     signal de_opcode        : STD_LOGIC_VECTOR(2 downto 0);
+     signal de_src1_data         : STD_LOGIC_VECTOR(7 downto 0);
+     signal de_src2_data         : STD_LOGIC_VECTOR(7 downto 0);
+     signal de_src1_addr_out     : STD_LOGIC_VECTOR(2 downto 0);
+     signal de_src2_addr_out     : STD_LOGIC_VECTOR(2 downto 0);
+     signal de_dst1_addr_out     : STD_LOGIC_VECTOR(2 downto 0);
+     signal de_dst2_addr_out     : STD_LOGIC_VECTOR(2 downto 0);
 	 signal de_regWrite     : STD_LOGIC;
 	 
 	 -- ALU signals
 	 signal alu_result      : STD_LOGIC_VECTOR(7 downto 0);
     signal alu_cout        : STD_LOGIC;
 	 
-	 
+	 --Memory Stage
+    
+     signal ex_src1_data         : STD_LOGIC_VECTOR(7 downto 0);
+     signal ex_src2_data         : STD_LOGIC_VECTOR(7 downto 0);
+     signal ex_src1_addr_out     : STD_LOGIC_VECTOR(2 downto 0);
+     signal de_dst2_addr_out     : STD_LOGIC_VECTOR(2 downto 0);
+	 signal ex_regWrite          : STD_LOGIC;
 	 -- Writeback signals
     signal wb_opcode       : STD_LOGIC_VECTOR(2 downto 0);
-    signal wb_dst_addr     : STD_LOGIC_VECTOR(2 downto 0);
+    signal wb_dst1_addr     : STD_LOGIC_VECTOR(2 downto 0);
+    signal wb_dst2_addr     : STD_LOGIC_VECTOR(2 downto 0);
     signal wb_regWrite     : STD_LOGIC;
     signal wb_alu_result   : STD_LOGIC_VECTOR(7 downto 0);
     signal wb_cout         : STD_LOGIC;
@@ -334,11 +341,11 @@ begin
 			RegWrite_out  => de_regWrite
         );
 
-        Forwarding_Unit_Inst : entity work.Forwarding_Unit
+        Forwarding_Unit_Inst :Forwarding_Unit
         port map(
           D_EX_rs1 => de_src1_addr_out,
           D_EX_rs2 =>de_src2_addr_out,
-          EX_M_rd => dst,
+          EX_M_rd => d,
           M_WB_rd => M_WB_rd_sig,
           Forward_array_Rs1 => Forward_array_Rs1_sig,
           Forward_array_Rs2 => Forward_array_Rs2_sig
@@ -375,7 +382,8 @@ begin
             RegWrite        => de_regWrite, 
 
             Opcode_out      => wb_opcode,
-            dst_address_out => wb_dst_addr,
+            dst1_address_out => wb_dst1_addr,
+            dst2_address_out => wb_dst2_addr,
             RegWrite_out    => wb_regWrite,
             alu_result_out  => wb_alu_result,
             Cout_out        => wb_Cout
