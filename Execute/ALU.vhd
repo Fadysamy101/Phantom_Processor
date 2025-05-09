@@ -37,13 +37,21 @@ architecture Behavioral of ALU is
     signal update_n        : STD_LOGIC;  -- Whether to update Negative flag
     signal update_c        : STD_LOGIC;  -- Whether to update Carry flag
 
+    -- Sign-extended immediate value signals
+    signal imm_sign_extended : STD_LOGIC_VECTOR(31 downto 0); 
+    signal offset_sign_extended : STD_LOGIC_VECTOR(31 downto 0);
+
 begin
     -- Extend A and B to 33 bits for carry detection
     A_unsigned <= unsigned('0' & operand1);
     B_unsigned <= unsigned('0' & operand2);
     
+    -- Sign extension logic for immediate values 
+    imm_sign_extended <= (31 downto 16 => Imm(15)) & Imm; 
+    offset_sign_extended <= (31 downto 16 => offset(15)) & offset; 
+    
     -- Main ALU operation logic
-    process(operand1, operand2, ALU_OP, A_unsigned, B_unsigned, offset, Imm)
+    process(operand1, operand2, ALU_OP, A_unsigned, B_unsigned, offset, Imm, imm_sign_extended, offset_sign_extended)
     begin
         -- Default values
         result <= (others => '0');
@@ -91,7 +99,7 @@ begin
                 
             when "01001" =>  -- ADD
                 -- Add A and B
-                -- result_unsigned <= A_unsigned + B_unsigned;
+                result_unsigned <= A_unsigned + B_unsigned; 
                 result <= std_logic_vector(unsigned(operand1) + unsigned(operand2));
                 carry_out <= result_unsigned(32);
                 update_z <= '1';  -- Update zero flag
@@ -118,10 +126,11 @@ begin
                 update_n <= '1';  -- Update negative flag
                 
             when "01100" =>  -- IADD
-                -- Immediate Add
-                result <= std_logic_vector(unsigned(operand1) + unsigned(x"0000" & Imm));
-                -- Check for carry
-                if (unsigned(operand1) + unsigned(x"0000" & Imm)) > x"FFFFFFFF" then
+                -- sign-extended immediate add 
+                result <= std_logic_vector(unsigned(operand1) + unsigned(imm_sign_extended)); 
+                
+                -- Check for overflow/carry 
+                if (unsigned(operand1) + unsigned(imm_sign_extended)) > x"FFFFFFFF" then 
                     carry_out <= '1';
                 else
                     carry_out <= '0';
@@ -131,11 +140,12 @@ begin
                 update_c <= '1';  -- Update carry flag
                 
             when "10000" | "10001" =>  -- ADDRESS for load/store
-                -- Address calculation (add without changing flags)
-                result <= std_logic_vector(unsigned(operand1) + unsigned(x"0000" & offset));
+                -- Address calculation with proper sign extension 
+                result <= std_logic_vector(unsigned(operand1) + unsigned(offset_sign_extended)); 
                 -- LDD/STD does not update flags
             
             when "10010" | "10011" | "10100" | "10101" | "10110" | "11000" =>  -- jz/jn/jc/jmp/call/int
+                -- Zero-extended immediate for branch targets 
                 result <= x"0000" & imm;  -- Immediate value to result
                 -- Branch operations don't update flags
                 
