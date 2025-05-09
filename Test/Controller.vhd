@@ -192,6 +192,7 @@
 					Call <= '1';
 					Jump <= '1';
 					Sp_Dec <= '1';
+					J_SC<= "11";  
 					DM_address <= '1';
 					Sp_Enable <= '1';
 					MemWrite <= '1';
