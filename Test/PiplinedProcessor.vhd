@@ -96,74 +96,106 @@
 		 
 		 
 		-- Decode
-		-- Decode stage
-		component Decode_Stage is
-			 Port (
-				  -- Clock and reset
-				  clk               : in  STD_LOGIC;
-				  rst               : in  STD_LOGIC;
-				  
-				  -- Input from IF/ID pipeline register
-				  instruction       : in  STD_LOGIC_VECTOR(31 downto 0);
-				  PC_plus1          : in  STD_LOGIC_VECTOR(31 downto 0);
-				  
-				  -- Input from Write Back stage
-				  write_data        : in  STD_LOGIC_VECTOR(31 downto 0);
-				  wb_reg_addr       : in  STD_LOGIC_VECTOR(2 downto 0);
-				  wb_reg_write      : in  STD_LOGIC;
-				  
-				  -- Input for swap operation
-				  swap_data         : in  STD_LOGIC_VECTOR(31 downto 0);
-				  swap_reg_addr     : in  STD_LOGIC_VECTOR(2 downto 0);
-				  swap_enable       : in  STD_LOGIC;
-				  
-				  -- Hazard Detection inputs
-				  ex_mem_read       : in  STD_LOGIC;
-				  ex_mem_write      : in  STD_LOGIC;
-				  ex_dest_reg       : in  STD_LOGIC_VECTOR(2 downto 0);
-				  data_hazard_needed: in  STD_LOGIC;
-				  branch_taken      : in  STD_LOGIC;
-				  
-				  -- Outputs to ID/EX pipeline register
-				  read_data1        : out STD_LOGIC_VECTOR(31 downto 0);
-				  read_data2        : out STD_LOGIC_VECTOR(31 downto 0);
-				  immediate         : out STD_LOGIC_VECTOR(15 downto 0);
-				  offset            : out STD_LOGIC_VECTOR(15 downto 0);
-				  rs1_addr          : out STD_LOGIC_VECTOR(2 downto 0);
-				  rs2_addr          : out STD_LOGIC_VECTOR(2 downto 0);
-				  rd_addr           : out STD_LOGIC_VECTOR(2 downto 0);
-				  
-				  -- Control signals to ID/EX pipeline register
-				  reg_write         : out STD_LOGIC;
-				  alu_src1          : out STD_LOGIC;
-				  alu_src2          : out STD_LOGIC;
-				  mem_read          : out STD_LOGIC;
-				  mem_write         : out STD_LOGIC;
-				  mem_to_reg        : out STD_LOGIC;
-				  sp_inc            : out STD_LOGIC;
-				  sp_dec            : out STD_LOGIC;
-				  sp_enable         : out STD_LOGIC;
-				  branch            : out STD_LOGIC;
-				  jump              : out STD_LOGIC;
-				  call              : out STD_LOGIC;
-				  return_sig        : out STD_LOGIC;
-				  set_carry         : out STD_LOGIC;
-				  update_flag       : out STD_LOGIC;
-				  swap              : out STD_LOGIC;
-				  out_port          : out STD_LOGIC;
-				  in_port           : out STD_LOGIC;
-				  halt              : out STD_LOGIC;
-				  j_sc              : out STD_LOGIC_VECTOR(1 downto 0);
-				  int_ack           : out STD_LOGIC;
-				  flags_save        : out STD_LOGIC;
-				  flags_restore     : out STD_LOGIC;
-				  
-				  -- To hazard detection unit
-				  stall             : out STD_LOGIC_VECTOR(1 downto 0);
-				  flush             : out STD_LOGIC_VECTOR(1 downto 0)
-			 );
-		end component;
-		 
+        -- COntrol unit
+		component Controller is
+		Port (
+			opcode      : in  STD_LOGIC_VECTOR(4 downto 0);
+			
+            -- Execution control
+			RegWrite    : out STD_LOGIC;
+			      
+			immediate_Value_signal: out std_logic;
+			
+			-- Memory control
+			MemRead     : out STD_LOGIC;
+			DM_address : out STD_LOGIC;
+			MemWrite    : out STD_LOGIC;
+			MemToReg    : out STD_LOGIC;
+
+			-- Stack control
+			Sp_Inc      : out STD_LOGIC;
+			Sp_Dec      : out STD_LOGIC;
+			Sp_Enable   : out STD_LOGIC;
+
+			-- Flow control
+			Branch      : out STD_LOGIC;
+			Jump        : out STD_LOGIC;
+			Call        : out STD_LOGIC;
+			ReturnSig   : out STD_LOGIC;
+
+			-- Flag control
+			Set_Carry   : out STD_LOGIC;
+			Update_Flag : out STD_LOGIC;
+
+			-- Special operations
+			Swap        : out STD_LOGIC;
+
+			-- I/O control
+			OutPort     : out STD_LOGIC;
+			InPort      : out STD_LOGIC;
+
+			-- System control
+			Halt        : out STD_LOGIC;
+
+			-- Jump conditions
+			J_SC	    : out STD_LOGIC_VECTOR(1 downto 0); -- Jump if Set Carry
+
+			-- Interrupt control
+			IntAck      : out STD_LOGIC;
+			FlagsSave   : out STD_LOGIC;
+			FlagsRestore: out STD_LOGIC
+		);
+	    end component;
+        
+
+        -- Hazard Detection Unit
+        component Hazard_Detection_Unit is
+        port
+        (    
+            FD_RS1 : in std_logic_vector(2 downto 0);
+            FD_RS2 : in std_logic_vector(2 downto 0);
+            D_Ex_rd : in std_logic_vector(2 downto 0);
+            D_EX_Mem_Read: in std_logic;
+            D_EX_Mem_Write: in std_logic;
+            Data_interface_needed: in std_logic;
+            Branch_Taken: in std_logic;
+            -- Outputs
+            Stall: out std_logic_vector(1 downto 0);
+            Flush: out std_logic_vector(1 downto 0)
+
+        );
+        end component; 
+
+
+        -- Register File
+        component Reg is
+        generic(
+            address_bits : integer := 3; 
+            word_width   : integer := 32   
+        );
+        
+        port(
+            clk          : in std_logic;
+            rst          : in std_logic;
+            we1           : in std_logic;
+            address_sel_sw  : in std_logic;  
+            we2_swap      : in std_logic;
+            
+            write_address_1   : in std_logic_vector(address_bits-1 downto 0);
+            write_address_2   : in std_logic_vector(address_bits-1 downto 0);
+            
+            read_address_1   : in std_logic_vector(address_bits-1 downto 0);
+            read_address2_1  : in std_logic_vector(address_bits-1 downto 0);
+            read_address2_2  : in std_logic_vector(address_bits-1 downto 0);
+            
+            data_in_1      : in std_logic_vector(word_width-1 downto 0);
+            data_in_2      : in std_logic_vector(word_width-1 downto 0);
+            
+            data_out1    : out std_logic_vector(word_width-1 downto 0);
+            data_out2    : out std_logic_vector(word_width-1 downto 0)
+        );
+        end component;
+
 		 
 		 -- DEC/EX register
 		 component DecodeExecute is
@@ -478,6 +510,22 @@
 		 end component;
 		 
 
+         --Hazard Detection Unit
+         component Hazard_Detection_Unit is
+			  Port (
+					FD_RS1 : in std_logic_vector(2 downto 0);
+                    FD_RS2 : in std_logic_vector(2 downto 0);
+                    D_Ex_rd : in std_logic_vector(2 downto 0);
+                    D_EX_Mem_Read: in std_logic;
+                    D_EX_Mem_Write: in std_logic;
+                    Data_interface_needed: in std_logic;
+                    Branch_Taken: in std_logic;
+                    -- Outputs
+                    Stall: out std_logic_vector(1 downto 0);
+                    Flush: out std_logic_vector(1 downto 0)
+			  );
+		 end component;
+
 		 --Fetch stage
          signal instruction_from_instruction_memory : STD_LOGIC_VECTOR(31 downto 0);
 		 -- Pipeline register signals
@@ -485,86 +533,46 @@
 		 signal if_pc_out          : STD_LOGIC_VECTOR(31 downto 0);
 		 signal if_instr_out       : STD_LOGIC_VECTOR(31 downto 0);
 		 signal if_interrupt_out   : STD_LOGIC;
+         
          --Controller
-        signal Controller_J_SC_In           : STD_LOGIC_VECTOR(1 downto 0); 
-		signal Controller_Swap_In           : STD_LOGIC;
-        signal Controller_Set_Carry_In      : STD_LOGIC;
-        signal Controller_Sp_Inc_In         : STD_LOGIC;
-        signal Controller_Sp_Dec_In         : STD_LOGIC;
-        signal Controller_Sp_Enable_In      : STD_LOGIC;
-        signal Controller_RTI_In            : STD_LOGIC;
-        signal Controller_Return_Signal_In  : STD_LOGIC;
-        signal Controller_Call_In           : STD_LOGIC;
+        signal Controller_J_SC_In           : STD_LOGIC_VECTOR(1 downto 0); --
+		signal Controller_Swap_In           : STD_LOGIC; --
+        signal Controller_Set_Carry_In      : STD_LOGIC;--
+        signal Controller_Sp_Inc_In         : STD_LOGIC;--
+        signal Controller_Sp_Dec_In         : STD_LOGIC;--
+        signal Controller_Sp_Enable_In      : STD_LOGIC;--
+        signal Controller_Return_Signal_In  : STD_LOGIC;--
+        signal Controller_Call_In           : STD_LOGIC;--
         signal Controller_ALU_Srcl_In       : STD_LOGIC;
-        signal Controller_Branch_In         : STD_LOGIC;
-        signal Controller_Mem_Read_In       : STD_LOGIC;
-        signal Controller_Reg_Write_In      : STD_LOGIC;
-        signal Controller_Update_Flag_In    : STD_LOGIC;
-        signal Controller_IN_Port_In        : STD_LOGIC;
-        signal Controller_Mem_Write_In      : STD_LOGIC;
-        signal Controller_DM_In            : STD_LOGIC;
-
-
-        ------------------------ Decode stage signals ---------------------------
-		-- Signals from IF/ID pipeline register (prefixed with F/D)
-		signal F_D_instruction       : STD_LOGIC_VECTOR(31 downto 0);
-		signal F_D_PC_plus1          : STD_LOGIC_VECTOR(31 downto 0);
-				  
-		-- Signals from Write Back stage
-		signal write_data_sig        : STD_LOGIC_VECTOR(31 downto 0);
-		signal wb_reg_addr_sig       : STD_LOGIC_VECTOR(2 downto 0);
-		signal wb_reg_write_sig      : STD_LOGIC;
-				  
-		-- Signals for swap operation
-		signal swap_data_sig         : STD_LOGIC_VECTOR(31 downto 0);
-		signal swap_reg_addr_sig     : STD_LOGIC_VECTOR(2 downto 0);
-		signal swap_enable_sig       : STD_LOGIC;
-				  
-		-- Hazard Detection input signals
-		signal ex_mem_read_sig       : STD_LOGIC;
-		signal ex_mem_write_sig      : STD_LOGIC;
-		signal ex_dest_reg_sig       : STD_LOGIC_VECTOR(2 downto 0);
-		signal data_hazard_needed_sig: STD_LOGIC;
-		signal branch_taken_sig      : STD_LOGIC;
-				  
-		-- Output signals to ID/EX pipeline register (prefixed with D/E)
-		signal D_E_read_data1        : STD_LOGIC_VECTOR(31 downto 0);
-		signal D_E_read_data2        : STD_LOGIC_VECTOR(31 downto 0);
-		signal D_E_immediate         : STD_LOGIC_VECTOR(15 downto 0);
-		signal D_E_offset            : STD_LOGIC_VECTOR(15 downto 0);
-		signal D_E_rs1_addr          : STD_LOGIC_VECTOR(2 downto 0);
-		signal D_E_rs2_addr          : STD_LOGIC_VECTOR(2 downto 0);
-		signal D_E_rd_addr           : STD_LOGIC_VECTOR(2 downto 0);
-				  
-		-- Control signals to ID/EX pipeline register (prefixed with D/E)
-		signal D_E_reg_write         : STD_LOGIC;
-		signal D_E_alu_src1          : STD_LOGIC;
-		signal D_E_alu_src2          : STD_LOGIC;
-		signal D_E_mem_read          : STD_LOGIC;
-		signal D_E_mem_write         : STD_LOGIC;
-		signal D_E_mem_to_reg        : STD_LOGIC;
-		signal D_E_sp_inc            : STD_LOGIC;
-		signal D_E_sp_dec            : STD_LOGIC;
-		signal D_E_sp_enable         : STD_LOGIC;
-		signal D_E_branch            : STD_LOGIC;
-		signal D_E_jump              : STD_LOGIC;
-		signal D_E_call              : STD_LOGIC;
-		signal D_E_return_sig        : STD_LOGIC;
-		signal D_E_set_carry         : STD_LOGIC;
-		signal D_E_update_flag       : STD_LOGIC;
-		signal D_E_swap              : STD_LOGIC;
-		signal D_E_out_port          : STD_LOGIC;
-		signal D_E_in_port           : STD_LOGIC;
-		signal D_E_halt              : STD_LOGIC;
-		signal D_E_j_sc              : STD_LOGIC_VECTOR(1 downto 0);
-		signal D_E_int_ack           : STD_LOGIC;
-		signal D_E_flags_save        : STD_LOGIC;
-		signal D_E_flags_restore     : STD_LOGIC;
-				  
-		-- Hazard detection output signals
-		signal stall_sig             : STD_LOGIC_VECTOR(1 downto 0);
-		signal flush_sig             : STD_LOGIC_VECTOR(1 downto 0);
-        ------------------ End of Decode stage signals -------------------
+        signal Controller_Branch_In         : STD_LOGIC;--
+        signal Controller_Mem_Read_In       : STD_LOGIC;--
+        signal Controller_Reg_Write_In      : STD_LOGIC;--
+        signal Controller_Update_Flag_In    : STD_LOGIC;--
+        signal Controller_IN_Port_In        : STD_LOGIC;--
+        signal Controller_Mem_Write_In      : STD_LOGIC;--
+        signal Controller_DM_In             : STD_LOGIC;--
+        signal Controller_Jump              : STD_LOGIC;--
+        signal Controller_OutPort           : STD_LOGIC;--
+        signal Controller_Halt              : STD_LOGIC;--
+        signal Controller_Immediate_Value_signal : STD_LOGIC;--
+        signal Controller_FlagsSave         : STD_LOGIC;--
+        signal Controller_FlagsRestore      : STD_LOGIC;--
+        signal Controller_IntAck            : STD_LOGIC;--
+        signal Controller_MemToReg          : STD_LOGIC;--
+        
+        -- Register File signals
+        signal wb_reg_write     : STD_LOGIC;
+        signal ctrl_swap        : STD_LOGIC;
+        signal swap_enable      : STD_LOGIC;
+        signal swap_reg_addr    : STD_LOGIC_VECTOR(2 downto 0);
+        signal reg_rs1_addr     : STD_LOGIC_VECTOR(2 downto 0);
+        signal reg_rd_addr      : STD_LOGIC_VECTOR(2 downto 0);
+        signal reg_rs2_addr     : STD_LOGIC_VECTOR(2 downto 0);
+        signal write_data       : STD_LOGIC_VECTOR(31 downto 0);
+        signal swap_data        : STD_LOGIC_VECTOR(31 downto 0);
+        signal read_data1       : STD_LOGIC_VECTOR(31 downto 0);
+        signal read_data2       : STD_LOGIC_VECTOR(31 downto 0);
+        signal wb_reg_addr     : STD_LOGIC_VECTOR(2 downto 0);
 
 		 -- ID/EX signals
 		 signal id_pc_out          : STD_LOGIC_VECTOR(31 downto 0);
@@ -762,87 +770,79 @@
 			  Instruction    => if_instr_out
 		 );
         
-        ----- connecting F/D pipeline register to Decode stage -----
-        F_D_instruction <= if_instr_out;
-        F_D_PC_plus1 <= if_pc_out;
-
-        -- TODO: connect with writeback stage
         
+        Controller_inst : Controller
+        port map (
+            opcode => if_instr_out(31 downto 27),
+            
+            -- Execution control
+            RegWrite => Controller_Reg_Write_In,
+            immediate_Value_signal => Controller_Immediate_Value_signal,
+            
+            -- Memory control
+            MemRead => Controller_Mem_Read_In,
+            DM_address => Controller_DM_In,
+            MemWrite => Controller_Mem_Write_In,
+            MemToReg => Controller_MemToReg,
+            
+            -- Stack control
+            Sp_Inc => Controller_Sp_Inc_In,
+            Sp_Dec => Controller_Sp_Dec_In,
+            Sp_Enable => Controller_Sp_Enable_In,
+            
+            -- Flow control
+            Branch => Controller_Branch_In,
+            Jump => Controller_Jump,
+            Call => Controller_Call_In,
+            ReturnSig => Controller_Return_Signal_In,
+            
+            -- Flag control
+            Set_Carry => Controller_Set_Carry_In,
+            Update_Flag => Controller_Update_Flag_In,
+            
+            -- Special operations
+            Swap => Controller_Swap_In,
+            
+            -- I/O control
+            OutPort => Controller_OutPort,
+            InPort => Controller_IN_Port_In,
+            
+            -- System control
+            Halt => Controller_Halt,
+            
+            -- Jump conditions
+            J_SC => Controller_J_SC_In,
+            
+            -- Interrupt control
+            IntAck => Controller_IntAck,
+            FlagsSave => Controller_FlagsSave,
+            FlagsRestore => Controller_FlagsRestore
+        );
 
-         Decode_Stage_inst: Decode_Stage
-		 port map 
-		 (
-			  -- Clock and reset
-			  clk                => clk,
-			  rst                => rst,
-			  
-			  -- Input from IF/ID pipeline register (with F/D prefix)
-			  instruction        => F_D_instruction,
-			  PC_plus1           => F_D_PC_plus1,
-			  
-			  -- Input from Write Back stage
-			  write_data         => write_data_sig,
-			  wb_reg_addr        => wb_reg_addr_sig,
-			  wb_reg_write       => wb_reg_write_sig,
-			  
-			  -- Input for swap operation
-			  swap_data          => swap_data_sig,
-			  swap_reg_addr      => swap_reg_addr_sig,
-			  swap_enable        => swap_enable_sig,
-			  
-			  -- Hazard Detection inputs
-			  ex_mem_read        => ex_mem_read_sig,
-			  ex_mem_write       => ex_mem_write_sig,
-			  ex_dest_reg        => ex_dest_reg_sig,
-			  data_hazard_needed => data_hazard_needed_sig,
-			  branch_taken       => branch_taken_sig,
-			  
-			  -- Outputs to ID/EX pipeline register (with D/E prefix)
-			  read_data1         => D_E_read_data1,
-			  read_data2         => D_E_read_data2,
-			  immediate          => D_E_immediate,
-			  offset             => D_E_offset,
-			  rs1_addr           => D_E_rs1_addr,
-			  rs2_addr           => D_E_rs2_addr,
-			  rd_addr            => D_E_rd_addr,
-			  
-			  -- Control signals to ID/EX pipeline register (with D/E prefix)
-			  reg_write          => D_E_reg_write,
-			  alu_src1           => D_E_alu_src1,
-			  alu_src2           => D_E_alu_src2,
-			  mem_read           => D_E_mem_read,
-			  mem_write          => D_E_mem_write,
-			  mem_to_reg         => D_E_mem_to_reg,
-			  sp_inc             => D_E_sp_inc,
-			  sp_dec             => D_E_sp_dec,
-			  sp_enable          => D_E_sp_enable,
-			  branch             => D_E_branch,
-			  jump               => D_E_jump,
-			  call               => D_E_call,
-			  return_sig         => D_E_return_sig,
-			  set_carry          => D_E_set_carry,
-			  update_flag        => D_E_update_flag,
-			  swap               => D_E_swap,
-			  out_port           => D_E_out_port,
-			  in_port            => D_E_in_port,
-			  halt               => D_E_halt,
-			  j_sc               => D_E_j_sc,
-			  int_ack            => D_E_int_ack,
-			  flags_save         => D_E_flags_save,
-			  flags_restore      => D_E_flags_restore,
-			  
-			  -- To hazard detection unit
-			  stall              => stall_sig,
-			  flush              => flush_sig
-		 );
 
-         ----- connecting Decode stage to D/E pipeline register -----
-         -- D_E_rs1_addr
-         -- D_E_rs2_addr
-         -- D_E_rd_addr
-         -- D_E_immediate
-         -- D_E_read_data1
-         -- D_E_read_data2
+        register_file_inst: Reg
+        generic map (
+            address_bits => 3,
+            word_width => 32
+        )
+        -- TODOs
+        port map (
+            clk                => clk,
+            rst                => rst,
+            we1                => wb_reg_write,       -- from WB stage
+            address_sel_sw     => Controller_Swap_In, -- from CU 
+            we2_swap           => swap_enable,        -- from WB stage
+            write_address_1    => wb_reg_addr,        -- from WB stage
+            write_address_2    => swap_reg_addr,      -- from WB stage
+            read_address_1     => instruction_from_instruction_memory(26 downto 24), -- rs1
+            read_address2_1    => instruction_from_instruction_memory(23 downto 21), -- rs2
+            read_address2_2    => instruction_from_instruction_memory(20 downto 18), -- rd
+            data_in_1          => write_data,         -- from WB stage
+            data_in_2          => swap_data,          -- from WB stage
+            data_out1          => read_data1,
+            data_out2          => read_data2
+        );
+
 
 		 -- Decode/Execute Stage
          en2 <= not stall(1);
@@ -1050,7 +1050,7 @@
 			  rst          => rst,
 			  enable       => '1',
 			  -- Inputs from Execute/Memory
-			  Read_Data_In     => data_in,
+			  Read_Data_In     => write_data_sig,
 			  ALU_Result_In    => ex_alu_result_out,
 			  Mem_Read_In      => ex_mem_read_out,
 			  Rsrc1_In         => ex_rsrc1_out,
@@ -1125,8 +1125,20 @@
 		 
 		 
 
-		 -- Hazard Detection Unit
-		 -- Next PC Logic
-	  
+        -- Hazard Detection Unit
+        HD_Stage: Hazard_Detection_Unit
+        port map(
+            FD_RS1 => rs1_addr_FD,
+            FD_RS2 => rs2_addr_FD,
+            D_Ex_rd => id_rd_out,
+            D_EX_Mem_Read => ex_mem_read_sig,
+            D_EX_Mem_Write => ex_mem_write_sig,
+            Data_interface_needed => data_hazard_needed_sig,
+            Branch_Taken => branch_taken_sig,
+            Stall => stall_sig,
+            Flush => flush_sig
+        );
+        -- Next PC Logic
+    
 
 	end Structural;

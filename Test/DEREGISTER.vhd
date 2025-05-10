@@ -42,6 +42,7 @@ entity DecodeExecute is
         Reg2_Data      : out STD_LOGIC_VECTOR(31 downto 0);
         Swap           : out STD_LOGIC;
         Rsrc1          : out STD_LOGIC_VECTOR(2 downto 0);
+		  Rsrc2          : out STD_LOGIC_VECTOR(2 downto 0);
 		  Rd             : out STD_LOGIC_VECTOR(2 downto 0);
         Reg_Write      : out STD_LOGIC;
         IN_Port        : out STD_LOGIC;
@@ -138,6 +139,7 @@ begin
             Reg2_Data      <= (others => '0');
             Swap           <= '0';
             Rsrc1          <= (others => '0');
+				Rsrc2          <= (others => '0');
 				Rd             <= (others => '0');
             Reg_Write      <= '0';
             IN_Port        <= '0';
@@ -201,6 +203,7 @@ begin
             Reg2_Data      <= Rsrc2_Data_Reg;
             Swap           <= Swap_Reg;
             Rsrc1          <= Read_Addr1_Reg;
+				Rsrc2          <= Read_Addr2_Reg;
 				Rd             <= Rd_Addr_Reg;
             Reg_Write      <= Reg_Write_Reg;
             IN_Port        <= IN_Port_Reg;

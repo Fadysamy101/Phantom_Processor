@@ -10,19 +10,19 @@ entity stack_pointer is
         SP_enable   : in STD_LOGIC;
         SP_INC      : in STD_LOGIC;  -- Pop operation
         SP_DEC      : in STD_LOGIC;  -- Push operation
-        SP_mem      : in STD_LOGIC_VECTOR(15 downto 0);  -- SP from memory stage
+        SP_mem      : in STD_LOGIC_VECTOR(11 downto 0);  -- SP from memory stage
         
         -- Output
-        SP_out      : out STD_LOGIC_VECTOR(15 downto 0)
+        SP_out      : out STD_LOGIC_VECTOR(11 downto 0)
     );
 end stack_pointer;
 
 architecture Behavioral of stack_pointer is
     -- Internal signals
-    signal SP_reg   : STD_LOGIC_VECTOR(15 downto 0); -- Current SP value
-    signal SP_next  : STD_LOGIC_VECTOR(15 downto 0); -- Next SP value
-    signal SP_inc_result : STD_LOGIC_VECTOR(15 downto 0); -- SP + 1
-    signal SP_dec_result : STD_LOGIC_VECTOR(15 downto 0); -- SP - 1
+    signal SP_reg   : STD_LOGIC_VECTOR(11 downto 0); -- Current SP value
+    signal SP_next  : STD_LOGIC_VECTOR(11 downto 0); -- Next SP value
+    signal SP_inc_result : STD_LOGIC_VECTOR(11 downto 0); -- SP + 1
+    signal SP_dec_result : STD_LOGIC_VECTOR(11 downto 0); -- SP - 1
 
 begin
     -- Calculate increment result (for pop)
