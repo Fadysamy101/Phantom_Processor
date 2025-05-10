@@ -829,20 +829,20 @@
             address_bits => 3,
             word_width => 32
         )
-        -- TODOs
+        -- TODOs (done)
         port map (
             clk                => clk,
             rst                => rst,
-            we1                => wb_reg_write,       -- from WB stage
-            address_sel_sw     => Controller_Swap_In, -- from CU 
-            we2_swap           => swap_enable,        -- from WB stage
-            write_address_1    => wb_reg_addr,        -- from WB stage
-            write_address_2    => swap_reg_addr,      -- from WB stage
+            we1                => wr_we1,                  -- from WB stage 
+            address_sel_sw     => Controller_Swap_In,      -- from CU 
+            we2_swap           => wr_we2_swap,             -- from WB stage
+            write_address_1    => wr_Write_address1,       -- from WB stage
+            write_address_2    => wr_Write_address2,       -- from WB stage
             read_address_1     => instruction_from_instruction_memory(26 downto 24), -- rs1
             read_address2_1    => instruction_from_instruction_memory(23 downto 21), -- rs2
             read_address2_2    => instruction_from_instruction_memory(20 downto 18), -- rd
-            data_in_1          => write_data,         -- from WB stage
-            data_in_2          => swap_data,          -- from WB stage
+            data_in_1          => wr_Write_data1,          -- from WB stage
+            data_in_2          => wr_Write_data2,          -- from WB stage
             data_out1          => read_data1,
             data_out2          => read_data2
         );
@@ -1113,7 +1113,7 @@
 			  Output_port  	=>	out_port,
 			  
 			  Write_data1  	=>	wr_Write_data1,
-			  Write_data2  		wr_Write_data2,
+			  Write_data2  	=>	wr_Write_data2,
 			  
 			  Write_address1  => wr_Write_address1,
 			  Write_address2 => wr_Write_address2,
