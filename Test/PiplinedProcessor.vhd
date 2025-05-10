@@ -2,7 +2,7 @@
 	use IEEE.STD_LOGIC_1164.ALL;
 	use IEEE.NUMERIC_STD.ALL;
 
-	entity PipelineProcessor is
+	entity PiplinedProcessor is
 		 Port (
 			  clk        : in STD_LOGIC;
 			  rst        : in STD_LOGIC;
@@ -11,9 +11,9 @@
 			  in_port    : in STD_LOGIC_VECTOR(31 downto 0);
 			  out_port   : out STD_LOGIC_VECTOR(31 downto 0)
 		 );
-	end PipelineProcessor;
+	end PiplinedProcessor;
 
-	architecture Structural of PipelineProcessor is
+	architecture Structural of PiplinedProcessor is
 		
 		 
 		-- Component declarations:
@@ -249,7 +249,7 @@ end component;
 		 
 		 -- Forwarding Unit
 		component Forwarding_Unit is
-     port(
+  port(
     -- Input registers from Decode/Execute stage
     D_EX_rs1      : in std_logic_vector(2 downto 0);
     D_EX_rs2      : in std_logic_vector(2 downto 0);
@@ -267,7 +267,8 @@ end component;
     EX_M_Rd_data  : in std_logic_vector(31 downto 0);
     Rarc1_data    : in std_logic_vector(31 downto 0);
     Rarc2_Data    : in std_logic_vector(31 downto 0);
-   
+    Rarc1_addr    : in std_logic_vector(2 downto 0);
+    Rarc2_addr    : in std_logic_vector(2 downto 0);
     Immediate     : in std_logic_vector(15 downto 0);
     
     -- Immediate selection control
@@ -278,8 +279,8 @@ end component;
     -- Output operands (as shown in the diagram)
     Operand1      : out std_logic_vector(31 downto 0);
     Operand2      : out std_logic_vector(31 downto 0)
-    );
-    end component Forwarding_Unit;
+  );
+end component Forwarding_Unit;
 		 
 		 -- ALU
 		 component ALU is
@@ -421,10 +422,10 @@ END component;
 			  SP_enable   : in STD_LOGIC;
 			  SP_INC      : in STD_LOGIC;  -- Pop operation
 			  SP_DEC      : in STD_LOGIC;  -- Push operation
-			  SP_mem      : in STD_LOGIC_VECTOR(15 downto 0);  -- SP from memory stage
+			  SP_mem      : in STD_LOGIC_VECTOR(11 downto 0);  -- SP from memory stage
 			  
 			  -- Output
-			  SP_out      : out STD_LOGIC_VECTOR(15 downto 0)
+			  SP_out      : out STD_LOGIC_VECTOR(11 downto 0)
 		 );
 		end component;
 		
@@ -708,7 +709,7 @@ END component;
 		 signal pc_enable          : STD_LOGIC;
 		 signal  PC_loaded_from_memory : STD_LOGIC_VECTOR(31 downto 0);
 		 -- Stack pointer signals
-		 signal sp_out             : STD_LOGIC_VECTOR(31 downto 0);
+		 signal sp_out             : STD_LOGIC_VECTOR(11 downto 0);
 		 
 		 -- Flag register signals
 		 signal zero_flag          : STD_LOGIC;
@@ -928,6 +929,8 @@ END component;
              port map(
                 D_EX_rs1 => D_EX_rs1,
                 D_EX_rs2 => D_EX_rs2,
+				Rarc1_addr => id_rsrc1_out,
+				Rarc2_addr => id_rsrc2_out,
                 EX_M_rd => EX_M_rd,
                 M_WB_rd => M_WB_rd,
                 EX_M_RegWrite => EX_M_RegWrite,
@@ -1082,7 +1085,7 @@ END component;
 			 Mem_Read => ex_mem_read_out,
 			 Mem_Write => ex_mem_write_out,
 			 DM_address => ex_dm_addr_out,
-			 ALU_result => ALU_result,
+			 ALU_result => ALU_result(11 downto 0),
 			 SP_Load => ex_sp_load_out,
 			 SP_INC => ex_sp_inc_out,
 			 Call => ex_call_out,
@@ -1144,7 +1147,7 @@ END component;
 			  
 			  reg_write1_flag  => mw_reg_write_out,
 			   
-			  read_address1  => mw_reg1_data_out,
+			  read_address1  => mw_reg1_addr_out,
 			  read_address2  => mw_reg2_addr_out,
 			  dst_address_in => mw_Rd, 
 			  

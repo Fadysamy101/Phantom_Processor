@@ -69,7 +69,7 @@ architecture Behavioral of ExecuteMemory is
     signal Mem_Read_Reg        : STD_LOGIC := '0';
     signal Interrupt_Reg       : STD_LOGIC := '0';
     signal ALU_Result_Reg      : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
-    signal Sp_Load_Reg         : STD_LOGIC_vector := (others => '0');
+    signal Sp_Load_Reg         : STD_LOGIC_vector(11 downto 0) := (others => '0');
     signal Swap_Reg            : STD_LOGIC := '0';
     signal Rsrc1_Reg           : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
 	 signal Rsrc2_Reg           : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
