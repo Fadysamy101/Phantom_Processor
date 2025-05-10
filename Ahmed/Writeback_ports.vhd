@@ -65,6 +65,18 @@ end Writeback_ports;
 architecture Behavioral of Writeback_ports is
 
 
+signal Output_port_signal:  STD_LOGIC_VECTOR (31 downto 0);
+
+signal Write_data1_signal:  STD_LOGIC_VECTOR (31 downto 0);---d
+signal Write_data2_signal:  STD_LOGIC_VECTOR (31 downto 0);---d
+
+signal Write_address1_signal  :  STD_LOGIC_VECTOR (2 downto 0);
+signal Write_address2_signal  :  STD_LOGIC_VECTOR (2 downto 0);
+
+signal we1_signal   		 :  STD_logic;
+signal we2_swap_signal   :  STD_logic;
+
+
 --signal WR_Data_GreenMux: std_logic_vector(31 downto 0);
 
 
@@ -79,11 +91,11 @@ begin
 		  -----------output_port-------------
 			if out_port_flag = '1' then
 			
-				Output_port <= read_data1;
+				Output_port_signal <= read_data1;
 			
 			else
 			
-				Output_port <= (others => '0');
+				Output_port_signal <= (others => '0');
 				
 			end if;
 		  -----------------------------------d
@@ -101,11 +113,11 @@ begin
 				
 						if in_port_flag = '1' then
 						---In_port
-						Write_data1 <= In_port;
+						Write_data1_signal <= In_port;
 						
 						else
 						---read_data1
-						Write_data1 <= read_data1;
+						Write_data1_signal <= read_data1;
 						
 						end if 
 				
@@ -115,11 +127,11 @@ begin
 				---Memory_data
 						if in_port_flag = '1' then
 						---In_port
-						Write_data1 <= In_port;
+						Write_data1_signal <= In_port;
 						
 						else
 						---Memory_data
-						Write_data1 <= Memory_data;
+						Write_data1_signal <= Memory_data;
 						
 						end if 				
 
@@ -136,11 +148,11 @@ begin
 				
 						if in_port_flag = '1' then
 						---In_port
-						Write_data1 <= In_port;
+						Write_data1_signal <= In_port;
 						
 						else
 						---read_data1
-						Write_data1 <= read_data1;
+						Write_data1_signal <= read_data1;
 						
 						end if 
 				
@@ -150,11 +162,11 @@ begin
 				---alu_result
 						if in_port_flag = '1' then
 						---In_port
-						Write_data1 <= In_port;
+						Write_data1_signal <= In_port;
 						
 						else
 						---alu_result
-						Write_data1 <= alu_result;
+						Write_data1_signal <= alu_result;
 						
 						end if 				
 
@@ -167,7 +179,7 @@ begin
 		  ----write_data2---handling----
 		  if swap_flag = '1' then
 		  
-		  Write_data2 <= read_data2;
+		  Write_data2_signal <= read_data2;
 		  
 		  end if;
 		  ------------------------------d
@@ -185,11 +197,11 @@ begin
 		  --------handling write address 1----------------------------
 		  if in_port_flag = '1' then
 		  
-		  Write_address1 <= dst_address_in;
+		  Write_address1_signal <= dst_address_in;
 
 		  else
 		  
-		  Write_address1 <= read_address1;
+		  Write_address1_signal <= read_address1;
 		  
 		  end if;
 		  
@@ -202,7 +214,7 @@ begin
 		  
 		  if swap_flag = '1' then
 		  
-		  Write_address2 <= dst_address_in;
+		  Write_address2_signal <= dst_address_in;
 		  
 		  end if;
 		  
@@ -214,15 +226,29 @@ begin
 	
 		  
 		  -----------------flags handling------------------------------------------------
-		  we1 <= reg_write1_flag;
+		  we1_signal <= reg_write1_flag;
 		  
-		  we2_swap <= swap_flag;  
+		  we2_swap_signal <= swap_flag;  
 		  -------------------------------------------------------------------------------d
 		  
 				
 				
         end if;
     end process;
+	 
+	 
+	 
+	 	  Output_port <=  Output_port_signal	;
+		  
+		  Write_data1 <= 	Write_data1_signal	;---d
+		  Write_data2  <=		Write_data2_signal;---d
+		  
+		  Write_address1 <= Write_address1_signal;
+		  Write_address2 <= Write_address2_signal;
+
+		  
+		  we1   <=	we1_signal	 ;
+		  we2_swap  <= we2_swap_signal;
 
 
 
