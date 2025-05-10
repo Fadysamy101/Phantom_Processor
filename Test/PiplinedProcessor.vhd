@@ -869,7 +869,7 @@
 			  Sp_Dec_In       => Controller_SP_DEC_IN,
 			  Sp_Enable_In    => Controller_Sp_Enable_In,
 			  RTI_In          => Controller_RTI_In,  -- TODO: Connect RTI
-			  Return_Signal_In=> Controller_Return_Signal_In,
+			  Return_Signal_In => Controller_Return_Signal_In,
 			  Call_In         => Controller_Return_Signal_In,
 			  ALU_Srcl_In     => Controller_ALU_Srcl_In,
 			  Branch_In       => Controller_Branch_In,
