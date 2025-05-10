@@ -31,6 +31,7 @@ entity ExecuteMemory is
         Return_Signal_In   : in STD_LOGIC;
 		  DM_IN              : in STD_LOGIC;
 		  Imm_Offset_In      : in STD_LOGIC_VECTOR(15 downto 0);
+		  Out_Port_In        : in STD_LOGIC;
 
         RTI            : out STD_LOGIC;
         Mem_Read       : out STD_LOGIC;
@@ -53,7 +54,8 @@ entity ExecuteMemory is
         Reg_Write      : out STD_LOGIC;
         IN_Port        : out STD_LOGIC;
 		  DM_Addr        : out STD_LOGIC;
-		  Index          : out STD_LOGIC_VECTOR(15 downto 0)
+		  Index          : out STD_LOGIC_VECTOR(15 downto 0);
+		  Out_Port       : out STD_LOGIC
     );
 	 
 end ExecuteMemory;
@@ -83,6 +85,7 @@ architecture Behavioral of ExecuteMemory is
     signal Return_Signal_Reg   : STD_LOGIC := '0';
 	 signal DM_Reg              : STD_LOGIC := '0';
 	 signal Imm_Offset_Reg      : STD_LOGIC_VECTOR(15 downto 0) := (others => '0');
+	 signal Out_Port_Reg        : STD_LOGIC := '0';
 	 
 begin
 
@@ -115,6 +118,7 @@ begin
             Return_Signal_Reg <= '0';
 				DM_Reg            <= '0';
 				Imm_Offset_Reg    <= (others => '0');
+				Out_Port_Reg      <= '0';
 
             RTI            <= '0';
             Mem_Read       <= '0';
@@ -138,6 +142,7 @@ begin
             IN_Port        <= '0';
 				DM_Addr        <= '0';
 				Index          <= (others => '0');
+				Out_Port       <= '0';
 
         elsif rising_edge(clk) then
 		  
@@ -166,6 +171,7 @@ begin
                 Return_Signal_Reg <= Return_Signal_In;
 					 DM_Reg            <= DM_In;
 					 Imm_Offset_Reg    <= Imm_Offset_In;
+					 Out_Port_Reg      <= Out_Port_In;
 					 
             end if;
 
@@ -193,6 +199,7 @@ begin
             IN_Port        <= IN_Port_Reg;
 				DM_Addr        <= DM_Reg;
 				Index          <= Imm_Offset_Reg;
+				Out_Port       <= Out_Port_Reg;
 				
         end if;
 		  

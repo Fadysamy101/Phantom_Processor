@@ -18,16 +18,19 @@ entity MemoryWrite is
         Swap_In          : in STD_LOGIC;
         Reg_Write_In     : in STD_LOGIC;
         IN_Port_In       : in STD_LOGIC;
+		  Out_Port_In      : in STD_LOGIC;
 
         Read_Data     : out STD_LOGIC_VECTOR(31 downto 0);
         ALU_Result    : out STD_LOGIC_VECTOR(31 downto 0);
-		  Reg1_Addr     : out STD_LOGIC_VECTOR(2 downto 0);
-        Reg2_Addr     : out STD_LOGIC_VECTOR(2 downto 0);
+		  Rd            : out STD_LOGIC_VECTOR(2 downto 0);
+        Rsrc1         : out STD_LOGIC_VECTOR(2 downto 0);
         Mem_Read      : out STD_LOGIC;
         Reg1_Data     : out STD_LOGIC_VECTOR(31 downto 0);
+		  Reg2_Data     : out STD_LOGIC_VECTOR(31 downto 0);
         Swap          : out STD_LOGIC;
+		  Reg_Write     : out STD_LOGIC;
         IN_Port       : out STD_LOGIC;
-		  Reg2_Write    : out STD_LOGIC
+		  Out_Port       : out STD_LOGIC
     );
 	 
 end MemoryWrite;
@@ -44,6 +47,7 @@ architecture Behavioral of MemoryWrite is
     signal Swap_Reg          : STD_LOGIC := '0';
     signal Reg_Write_Reg     : STD_LOGIC := '0';
     signal IN_Port_Reg       : STD_LOGIC := '0';
+	 signal Out_Port_Reg      : STD_LOGIC := '0';
 	 
 begin
 
@@ -63,16 +67,19 @@ begin
             Swap_Reg        <= '0';
             Reg_Write_Reg   <= '0';
             IN_Port_Reg     <= '0';
+				Out_Port_Reg    <= '0';
 
             Read_Data   <= (others => '0');
             ALU_Result  <= (others => '0');
-				Reg1_Addr   <= (others => '0');
-            Reg2_Addr   <= (others => '0');
+				Rd          <= (others => '0');
+            Rsrc1       <= (others => '0');
             Mem_Read    <= '0';
             Reg1_Data   <= (others => '0');
+				Reg2_Data   <= (others => '0');
             Swap        <= '0';
+				Reg_Write   <= '0';
             IN_Port     <= '0';
-				Reg2_Write  <= '0';
+				Out_Port    <= '0';
 
         elsif rising_edge(clk) then
 		  
@@ -88,6 +95,7 @@ begin
                 Swap_Reg        <= Swap_In;
                 Reg_Write_Reg   <= Reg_Write_In;
                 IN_Port_Reg     <= IN_Port_In;
+					 Out_Port_Reg    <= Out_Port_In;
 					 
             end if;
 
@@ -95,13 +103,15 @@ begin
 		  
             Read_Data   <= Read_Data_Reg;
             ALU_Result  <= ALU_Result_Reg;
-				Reg1_Addr   <= Rd_Reg;
-            Reg2_Addr   <= Rsrc1_Reg;
+				Rd          <= Rd_Reg;
+            Rsrc1       <= Rsrc1_Reg;
             Mem_Read    <= Mem_Read_Reg;
             Reg1_Data   <= Reg1_Data_Reg;
+				Reg2_Data   <= Reg2_Data_Reg;
             Swap        <= Swap_Reg;
+				Reg_Write   <= Reg_Write_Reg;
             IN_Port     <= IN_Port_Reg;
-				Reg2_Write  <= Swap_Reg;
+				Out_Port    <= Out_Port_Reg;
 				
         end if;
 		  
