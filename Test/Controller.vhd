@@ -8,11 +8,12 @@
 			opcode      : in  STD_LOGIC_VECTOR(4 downto 0);
 			-- Execution control
 			RegWrite    : out STD_LOGIC;
-			ALUSrc1     : out STD_LOGIC;
-			ALUSrc2     : out STD_LOGIC;
+			      
+			immediate_Value_signal: out std_logic;
 			
 			-- Memory control
 			MemRead     : out STD_LOGIC;
+			DM_address : out STD_LOGIC;
 			MemWrite    : out STD_LOGIC;
 			MemToReg    : out STD_LOGIC;
 			-- Stack control
@@ -52,9 +53,7 @@
 		begin
 			-- Default values
 			RegWrite    <= '0';
-			ALUSrc1     <= '0';
-			ALUSrc2     <= '0';
-			
+			   
 			MemRead     <= '0';
 			MemWrite    <= '0';
 			MemToReg    <= '0';
@@ -73,8 +72,10 @@
 			Halt        <= '0';
 			J_SC        <= "00";  -- Default no jump condition
 			IntAck      <= '0';
+			immediate_Value_signal<= '0';
 			FlagsSave   <= '0';
 			FlagsRestore<= '0';
+			DM_address <= '0';
 
 			case opcode is
 				-- One Operand Instructions
@@ -131,7 +132,8 @@
 				
 				when "01100" => -- IADD Rdst, Rsrc1, Imm
 					RegWrite <= '1';
-					ALUSrc2 <= '1';
+					
+					immediate_Value_signal <= '1';
 					
 					Update_Flag <= '1';
 				
@@ -140,6 +142,7 @@
 					MemWrite <= '1';
 					Sp_Dec <= '1';
 					Sp_Enable <= '1';
+					DM_address<= '1';
 				
 				when "01110" => -- POP Rdst
 					RegWrite <= '1';
@@ -150,20 +153,20 @@
 				
 				when "01111" => -- LDM Rdst, Imm
 					RegWrite <= '1';
-					ALUSrc2 <= '1';
+					  
 					
 				
 				when "10000" => -- LDD Rdst, offset(Rsrc1)
 					RegWrite <= '1';
 					MemRead <= '1';
+					immediate_Value_signal <= '1';
 					MemToReg <= '1';
-					ALUSrc2 <= '1';  -- Use offset
+				 -- Use offset
 					
 				
 				when "10001" => -- STD Rsrc1, offset(Rsrc2)
 					MemWrite <= '1';
-					ALUSrc2 <= '1';  -- Use offset
-					
+				 	immediate_Value_signal<= '1';
 				
 				-- Branch and Control Flow
 				when "10010" => -- JZ Imm
@@ -189,6 +192,8 @@
 					Call <= '1';
 					Jump <= '1';
 					Sp_Dec <= '1';
+					J_SC<= "11";  
+					DM_address <= '1';
 					Sp_Enable <= '1';
 					MemWrite <= '1';
 				
@@ -202,6 +207,7 @@
 					Call <= '1';
 					Sp_Dec <= '1';
 					Sp_Enable <= '1';
+					DM_address <= '1';
 					MemWrite <= '1';
 					FlagsSave <= '1';
 					IntAck <= '1';
