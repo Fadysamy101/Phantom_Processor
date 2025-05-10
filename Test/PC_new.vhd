@@ -21,63 +21,63 @@ entity PC_New is
 end PC_New;
 
 architecture Behavioral of PC_New is
-    signal counter           : STD_LOGIC_VECTOR(31 downto 0);
+    signal counter           : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
     signal next_PC           : STD_LOGIC_VECTOR(31 downto 0);
-    signal flag_decision     : STD_LOGIC;
     signal branch_decision   : STD_LOGIC;
     signal Return_Decision   : STD_LOGIC;
 begin
     -- Process to handle the branch and jump conditions based on flags
-    process(in_from_CCR, in_J_SC, branch)
+    flag_check: process(in_from_CCR, in_J_SC, branch)
     begin
-        case in_J_SC is
-            when "00" =>
-                if in_from_CCR(0) = '1' then
-                    branch_decision <= '1' and branch;
-                else
-                    branch_decision <= '0';
-                end if;
-            when "01" =>
-                if in_from_CCR(1) = '1' then
-                    branch_decision <= '1' and branch;
-                else
-                    branch_decision <= '0';
-                end if;  
-            when "10" =>
-                if in_from_CCR(2) = '1' then
-                    branch_decision <= '1' and branch;
-                else
-                    branch_decision <= '0';
-                end if;      
-            when "11" =>
-                branch_decision <= '1' and branch;
-            when others =>  
-                branch_decision <= '0';
-        end case;
-    end process;
-
-    -- Process to calculate next PC value (combinational logic)
-    process(branch_decision, Call, branch_addr, counter, Return_flag, RTI, Interrupt, PC_loaded_from_memory)
-    begin
-        -- Default is normal increment
-        next_PC <= std_logic_vector(unsigned(counter) + 1);
+        branch_decision <= '0'; -- Default value
         
-        -- Handle branch/jump conditions
-        if Call = '1' then
-            next_PC <= branch_addr; -- Jump to subroutine
-        elsif branch_decision = '1' then
-            next_PC <= branch_addr; -- Conditional branch
+        if branch = '1' then
+            case in_J_SC is
+                when "00" =>
+                    if in_from_CCR(0) = '1' then
+                        branch_decision <= '1';
+                    end if;
+                when "01" =>
+                    if in_from_CCR(1) = '1' then
+                        branch_decision <= '1';
+                    end if;  
+                when "10" =>
+                    if in_from_CCR(2) = '1' then
+                        branch_decision <= '1';
+                    end if;      
+                when "11" =>
+                    branch_decision <= '1';
+                when others =>  
+                    branch_decision <= '0';
+            end case;
         end if;
+    end process flag_check;
+    
+    -- Calculate Return Decision (separate process)
+    Return_Decision <= RTI or Return_flag or Interrupt;
+    
+    -- Process to calculate next PC value (combinational logic)
+    next_pc_calc: process(counter, branch_decision, Call, branch_addr, Return_Decision, PC_loaded_from_memory)
+    begin
+        -- Priority handling for PC update:
+        -- 1. Return/Interrupt (highest)
+        -- 2. Call
+        -- 3. Branch
+        -- 4. Normal increment (lowest)
         
-        -- Handle return conditions (highest priority)
-        Return_Decision <= RTI or Return_flag or Interrupt;
         if Return_Decision = '1' then
             next_PC <= PC_loaded_from_memory;
+        elsif Call = '1' then
+            next_PC <= branch_addr;
+        elsif branch_decision = '1' then
+            next_PC <= branch_addr;
+        else
+            next_PC <= std_logic_vector(unsigned(counter) + 1);
         end if;
-    end process;
-
+    end process next_pc_calc;
+    
     -- Sequential process to update counter on clock edge
-    process(clk, rst)
+    pc_update: process(clk, rst)
     begin
         if rst = '1' then
             counter <= (others => '0');
@@ -86,9 +86,9 @@ begin
                 counter <= next_PC;
             end if;
         end if;
-    end process;
-
+    end process pc_update;
+    
     -- Output current PC value
     PC <= counter;
-    
+   
 end Behavioral;
