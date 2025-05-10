@@ -6,7 +6,7 @@ use IEEE.NUMERIC_STD.ALL;
 entity InstructionMemory is
     Port (        
         PC 		  : in STD_LOGIC_VECTOR (7 downto 0); 
-		  data_bus : out STD_LOGIC_VECTOR (15 downto 0)
+		  data_bus : out STD_LOGIC_VECTOR ( 31 downto 0)
 		  
     );
 end InstructionMemory;
@@ -16,7 +16,7 @@ end InstructionMemory;
 architecture Behavioral of InstructionMemory is
 
 
-    type memory_array is array (0 to 255) of STD_LOGIC_VECTOR(15 downto 0); 
+    type memory_array is array (0 to 4095) of STD_LOGIC_VECTOR(31 downto 0); 
     signal ROM : memory_array := (others => (others => '0'));  
 
 begin
