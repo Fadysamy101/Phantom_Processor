@@ -14,6 +14,7 @@ entity ExecuteMemory is
         Sp_Load_In         : in STD_LOGIC;
         Swap_In            : in STD_LOGIC;
         Rsrc1_In           : in STD_LOGIC_VECTOR(2 downto 0);
+		  Rsrc2_In           : in STD_LOGIC_VECTOR(2 downto 0);
 		  Rd_In              : in STD_LOGIC_VECTOR(2 downto 0);
         Reg1_Data_In       : in STD_LOGIC_VECTOR(31 downto 0);
         Reg2_Data_In       : in STD_LOGIC_VECTOR(31 downto 0);
@@ -40,6 +41,7 @@ entity ExecuteMemory is
         ALU_Result     : out STD_LOGIC_VECTOR(31 downto 0);
         Sp_Load        : out STD_LOGIC;
         Rsrc1          : out STD_LOGIC_VECTOR(2 downto 0);
+		  Rsrc2          : out STD_LOGIC_VECTOR(2 downto 0);
 		  Rd             : out STD_LOGIC_VECTOR(2 downto 0);
         Pc             : out STD_LOGIC_VECTOR(31 downto 0);
         Set_Carry      : out STD_LOGIC;
@@ -68,6 +70,7 @@ architecture Behavioral of ExecuteMemory is
     signal Sp_Load_Reg         : STD_LOGIC := '0';
     signal Swap_Reg            : STD_LOGIC := '0';
     signal Rsrc1_Reg           : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
+	 signal Rsrc2_Reg           : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
 	 signal Rd_Reg              : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
     signal Reg1_Data_Reg       : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
     signal Reg2_Data_Reg       : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
@@ -101,6 +104,7 @@ begin
             Sp_Load_Reg       <= '0';
             Swap_Reg          <= '0';
             Rsrc1_Reg         <= (others => '0');
+				Rsrc2_Reg         <= (others => '0');
 				Rd_Reg            <= (others => '0');
             Reg1_Data_Reg     <= (others => '0');
             Reg2_Data_Reg     <= (others => '0');
@@ -127,6 +131,7 @@ begin
             ALU_Result     <= (others => '0');
             Sp_Load        <= '0';
             Rsrc1          <= (others => '0');
+				Rsrc2          <= (others => '0');
 				Rd             <= (others => '0');
             Pc             <= (others => '0');
             Set_Carry      <= '0';
@@ -154,6 +159,7 @@ begin
                 Sp_Load_Reg       <= Sp_Load_In;
                 Swap_Reg          <= Swap_In;
                 Rsrc1_Reg         <= Rsrc1_In;
+					 Rsrc2_Reg         <= Rsrc2_In;
 					 Rd_Reg            <= Rd_In;
                 Reg1_Data_Reg     <= Reg1_Data_In;
                 Reg2_Data_Reg     <= Reg2_Data_In;
@@ -184,6 +190,7 @@ begin
             ALU_Result     <= ALU_Result_Reg;
             Sp_Load        <= Sp_Load_Reg;
             Rsrc1          <= Rsrc1_Reg;
+				Rsrc2          <= Rsrc2_Reg;
 				Rd             <= Rd_Reg;
             Pc             <= Pc_Reg;
             Set_Carry      <= Set_Carry_Reg;
