@@ -119,7 +119,7 @@ begin
 						---read_data1
 						Write_data1_signal <= read_data1;
 						
-						end if 
+						end if; 
 				
 				
 				
@@ -133,9 +133,9 @@ begin
 						---Memory_data
 						Write_data1_signal <= Memory_data;
 						
-						end if 				
+						end if; 				
 
-				end if
+				end if;
 		  
 		  
 		  
@@ -154,7 +154,7 @@ begin
 						---read_data1
 						Write_data1_signal <= read_data1;
 						
-						end if 
+						end if; 
 				
 				
 				
@@ -168,9 +168,9 @@ begin
 						---alu_result
 						Write_data1_signal <= alu_result;
 						
-						end if 				
+						end if; 				
 
-				end if		  
+				end if;		  
 		  
 
 		  end if;
