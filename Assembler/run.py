@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """
-Script to run the Assembler on the test program with memory format
+Script to run the 32-bit Assembler on the test program with memory format
 that matches the memory_init1.mem example
 """
 
 import os
 import sys
-import subprocess
 from Assembler import Assembler
 
 def main():
-    print("Assembly to Memory Formatter")
+    print("32-bit Assembly to Memory Formatter")
     print("===========================")
     
     # Get the current directory
