@@ -428,6 +428,22 @@
 			  );
 		 end component;
 
+         --Hazard Detection Unit
+         component Hazard_Detection_Unit is
+			  Port (
+					FD_RS1 : in std_logic_vector(2 downto 0);
+                    FD_RS2 : in std_logic_vector(2 downto 0);
+                    D_Ex_rd : in std_logic_vector(2 downto 0);
+                    D_EX_Mem_Read: in std_logic;
+                    D_EX_Mem_Write: in std_logic;
+                    Data_interface_needed: in std_logic;
+                    Branch_Taken: in std_logic;
+                    -- Outputs
+                    Stall: out std_logic_vector(1 downto 0);
+                    Flush: out std_logic_vector(1 downto 0)
+			  );
+		 end component;
+
 		 --Fetch stage
          signal instruction_from_instruction_memory : STD_LOGIC_VECTOR(31 downto 0);
 		 -- Pipeline register signals
@@ -979,7 +995,7 @@
 			  rst          => rst,
 			  enable       => '1',
 			  -- Inputs from Execute/Memory
-			  Read_Data_In     => data_in,
+			  Read_Data_In     => write_data_sig,
 			  ALU_Result_In    => ex_alu_result_out,
 			  Mem_Read_In      => ex_mem_read_out,
 			  Rsrc1_In         => ex_rsrc1_out,
@@ -1001,8 +1017,20 @@
 			  Reg2_Write    => mw_reg2_write_out
 		 );
 
-		 -- Hazard Detection Unit
-		 -- Next PC Logic
-	  
+        -- Hazard Detection Unit
+        HD_Stage: Hazard_Detection_Unit
+        port map(
+            FD_RS1 => rs1_addr_FD,
+            FD_RS2 => rs2_addr_FD,
+            D_Ex_rd => id_rd_out,
+            D_EX_Mem_Read => ex_mem_read_sig,
+            D_EX_Mem_Write => ex_mem_write_sig,
+            Data_interface_needed => data_hazard_needed_sig,
+            Branch_Taken => branch_taken_sig,
+            Stall => stall_sig,
+            Flush => flush_sig
+        );
+        -- Next PC Logic
+    
 
 	end Structural;
