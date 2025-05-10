@@ -12,6 +12,7 @@ Features:
 - Labels and robust error handling
 - Direct output to ModelSim/Quartus compatible .mem format
 - Full 32-bit binary output for instructions
+- Support for immediate values with # prefix (e.g., MOV R0, #2)
 
 Instruction Format:
 31:27    26:24    23:21    20:18    17:16    15:0
@@ -103,6 +104,10 @@ class Assembler:
 
     def immediate_to_binary(self, imm, bits=16):
         """Convert immediate value to binary with specified bit width."""
+        # Remove # prefix if present
+        if imm.startswith('#'):
+            imm = imm[1:]
+            
         # Parse the immediate value (hex or decimal)
         try:
             value = self.parse_hex_value(imm)
@@ -118,6 +123,10 @@ class Assembler:
             
         except ValueError as e:
             raise ValueError(f"Error parsing immediate value '{imm}': {e}")
+
+    def is_immediate(self, operand):
+        """Check if an operand is an immediate value (starting with #)."""
+        return operand.startswith('#')
 
     def parse_operands(self, operands_str):
         """Parse operands string into list of operands."""
@@ -252,25 +261,61 @@ class Assembler:
                         rsrc1_bin = self.register_to_binary(operands[0])
                         binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
                     
-                    elif opcode in ['MOV', 'SWAP']:
+                    elif opcode == 'MOV':
+                        # Handle two formats:
+                        # 1. MOV Rdst, Rsrc1 (register to register)
+                        # 2. MOV Rdst, #imm (immediate to register)
+                        rdst_bin = self.register_to_binary(operands[0])
+                        
+                        if self.is_immediate(operands[1]):
+                            # MOV Rdst, #imm -> treat as LDM instruction
+                            opcode_bin = self.opcodes['LDM']  # Use LDM opcode
+                            imm_bin = self.immediate_to_binary(operands[1], 16)
+                            binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                        else:
+                            # Standard MOV between registers
+                            rsrc1_bin = self.register_to_binary(operands[1])
+                            binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                    
+                    elif opcode == 'SWAP':
                         # Format: opcode Rdst, Rsrc1
                         rdst_bin = self.register_to_binary(operands[0])
                         rsrc1_bin = self.register_to_binary(operands[1])
                         binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
                     
                     elif opcode in ['ADD', 'SUB', 'AND']:
-                        # Format: opcode Rdst, Rsrc1, Rsrc2
+                        # Check for three-operand format with possible immediate
                         rdst_bin = self.register_to_binary(operands[0])
                         rsrc1_bin = self.register_to_binary(operands[1])
-                        rsrc2_bin = self.register_to_binary(operands[2])
-                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                        
+                        if len(operands) > 2:
+                            if self.is_immediate(operands[2]):
+                                # ADD/SUB/AND with immediate -> use IADD for ADD with imm
+                                # For other ops, this could be mapped to equivalent ops
+                                if opcode == 'ADD':
+                                    opcode_bin = self.opcodes['IADD']
+                                    imm_bin = self.immediate_to_binary(operands[2], 16)
+                                    binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                                else:
+                                    raise ValueError(f"Immediate values not supported for {opcode}")
+                            else:
+                                # Standard three-register operation
+                                rsrc2_bin = self.register_to_binary(operands[2])
+                                binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                        else:
+                            raise ValueError(f"{opcode} requires three operands")
                     
                     elif opcode == 'IADD':
                         # Format: opcode Rdst, Rsrc1, Imm
                         rdst_bin = self.register_to_binary(operands[0])
                         rsrc1_bin = self.register_to_binary(operands[1])
-                        imm_bin = self.immediate_to_binary(operands[2], 16)
-                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                        
+                        # Check if immediate has # prefix
+                        if len(operands) > 2:
+                            imm_bin = self.immediate_to_binary(operands[2], 16)
+                            binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                        else:
+                            raise ValueError(f"{opcode} requires three operands")
                     
                     elif opcode == 'LDM':
                         # Format: opcode Rdst, Imm
@@ -301,6 +346,7 @@ class Assembler:
                             # Use the label's address value
                             imm_bin = self.immediate_to_binary(str(self.labels[operands[0]]), 16)
                         else:
+                            # Remove # prefix if present
                             imm_bin = self.immediate_to_binary(operands[0], 16)
                         binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
                     
