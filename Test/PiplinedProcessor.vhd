@@ -622,6 +622,10 @@
 		 -- Hazard detection signals
 		 signal stall              : STD_LOGIC_VECTOR(1 downto 0);
 		 signal flush              : STD_LOGIC_VECTOR(1 downto 0);
+         signal ex_mem_read_sig    : STD_LOGIC;
+         signal ex_mem_write_sig   : STD_LOGIC;
+         signal data_hazard_needed_sig : STD_LOGIC;
+         signal branch_taken_sig : STD_LOGIC;
 		 
 		 -- Forwarding signals
 		 signal forward_rs1        : STD_LOGIC_VECTOR(1 downto 0);
@@ -1011,8 +1015,8 @@
             D_EX_Mem_Write => ex_mem_write_sig,
             Data_interface_needed => data_hazard_needed_sig,
             Branch_Taken => branch_taken_sig,
-            Stall => stall_sig,
-            Flush => flush_sig
+            Stall => stall,
+            Flush => flush
         );
         -- Next PC Logic
     
