@@ -16,6 +16,7 @@ end PipelineProcessor;
 
 architecture Structural of PipelineProcessor is
     -- Component declarations
+    --Pipeline stages + Decode stage+Memory
     component FetchDecode is
         Port (
             clk            : in  STD_LOGIC;
@@ -30,17 +31,7 @@ architecture Structural of PipelineProcessor is
             Interrupt      : out STD_LOGIC;
             Instruction    : out STD_LOGIC_VECTOR(31 downto 0)
         );
-    end component;
-    component ProgramCounter is
-    Port (
-        clk       : in STD_LOGIC;
-        rst       : in STD_LOGIC;
-        stall     : in STD_LOGIC;  -- Hazard detection
-        branch    : in STD_LOGIC;  -- From EX stage
-        branch_addr : in STD_LOGIC_VECTOR(7 downto 0); -- From ALU
-        PC        : out STD_LOGIC_VECTOR(7 downto 0)
-    );
-    end component;    
+    end component; 
     component DecodeExecute is
         Port (
             clk             : in  STD_LOGIC;
@@ -200,95 +191,6 @@ architecture Structural of PipelineProcessor is
             Forward_array_Rs2 : out std_logic_vector(1 downto 0)
         );
     end component;
-
-    component Hazard_Detection_Unit is
-        port(
-            FD_RS1 : in std_logic_vector(2 downto 0);
-            FD_RS2 : in std_logic_vector(2 downto 0);
-            D_Ex_rd : in std_logic_vector(2 downto 0);
-            D_EX_Mem_Read: in std_logic;
-            D_EX_Mem_Write: in std_logic;
-            Data_interface_needed: in std_logic;
-            Branch_Taken: in std_logic;
-            -- Outputs
-            Stall: out std_logic_vector(1 downto 0);
-            Flush: out std_logic_vector(1 downto 0)
-        );
-    end component;
-
-    component Reg is
-        generic(
-            address_bits : integer := 3; 
-            word_width   : integer := 32   
-        );
-        port(
-            clk          : in std_logic;
-            rst          : in std_logic;
-            we           : in std_logic;  -- Write Enable
-            write_address: in std_logic_vector(2 downto 0);
-            read_address1: in std_logic_vector(2 downto 0);
-            read_address2: in std_logic_vector(2 downto 0);
-            data_in      : in std_logic_vector(31 downto 0);
-            data_out1    : out std_logic_vector(31 downto 0);
-            data_out2    : out std_logic_vector(31 downto 0)
-        );
-    end component;
-
-    component ALU is
-        Generic ( WIDTH : integer := 32 );
-        Port (
-            A          : in  STD_LOGIC_VECTOR(WIDTH-1 downto 0);
-            B          : in  STD_LOGIC_VECTOR(WIDTH-1 downto 0);
-            ALUOp      : in  STD_LOGIC_VECTOR(3 downto 0);
-            Swap       : in  STD_LOGIC;
-            Result     : out STD_LOGIC_VECTOR(WIDTH-1 downto 0);
-            Zero       : out STD_LOGIC;
-            Negative   : out STD_LOGIC;
-            Carry      : out STD_LOGIC
-        );
-    end component;
-
-    component Control_Unit is
-        Port (
-            opcode      : in  STD_LOGIC_VECTOR(4 downto 0);
-            -- Execution control
-            RegWrite    : out STD_LOGIC;
-            ALUSrc1     : out STD_LOGIC;
-            ALUSrc2     : out STD_LOGIC;
-            ALUOp       : out STD_LOGIC_VECTOR(3 downto 0);
-            -- Memory control
-            MemRead     : out STD_LOGIC;
-            MemWrite    : out STD_LOGIC;
-            MemToReg    : out STD_LOGIC;
-            -- Stack control
-            Sp_Inc      : out STD_LOGIC;
-            Sp_Dec      : out STD_LOGIC;
-            Sp_Enable   : out STD_LOGIC;
-            -- Flow control
-            Branch      : out STD_LOGIC;
-            Jump        : out STD_LOGIC;
-            Call        : out STD_LOGIC;
-            ReturnSig   : out STD_LOGIC;
-            -- Flag control
-            Set_Carry   : out STD_LOGIC;
-            Update_Flag : out STD_LOGIC;
-            -- Special operations
-            Swap        : out STD_LOGIC;
-            -- I/O control
-            OutPort     : out STD_LOGIC;
-            InPort      : out STD_LOGIC;
-            -- System control
-            Halt        : out STD_LOGIC;
-            -- Jump conditions
-            JZ          : out STD_LOGIC;
-            JN          : out STD_LOGIC;
-            JC          : out STD_LOGIC;
-            -- Interrupt control
-            IntAck      : out STD_LOGIC;
-            FlagsSave   : out STD_LOGIC;
-            FlagsRestore: out STD_LOGIC
-        );
-    end component;
     component PC_new is
         Port (
             clk              : in  STD_LOGIC;
@@ -323,12 +225,71 @@ architecture Structural of PipelineProcessor is
             data_out : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0)
         );
     END component;
-    
-    component InstructionMemory is
-        Port (        
-            PC        : in STD_LOGIC_VECTOR (7 downto 0);
-            data_bus  : out STD_LOGIC_VECTOR (31 downto 0)
-        );
+    Component Decode_Stage is
+    Port (
+        -- Clock and reset
+        clk               : in  STD_LOGIC;
+        rst               : in  STD_LOGIC;
+        
+        -- Input from IF/ID pipeline register
+        instruction       : in  STD_LOGIC_VECTOR(31 downto 0);
+        PC_plus1          : in  STD_LOGIC_VECTOR(31 downto 0);
+        
+        -- Input from Write Back stage
+        write_data        : in  STD_LOGIC_VECTOR(31 downto 0);
+        wb_reg_addr       : in  STD_LOGIC_VECTOR(2 downto 0);
+        wb_reg_write      : in  STD_LOGIC;
+        
+        -- Input for swap operation
+        swap_data         : in  STD_LOGIC_VECTOR(31 downto 0);
+        swap_reg_addr     : in  STD_LOGIC_VECTOR(2 downto 0);
+        swap_enable       : in  STD_LOGIC;
+        
+        -- Hazard Detection inputs
+        ex_mem_read       : in  STD_LOGIC;
+        ex_mem_write      : in  STD_LOGIC;
+        ex_dest_reg       : in  STD_LOGIC_VECTOR(2 downto 0);
+        data_hazard_needed: in  STD_LOGIC;
+        branch_taken      : in  STD_LOGIC;
+        
+        -- Outputs to ID/EX pipeline register
+        read_data1        : out STD_LOGIC_VECTOR(31 downto 0);
+        read_data2        : out STD_LOGIC_VECTOR(31 downto 0);
+        immediate         : out STD_LOGIC_VECTOR(15 downto 0);
+        offset            : out STD_LOGIC_VECTOR(15 downto 0);
+        rs1_addr          : out STD_LOGIC_VECTOR(2 downto 0);
+        rs2_addr          : out STD_LOGIC_VECTOR(2 downto 0);
+        rd_addr           : out STD_LOGIC_VECTOR(2 downto 0);
+        
+        -- Control signals to ID/EX pipeline register
+        reg_write         : out STD_LOGIC;
+        alu_src1          : out STD_LOGIC;
+        alu_src2          : out STD_LOGIC;
+        mem_read          : out STD_LOGIC;
+        mem_write         : out STD_LOGIC;
+        mem_to_reg        : out STD_LOGIC;
+        sp_inc            : out STD_LOGIC;
+        sp_dec            : out STD_LOGIC;
+        sp_enable         : out STD_LOGIC;
+        branch            : out STD_LOGIC;
+        jump              : out STD_LOGIC;
+        call              : out STD_LOGIC;
+        return_sig        : out STD_LOGIC;
+        set_carry         : out STD_LOGIC;
+        update_flag       : out STD_LOGIC;
+        swap              : out STD_LOGIC;
+        out_port          : out STD_LOGIC;
+        in_port           : out STD_LOGIC;
+        halt              : out STD_LOGIC;
+        j_sc              : out STD_LOGIC_VECTOR(1 downto 0);
+        int_ack           : out STD_LOGIC;
+        flags_save        : out STD_LOGIC;
+        flags_restore     : out STD_LOGIC;
+        
+        -- To hazard detection unit
+        stall             : out STD_LOGIC_VECTOR(1 downto 0);
+        flush             : out STD_LOGIC_VECTOR(1 downto 0)
+    );
     end component;
     
     -- Pipeline register signals
