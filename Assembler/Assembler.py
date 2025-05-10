@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Enhanced Assembler for Team1 Instruction Set Architecture with .mem Output Support
+Enhanced Assembler for Team1 Instruction Set Architecture with ModelSim/Quartus .mem Output Support
 
 This assembler translates assembly language into machine code according to the
 instruction format provided in Team1_Phase1_Report.pdf.
@@ -10,13 +10,13 @@ Features:
 - Hexadecimal constants and addresses
 - Data statements
 - Labels and robust error handling
-- Direct output to .mem format
-- Full 32-bit binary output
+- Direct output to ModelSim/Quartus compatible .mem format
+- Full 32-bit binary output for instructions
 
 Instruction Format:
 31:27    26:24    23:21    20:18    17:16    15:0
-opcode   Rsrc1    Rsrc2    Rdst     -        Immediate/offset
-
+opcode   Rsrc1    Rsrc2    Rdst     --       Imm/offset
+(5 bits) (3 bits) (3 bits) (3 bits) (2 bits) (16 bits)
 """
 
 import re
@@ -214,100 +214,106 @@ class Assembler:
                 
                 # Handle data values
                 if opcode == "DATA":
-                    value = self.parse_hex_value(operands_str)
-                    if value > 0xFFFFFFFF:
-                        raise ValueError(f"Data value exceeds 32 bits: {operands_str}")
-                    binary = format(value, '032b')
-                    self.memory_map[address] = binary
-                    continue
-                
-                # Get the opcode binary
-                if opcode not in self.opcodes:
-                    raise ValueError(f"Unknown opcode: {opcode}")
-                
-                opcode_bin = self.opcodes[opcode]
-                operands = self.parse_operands(operands_str)
-                
-                # Initialize register fields and immediate field
-                rsrc1_bin = '000'  # Default is R0
-                rsrc2_bin = '000'  # Default is R0
-                rdst_bin = '000'   # Default is R0
-                immediate_bin = '0000000000000000'  # 16 bits of zeros
-                
-                # Format the binary instruction based on the instruction type
-                if opcode in ['NOP', 'HLT', 'SETC', 'RET', 'RTI']:
-                    # No operands
-                    binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{immediate_bin}"
-                
-                elif opcode in ['NOT', 'INC', 'IN', 'POP']:
-                    # Format: opcode Rdst
-                    rdst_bin = self.register_to_binary(operands[0])
-                    binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{immediate_bin}"
-                
-                elif opcode in ['OUT', 'PUSH']:
-                    # Format: opcode Rsrc1
-                    rsrc1_bin = self.register_to_binary(operands[0])
-                    binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{immediate_bin}"
-                
-                elif opcode in ['MOV', 'SWAP']:
-                    # Format: opcode Rdst, Rsrc1
-                    rsrc1_bin = self.register_to_binary(operands[1])
-                    rdst_bin = self.register_to_binary(operands[0])
-                    binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{immediate_bin}"
-                
-                elif opcode in ['ADD', 'SUB', 'AND']:
-                    # Format: opcode Rdst, Rsrc1, Rsrc2
-                    rsrc1_bin = self.register_to_binary(operands[1])
-                    rsrc2_bin = self.register_to_binary(operands[2])
-                    rdst_bin = self.register_to_binary(operands[0])
-                    binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{immediate_bin}"
-                
-                elif opcode == 'IADD':
-                    # Format: opcode Rdst, Rsrc1, Imm
-                    rsrc1_bin = self.register_to_binary(operands[1])
-                    rdst_bin = self.register_to_binary(operands[0])
-                    immediate_bin = self.immediate_to_binary(operands[2])
-                    binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{immediate_bin}"
-                
-                elif opcode == 'LDM':
-                    # Format: opcode Rdst, Imm
-                    rdst_bin = self.register_to_binary(operands[0])
-                    immediate_bin = self.immediate_to_binary(operands[1])
-                    binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{immediate_bin}"
-                
-                elif opcode == 'LDD':
-                    # Format: opcode Rdst, offset(Rsrc1)
-                    # operands = [Rdst, Rsrc1, offset]
-                    rsrc1_bin = self.register_to_binary(operands[1])
-                    rdst_bin = self.register_to_binary(operands[0])
-                    immediate_bin = self.immediate_to_binary(operands[2])
-                    binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{immediate_bin}"
-                
-                elif opcode == 'STD':
-                    # Format: opcode Rsrc1, offset(Rsrc2)
-                    # operands = [Rsrc1, Rsrc2, offset]
-                    rsrc1_bin = self.register_to_binary(operands[0])
-                    rsrc2_bin = self.register_to_binary(operands[1])
-                    immediate_bin = self.immediate_to_binary(operands[2])
-                    binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{immediate_bin}"
-                
-                elif opcode in ['JZ', 'JN', 'JC', 'JMP', 'CALL']:
-                    # Format: opcode Imm
-                    # Check if it's a label or immediate value
-                    if operands[0] in self.labels:
-                        immediate_value = self.labels[operands[0]]
-                        immediate_bin = self.immediate_to_binary(str(immediate_value))
-                    else:
-                        immediate_bin = self.immediate_to_binary(operands[0])
-                    binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{immediate_bin}"
-                
-                elif opcode == 'INT':
-                    # Format: opcode index
-                    immediate_bin = self.immediate_to_binary(operands[0])
-                    binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{immediate_bin}"
+                    try:
+                        value = self.parse_hex_value(operands_str)
+                        # Generate a 32-bit representation for the data
+                        binary = format(value & 0xFFFFFFFF, '032b')
+                    except:
+                        # If operands_str is empty, use the opcode as the data value
+                        value = self.parse_hex_value(opcode)
+                        binary = format(value & 0xFFFFFFFF, '032b')
                 
                 else:
-                    raise ValueError(f"Unsupported opcode: {opcode}")
+                    # Get the opcode binary
+                    if opcode not in self.opcodes:
+                        raise ValueError(f"Unknown opcode: {opcode}")
+                    
+                    opcode_bin = self.opcodes[opcode]
+                    operands = self.parse_operands(operands_str)
+                    
+                    # Initialize register fields and immediate field
+                    rsrc1_bin = '000'  # Default is R0
+                    rsrc2_bin = '000'  # Default is R0
+                    rdst_bin = '000'   # Default is R0
+                    imm_bin = '0000000000000000'  # Default immediate value (16 bits)
+                    
+                    # Format the binary instruction based on the instruction type
+                    if opcode in ['NOP', 'HLT', 'SETC', 'RET', 'RTI']:
+                        # No operands - use default values
+                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                    
+                    elif opcode in ['NOT', 'INC', 'IN', 'POP']:
+                        # Format: opcode Rdst
+                        rdst_bin = self.register_to_binary(operands[0])
+                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                    
+                    elif opcode in ['OUT', 'PUSH']:
+                        # Format: opcode Rsrc1
+                        rsrc1_bin = self.register_to_binary(operands[0])
+                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                    
+                    elif opcode in ['MOV', 'SWAP']:
+                        # Format: opcode Rdst, Rsrc1
+                        rdst_bin = self.register_to_binary(operands[0])
+                        rsrc1_bin = self.register_to_binary(operands[1])
+                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                    
+                    elif opcode in ['ADD', 'SUB', 'AND']:
+                        # Format: opcode Rdst, Rsrc1, Rsrc2
+                        rdst_bin = self.register_to_binary(operands[0])
+                        rsrc1_bin = self.register_to_binary(operands[1])
+                        rsrc2_bin = self.register_to_binary(operands[2])
+                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                    
+                    elif opcode == 'IADD':
+                        # Format: opcode Rdst, Rsrc1, Imm
+                        rdst_bin = self.register_to_binary(operands[0])
+                        rsrc1_bin = self.register_to_binary(operands[1])
+                        imm_bin = self.immediate_to_binary(operands[2], 16)
+                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                    
+                    elif opcode == 'LDM':
+                        # Format: opcode Rdst, Imm
+                        rdst_bin = self.register_to_binary(operands[0])
+                        imm_bin = self.immediate_to_binary(operands[1], 16)
+                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                    
+                    elif opcode == 'LDD':
+                        # Format: opcode Rdst, offset(Rsrc1)
+                        # operands = [Rdst, Rsrc1, offset]
+                        rdst_bin = self.register_to_binary(operands[0])
+                        rsrc1_bin = self.register_to_binary(operands[1])
+                        imm_bin = self.immediate_to_binary(operands[2], 16)  # offset is 16 bits
+                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                    
+                    elif opcode == 'STD':
+                        # Format: opcode Rsrc1, offset(Rsrc2)
+                        # operands = [Rsrc1, Rsrc2, offset]
+                        rsrc1_bin = self.register_to_binary(operands[0])
+                        rsrc2_bin = self.register_to_binary(operands[1])
+                        imm_bin = self.immediate_to_binary(operands[2], 16)  # offset is 16 bits
+                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                    
+                    elif opcode in ['JZ', 'JN', 'JC', 'JMP', 'CALL']:
+                        # Format: opcode Imm
+                        # Check if we have a label instead of a direct address
+                        if operands[0] in self.labels:
+                            # Use the label's address value
+                            imm_bin = self.immediate_to_binary(str(self.labels[operands[0]]), 16)
+                        else:
+                            imm_bin = self.immediate_to_binary(operands[0], 16)
+                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                    
+                    elif opcode == 'INT':
+                        # Format: opcode index
+                        imm_bin = self.immediate_to_binary(operands[0], 16)
+                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                    
+                    else:
+                        raise ValueError(f"Unsupported opcode: {opcode}")
+                
+                # Ensure all binary instructions are exactly 32 bits
+                binary = binary.ljust(32, '0')
                 
                 # Add binary code to memory map
                 self.memory_map[address] = binary
@@ -320,8 +326,8 @@ class Assembler:
     def write_output(self, output_file, format_type='bin'):
         """Write assembled output to file in specified format."""
         if format_type == 'mem':
-            # Write in .mem format with @XXXXX section headers
-            self.write_mem_output(output_file)
+            # Write in .mem format for ModelSim/Quartus
+            self.write_quartus_mem_output(output_file)
         else:
             # Write in original format
             self.write_bin_output(output_file)
@@ -341,8 +347,8 @@ class Assembler:
         with open(readable_output, 'w') as f:
             f.write(f"# Assembly of {output_file}\n")
             f.write(f"# Generated by Enhanced Assembler Modified\n\n")
-            f.write("# Address  | Hex Code   | Binary (32-bits)\n")
-            f.write("# --------------------------------------------\n")
+            f.write("# Address  | Hex Code       | Binary (32-bits)\n")
+            f.write("# -------------------------------------------------\n")
             
             # Write the memory map with complete binary representation
             for address, binary in binary_output:
@@ -360,33 +366,47 @@ class Assembler:
             # Add instruction format reference
             f.write("\n# Instruction Format Reference:\n")
             f.write("# 31:27    26:24    23:21    20:18    17:16    15:0\n")
-            f.write("# opcode   Rsrc1    Rsrc2    Rdst     -        Immediate/offset\n")
+            f.write("# opcode   Rsrc1    Rsrc2    Rdst     --       Imm/offset\n")
     
-    def write_mem_output(self, output_file):
-        """Write output in .mem format with @XXXXX section headers."""
+    def write_quartus_mem_output(self, output_file):
+        """Write output in ModelSim/Quartus compatible .mem format that matches the example format."""
         binary_output = self.generate_output()
         
-        # Group instructions by section (first 5 hex digits of address)
-        sections = {}
-        for address, binary in binary_output:
-            # Use the first 5 hex digits as section
-            section = format(address, '05X')
-            if section not in sections:
-                sections[section] = []
-            sections[section].append((address, binary))
-        
-        # Write sections to file
         with open(output_file, 'w') as f:
-            for section in sorted(sections.keys()):
-                # Write section header
-                f.write(f"@{section}\n")
+            # Write memory configuration header
+            f.write("// memory data file (do not edit the following line - required for mem load use)\n")
+            f.write("// instance=/cpu/rom_inst/rom_Sig\n")
+            f.write("// format=bin addressradix=h dataradix=b version=1.0 wordsperline=4\n\n")
+            
+            # Create a dict to organize instructions by address groups of 4
+            address_groups = {}
+            for address, binary in binary_output:
+                group_address = address // 4 * 4  # Round down to multiple of 4
+                if group_address not in address_groups:
+                    address_groups[group_address] = []
                 
-                # Write binary instructions for this section
-                for _, binary in sorted(sections[section]):
-                    f.write(f"{binary}\n")
+                # Add the instruction to its group
+                # If there are gaps, we'll fill them with zeros later
+                address_groups[group_address].append((address, binary))
+            
+            # Process each group of 4 addresses
+            for group_address in sorted(address_groups.keys()):
+                instructions = address_groups[group_address]
+                
+                # Create a list of 4 instructions, filling gaps with zeros
+                group_instructions = ["00000000000000000000000000000000"] * 4
+                for addr, binary in instructions:
+                    group_instructions[addr % 4] = binary
+                
+                # Write the group header (address in hex)
+                f.write(f"@{group_address:X}  ")
+                
+                # Write all 4 instructions with spaces between them
+                f.write(" ".join(group_instructions))
+                f.write("  \n")
         
-        print(f"\nWrote .mem output to {output_file}")
-        print(f"Created {len(sections)} memory sections with {len(binary_output)} instructions")
+        print(f"\nWrote Quartus/ModelSim .mem output to {output_file}")
+        print(f"Created {len(address_groups)} memory groups with {len(binary_output)} instructions")
 
     def generate_output(self):
         """Generate binary output in correct memory address order."""
@@ -414,10 +434,10 @@ class Assembler:
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python ModifiedAssembler.py input_file.asm [output_file] [-m/--mem]")
+        print("Usage: python Assembler.py input_file.asm [output_file] [-m/--mem]")
         print("  input_file.asm: Assembly source file to assemble")
         print("  output_file: Optional output file (default: input_file_base.bin or .mem)")
-        print("  -m/--mem: Output in .mem format with @XXXXX headers (default: bin format)")
+        print("  -m/--mem: Output in .mem format (default: bin format)")
         return
 
     input_file = sys.argv[1]
