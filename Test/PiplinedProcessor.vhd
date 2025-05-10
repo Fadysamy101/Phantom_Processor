@@ -432,33 +432,83 @@
 		 -- MEM/WB register
 		 component MemoryWrite is
 			  Port (
-					clk          : in  STD_LOGIC;
-					rst          : in  STD_LOGIC;
-					enable       : in  STD_LOGIC;
-					
-					-- Inputs from Execute/Memory
-					Read_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
-					ALU_Result_In    : in STD_LOGIC_VECTOR(31 downto 0);
-					Mem_Read_In      : in STD_LOGIC;
-					Rsrc1_In         : in STD_LOGIC_VECTOR(2 downto 0);
-					Rd_In            : in STD_LOGIC_VECTOR(2 downto 0);
-					Reg1_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
-					Reg2_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
-					Swap_In          : in STD_LOGIC;
-					Reg_Write_In     : in STD_LOGIC;
-					IN_Port_In       : in STD_LOGIC;
-					-- Outputs to Writeback
-					Read_Data     : out STD_LOGIC_VECTOR(31 downto 0);
-					ALU_Result    : out STD_LOGIC_VECTOR(31 downto 0);
-					Reg1_Addr     : out STD_LOGIC_VECTOR(2 downto 0);
-					Reg2_Addr     : out STD_LOGIC_VECTOR(2 downto 0);
-					Mem_Read      : out STD_LOGIC;
-					Reg1_Data     : out STD_LOGIC_VECTOR(31 downto 0);
-					Swap          : out STD_LOGIC;
-					IN_Port       : out STD_LOGIC;
-					Reg2_Write    : out STD_LOGIC
-			  );
+				  clk          : in  STD_LOGIC;
+				  rst          : in  STD_LOGIC;
+				  enable       : in  STD_LOGIC;
+
+				  Read_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
+				  ALU_Result_In    : in STD_LOGIC_VECTOR(31 downto 0);
+				  Mem_Read_In      : in STD_LOGIC;
+				  Rsrc1_In         : in STD_LOGIC_VECTOR(2 downto 0);
+				  Rsrc2_In         : in STD_LOGIC_VECTOR(2 downto 0);
+				  Rd_In            : in STD_LOGIC_VECTOR(2 downto 0);
+				  Reg1_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
+				  Reg2_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
+				  Swap_In          : in STD_LOGIC;
+				  Reg_Write_In     : in STD_LOGIC;
+				  IN_Port_In       : in STD_LOGIC;
+				  Out_Port_In      : in STD_LOGIC;
+
+				  Read_Data     : out STD_LOGIC_VECTOR(31 downto 0);
+				  ALU_Result    : out STD_LOGIC_VECTOR(31 downto 0);
+				  Rd            : out STD_LOGIC_VECTOR(2 downto 0);
+				  Rsrc1         : out STD_LOGIC_VECTOR(2 downto 0);
+				  Rsrc2         : out STD_LOGIC_VECTOR(2 downto 0);
+				  Mem_Read      : out STD_LOGIC;
+				  Reg1_Data     : out STD_LOGIC_VECTOR(31 downto 0);
+				  Reg2_Data     : out STD_LOGIC_VECTOR(31 downto 0);
+				  Swap          : out STD_LOGIC;
+				  Reg_Write     : out STD_LOGIC;
+				  IN_Port       : out STD_LOGIC;
+				  Out_Port       : out STD_LOGIC
+						  );
 		 end component;
+		 
+		 
+		 
+		 --Writeback_ports
+		 component Writeback_ports is
+		 Port (
+				  ----------------------------------inputs-------------------------------	
+				  clk        		   : in STD_logic;
+				  --rst        		: in STD_logic;
+				  In_port  				: in STD_LOGIC_VECTOR (31 downto 0);
+				  Memory_data  		: in STD_LOGIC_VECTOR (31 downto 0);
+				  Alu_result  			: in STD_LOGIC_VECTOR (31 downto 0);
+				  Memory_read_flag   : in STD_logic;
+				  
+				  
+
+				  read_data1  			: in STD_LOGIC_VECTOR (31 downto 0);
+				  read_data2  			: in STD_LOGIC_VECTOR (31 downto 0);
+				  swap_flag        	: in STD_logic;--reg_Write2 flag
+				  
+				  reg_write1_flag    : in STD_logic;
+				  
+				  read_address1  : in STD_LOGIC_VECTOR (2 downto 0);
+				  read_address2  : in STD_LOGIC_VECTOR (2 downto 0);
+				  dst_address_in : in STD_LOGIC_VECTOR (2 downto 0);
+				  
+				  in_port_flag   : in STD_logic;
+				  out_port_flag  : in STD_logic;
+				  
+				  
+				  ----------------------------------outputs-------------------------------
+				  Output_port  		: out STD_LOGIC_VECTOR (31 downto 0);---d
+				  
+				  Write_data1  		: out STD_LOGIC_VECTOR (31 downto 0);---d
+				  Write_data2  		: out STD_LOGIC_VECTOR (31 downto 0);---d
+				  
+				  Write_address1  : out STD_LOGIC_VECTOR (2 downto 0);
+				  Write_address2  : out STD_LOGIC_VECTOR (2 downto 0);
+				  --dst_address     : out STD_LOGIC_VECTOR (2 downto 0);
+				  
+				  we1   		 : out STD_logic;
+				  we2_swap   : out STD_logic
+		 
+		 );
+		 end component;
+		 
 
          --Hazard Detection Unit
          component Hazard_Detection_Unit is
@@ -602,13 +652,19 @@
                 -- MEM/WB signals
 		 signal mw_read_data_out   : STD_LOGIC_VECTOR(31 downto 0);
 		 signal mw_alu_result_out  : STD_LOGIC_VECTOR(31 downto 0);
+		 signal mw_Rd					: STD_LOGIC_VECTOR(2 downto 0);	
 		 signal mw_reg1_addr_out   : STD_LOGIC_VECTOR(2 downto 0);
 		 signal mw_reg2_addr_out   : STD_LOGIC_VECTOR(2 downto 0);
 		 signal mw_mem_read_out    : STD_LOGIC;
 		 signal mw_reg1_data_out   : STD_LOGIC_VECTOR(31 downto 0);
+		 signal mw_reg2_data_out   : STD_LOGIC_VECTOR(31 downto 0);
 		 signal mw_swap_out        : STD_LOGIC;
 		 signal mw_in_port_out     : STD_LOGIC;
-		 signal mw_reg2_write_out  : STD_LOGIC;
+		 signal mw_out_port_out     : STD_LOGIC;
+		 signal mw_reg_write_out  : STD_LOGIC;
+		 
+		 
+ 
 		 
 		
 		--  signal halt               : STD_LOGIC;
@@ -654,6 +710,21 @@
 		 signal zero_flag          : STD_LOGIC;
 		 signal neg_flag           : STD_LOGIC;
 		 signal carry_flag         : STD_LOGIC;
+		 
+		 
+		 
+		 --Write back and ports signals
+		 
+		--signal wr_Output_port     :  STD_LOGIC_VECTOR (31 downto 0);
+		signal wr_Write_data1     :  STD_LOGIC_VECTOR (31 downto 0);
+		signal wr_Write_data2     :  STD_LOGIC_VECTOR (31 downto 0);
+		signal wr_Write_address1  :  STD_LOGIC_VECTOR (2 downto 0);
+		signal wr_Write_address2  :  STD_LOGIC_VECTOR (2 downto 0);
+		signal wr_we1   		 	  :  STD_logic;
+		signal wr_we2_swap  		  :  STD_logic;
+
+		 
+		 
          --PC_new signals
        signal branch_addr_se : STD_LOGIC_VECTOR(31 downto 0);
        signal en2 : STD_LOGIC;
@@ -987,23 +1058,76 @@
 			  ALU_Result_In    => ex_alu_result_out,
 			  Mem_Read_In      => ex_mem_read_out,
 			  Rsrc1_In         => ex_rsrc1_out,
+--			  Rsrc2_In			 => ex_rsrc2_out,	to do 
 			  Rd_In            => ex_rd_out,
 			  Reg1_Data_In     => ex_reg1_data_out,
 			  Reg2_Data_In     => ex_reg2_data_out,
 			  Swap_In          => ex_swap_out,
 			  Reg_Write_In     => ex_reg_write_out,
 			  IN_Port_In       => ex_in_port_out,
+--			  Out_Port_In		 => ex_out_port_out, to do
 			  -- Outputs to Writeback
 			  Read_Data     => mw_read_data_out,
 			  ALU_Result    => mw_alu_result_out,
-			  Reg1_Addr     => mw_reg1_addr_out,
-			  Reg2_Addr     => mw_reg2_addr_out,
+			  Rsrc1     => mw_reg1_addr_out,
+			  Rsrc2     => mw_reg2_addr_out,
+			  Rd => mw_Rd,
 			  Mem_Read      => mw_mem_read_out,
 			  Reg1_Data     => mw_reg1_data_out,
+			  Reg2_Data     => mw_reg2_data_out,
 			  Swap          => mw_swap_out,
 			  IN_Port       => mw_in_port_out,
-			  Reg2_Write    => mw_reg2_write_out
+			  Out_Port => mw_out_port_out,
+			  Reg_Write    => mw_reg_write_out
 		 );
+		 
+ 
+		 -- Writeback_ports
+		 
+		  WB_Ports_Inst : Writeback_ports
+        port map (
+		  
+			  clk => clk,
+			  In_port  	=> in_port,
+			  Memory_data  => mw_read_data_out,
+			  Alu_result  	=> mw_alu_result_out,
+			  Memory_read_flag => mw_mem_read_out,
+			  
+			  
+
+			  read_data1  	=> mw_reg1_data_out,
+			  read_data2  	=> mw_reg2_data_out,
+			  swap_flag      => mw_swap_out,
+			  
+			  reg_write1_flag  => mw_reg_write_out,
+			   
+			  read_address1  => mw_reg1_data_out,
+			  read_address2  => mw_reg2_addr_out,
+			  dst_address_in => mw_Rd, 
+			  
+			  in_port_flag   => mw_in_port_out,
+			  out_port_flag  => mw_out_port_out, 
+			  
+			  
+			  ----------------------------------outputs-------------------------------
+			  Output_port  	=>	out_port,
+			  
+			  Write_data1  	=>	wr_Write_data1,
+			  Write_data2  		wr_Write_data2,
+			  
+			  Write_address1  => wr_Write_address1,
+			  Write_address2 => wr_Write_address2,
+			  
+			  we1   		=> wr_we1,
+			  we2_swap  => wr_we2_swap 
+        );
+		  
+		  
+		 
+		 
+		 
+		 
+		 
 
         -- Hazard Detection Unit
         HD_Stage: Hazard_Detection_Unit
