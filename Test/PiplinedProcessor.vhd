@@ -1109,7 +1109,7 @@
 			  Output_port  	=>	out_port,
 			  
 			  Write_data1  	=>	wr_Write_data1,
-			  Write_data2  		wr_Write_data2,
+			  Write_data2  	=>	wr_Write_data2,
 			  
 			  Write_address1  => wr_Write_address1,
 			  Write_address2 => wr_Write_address2,
