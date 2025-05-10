@@ -1,85 +1,94 @@
-    library IEEE;
-    use IEEE.STD_LOGIC_1164.ALL;
-    use IEEE.NUMERIC_STD.ALL;
-entity PC_new is 
- port
- ( 
-    PC_old           : in STD_LOGIC_VECTOR(31 downto 0);
-    branch           : in STD_LOGIC;  -- From EX stage
-    in_from_CCR      : in STD_LOGIC_VECTOR(3 downto 0);
-    in_J_SC          : in STD_LOGIC_VECTOR(1 downto 0);
-    Call             : in STD_LOGIC;
-    branch_addr      : in STD_LOGIC_VECTOR(31 downto 0); -- From ALU
-    RTI              : in std_logic;
-    Return_flag      : in std_logic;
-    Interrupt        : in std_logic;
-    PC_new           : out STD_LOGIC_VECTOR(31 downto 0);
-    PC_loaded_from_memory   : in STD_LOGIC_VECTOR(31 downto 0)
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
+entity PC_New is
+    Port (
+        clk                   : in STD_LOGIC;
+        rst                   : in STD_LOGIC;
+        stall                 : in STD_LOGIC;  -- Hazard detection
+        branch                : in STD_LOGIC;  -- From EX stage
+        in_from_CCR           : in STD_LOGIC_VECTOR(3 downto 0);
+        in_J_SC               : in STD_LOGIC_VECTOR(1 downto 0);
+        Call                  : in STD_LOGIC;
+        branch_addr           : in STD_LOGIC_VECTOR(31 downto 0); -- From ALU
+        RTI                   : in std_logic;
+        Return_flag           : in std_logic;
+        Interrupt             : in std_logic;
+        PC_loaded_from_memory : in STD_LOGIC_VECTOR(31 downto 0);
+        PC                    : out STD_LOGIC_VECTOR(31 downto 0)
+    );
+end PC_New;
 
- );   
-end entity;
-architecture behavioral of PC_new is
-    signal flag_decision : STD_LOGIC;
-    signal branch_decision : STD_LOGIC;
-   
-    signal PC_new_temp : STD_LOGIC_VECTOR(31 downto 0); 
-    signal Return_Decision : STD_LOGIC;
-
+architecture Behavioral of PC_New is
+    signal counter           : STD_LOGIC_VECTOR(31 downto 0);
+    signal next_PC           : STD_LOGIC_VECTOR(31 downto 0);
+    signal flag_decision     : STD_LOGIC;
+    signal branch_decision   : STD_LOGIC;
+    signal Return_Decision   : STD_LOGIC;
 begin
-    --procees to handle the branch and jump conditions
-    process(in_from_CCR, in_J_SC, Call, branch)
-begin
-    case in_J_SC is 
-        when "00" => 
-            if in_from_CCR(0) = '1' then
+    -- Process to handle the branch and jump conditions based on flags
+    process(in_from_CCR, in_J_SC, branch)
+    begin
+        case in_J_SC is
+            when "00" =>
+                if in_from_CCR(0) = '1' then
+                    branch_decision <= '1' and branch;
+                else
+                    branch_decision <= '0';
+                end if;
+            when "01" =>
+                if in_from_CCR(1) = '1' then
+                    branch_decision <= '1' and branch;
+                else
+                    branch_decision <= '0';
+                end if;  
+            when "10" =>
+                if in_from_CCR(2) = '1' then
+                    branch_decision <= '1' and branch;
+                else
+                    branch_decision <= '0';
+                end if;      
+            when "11" =>
                 branch_decision <= '1' and branch;
-            else
+            when others =>  
                 branch_decision <= '0';
+        end case;
+    end process;
+
+    -- Process to calculate next PC value (combinational logic)
+    process(branch_decision, Call, branch_addr, counter, Return_flag, RTI, Interrupt, PC_loaded_from_memory)
+    begin
+        -- Default is normal increment
+        next_PC <= std_logic_vector(unsigned(counter) + 1);
+        
+        -- Handle branch/jump conditions
+        if Call = '1' then
+            next_PC <= branch_addr; -- Jump to subroutine
+        elsif branch_decision = '1' then
+            next_PC <= branch_addr; -- Conditional branch
+        end if;
+        
+        -- Handle return conditions (highest priority)
+        Return_Decision <= RTI or Return_flag or Interrupt;
+        if Return_Decision = '1' then
+            next_PC <= PC_loaded_from_memory;
+        end if;
+    end process;
+
+    -- Sequential process to update counter on clock edge
+    process(clk, rst)
+    begin
+        if rst = '1' then
+            counter <= (others => '0');
+        elsif rising_edge(clk) then
+            if stall = '0' then
+                counter <= next_PC;
             end if;
-        when "01" => 
-            if in_from_CCR(1) = '1' then
-                branch_decision <= '1' and branch;
-            else
-                branch_decision <= '0';
-            end if;   
-        when "10" => 
-            if in_from_CCR(2) = '1' then
-                branch_decision <= '1' and branch;
-            else
-                branch_decision <= '0';
-            end if;      
-        when "11" =>
-            branch_decision <= '1' and branch;
-        when others =>   
-            branch_decision <= '0';
-    end case;
+        end if;
     end process;
 
-    --process to handle the branch and jump conditions
-    process(branch_decision, Call, branch_addr, PC_old)
-    begin
-       if Call = '1' then
-        PC_new_temp <= branch_addr(31 downto 0); -- Jump to subroutine
-    elsif branch_decision = '1' then
-        PC_new_temp <= branch_addr(31 downto 0); -- Conditional branch
-    else
-        PC_new_temp <= std_logic_vector(unsigned(PC_old) + 1); -- Normal PC increment
-    end if;
-        report "PC_new" & std_logic'image(PC_new_temp(0)) &  std_logic'image(PC_new_temp(1)) severity note;
-
-    end process;
-   --process to handle Return address or Pc_New
-    process(PC_new_temp, Return_flag, RTI, Interrupt, PC_loaded_from_memory)
-    begin
-    Return_Decision<= RTI or Return_flag or  Interrupt; 
-    if Return_Decision = '1' then
-        PC_new <= PC_loaded_from_memory;
-    else
-        PC_new <= PC_new_temp;
-    end if; 
-      report "Pc_Out" & std_logic'image(PC_new_Temp(0)) &  std_logic'image(PC_new_temp(1)) severity note;    
-    end process; 
-
-
-end architecture;
+    -- Output current PC value
+    PC <= counter;
+    
+end Behavioral;
