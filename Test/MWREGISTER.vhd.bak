@@ -12,7 +12,6 @@ entity MemoryWrite is
         ALU_Result_In    : in STD_LOGIC_VECTOR(31 downto 0);
         Mem_Read_In      : in STD_LOGIC;
         Rsrc1_In         : in STD_LOGIC_VECTOR(2 downto 0);
-        Rsrc2_In         : in STD_LOGIC_VECTOR(2 downto 0);		  
 		  Rd_In            : in STD_LOGIC_VECTOR(2 downto 0);
         Reg1_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
         Reg2_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
@@ -25,7 +24,6 @@ entity MemoryWrite is
         ALU_Result    : out STD_LOGIC_VECTOR(31 downto 0);
 		  Rd            : out STD_LOGIC_VECTOR(2 downto 0);
         Rsrc1         : out STD_LOGIC_VECTOR(2 downto 0);
-		  Rsrc2         : out STD_LOGIC_VECTOR(2 downto 0);
         Mem_Read      : out STD_LOGIC;
         Reg1_Data     : out STD_LOGIC_VECTOR(31 downto 0);
 		  Reg2_Data     : out STD_LOGIC_VECTOR(31 downto 0);
@@ -33,11 +31,6 @@ entity MemoryWrite is
 		  Reg_Write     : out STD_LOGIC;
         IN_Port       : out STD_LOGIC;
 		  Out_Port       : out STD_LOGIC
-		  
-		  
-		  
-		  
-		  
     );
 	 
 end MemoryWrite;
@@ -48,7 +41,6 @@ architecture Behavioral of MemoryWrite is
     signal ALU_Result_Reg    : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
     signal Mem_Read_Reg      : STD_LOGIC := '0';
     signal Rsrc1_Reg         : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
-	 signal Rsrc2_Reg         : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
 	 signal Rd_Reg            : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
     signal Reg1_Data_Reg     : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
     signal Reg2_Data_Reg     : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
@@ -69,7 +61,6 @@ begin
             ALU_Result_Reg  <= (others => '0');
             Mem_Read_Reg    <= '0';
             Rsrc1_Reg       <= (others => '0');
-				Rsrc2_Reg       <= (others => '0');
 				Rd_Reg          <= (others => '0');
             Reg1_Data_Reg   <= (others => '0');
             Reg2_Data_Reg   <= (others => '0');
@@ -82,7 +73,6 @@ begin
             ALU_Result  <= (others => '0');
 				Rd          <= (others => '0');
             Rsrc1       <= (others => '0');
-				Rsrc2       <= (others => '0');
             Mem_Read    <= '0';
             Reg1_Data   <= (others => '0');
 				Reg2_Data   <= (others => '0');
@@ -99,7 +89,6 @@ begin
                 ALU_Result_Reg  <= ALU_Result_In;
                 Mem_Read_Reg    <= Mem_Read_In;
                 Rsrc1_Reg       <= Rsrc1_In;
-					 Rsrc2_Reg       <= Rsrc2_In;
 					 Rd_Reg          <= Rd_In;
                 Reg1_Data_Reg   <= Reg1_Data_In;
                 Reg2_Data_Reg   <= Reg2_Data_In;
@@ -116,7 +105,6 @@ begin
             ALU_Result  <= ALU_Result_Reg;
 				Rd          <= Rd_Reg;
             Rsrc1       <= Rsrc1_Reg;
-				Rsrc2       <= Rsrc2_Reg;
             Mem_Read    <= Mem_Read_Reg;
             Reg1_Data   <= Reg1_Data_Reg;
 				Reg2_Data   <= Reg2_Data_Reg;
