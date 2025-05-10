@@ -11,7 +11,7 @@ entity ExecuteMemory is
         Mem_Read_In        : in STD_LOGIC;
         Interrupt_In       : in STD_LOGIC;
         ALU_Result_In      : in STD_LOGIC_VECTOR(31 downto 0);
-        Sp_Load_In         : in STD_LOGIC;
+        Sp_Load_In         : in STD_LOGIC_vector(11 downto 0);
         Swap_In            : in STD_LOGIC;
         Rsrc1_In           : in STD_LOGIC_VECTOR(2 downto 0);
 		  Rsrc2_In           : in STD_LOGIC_VECTOR(2 downto 0);
@@ -33,13 +33,14 @@ entity ExecuteMemory is
 		  DM_IN              : in STD_LOGIC;
 		  Imm_Offset_In      : in STD_LOGIC_VECTOR(15 downto 0);
 		  Out_Port_In        : in STD_LOGIC;
-
+          call_In            : in STD_LOGIC;
+        -- Outputs
         RTI            : out STD_LOGIC;
         Mem_Read       : out STD_LOGIC;
         Return_Signal  : out STD_LOGIC;
         Mem_Write      : out STD_LOGIC;
         ALU_Result     : out STD_LOGIC_VECTOR(31 downto 0);
-        Sp_Load        : out STD_LOGIC;
+        Sp_Load        : out STD_LOGIC_VECTOR( 11 downto 0);
         Rsrc1          : out STD_LOGIC_VECTOR(2 downto 0);
 		  Rsrc2          : out STD_LOGIC_VECTOR(2 downto 0);
 		  Rd             : out STD_LOGIC_VECTOR(2 downto 0);
@@ -55,6 +56,7 @@ entity ExecuteMemory is
         Swap           : out STD_LOGIC;
         Reg_Write      : out STD_LOGIC;
         IN_Port        : out STD_LOGIC;
+        call_out       : out STD_LOGIC;
 		  DM_Addr        : out STD_LOGIC;
 		  Index          : out STD_LOGIC_VECTOR(15 downto 0);
 		  Out_Port       : out STD_LOGIC
@@ -67,7 +69,7 @@ architecture Behavioral of ExecuteMemory is
     signal Mem_Read_Reg        : STD_LOGIC := '0';
     signal Interrupt_Reg       : STD_LOGIC := '0';
     signal ALU_Result_Reg      : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
-    signal Sp_Load_Reg         : STD_LOGIC := '0';
+    signal Sp_Load_Reg         : STD_LOGIC_vector(11 downto 0) := (others => '0');
     signal Swap_Reg            : STD_LOGIC := '0';
     signal Rsrc1_Reg           : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
 	 signal Rsrc2_Reg           : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
@@ -89,6 +91,7 @@ architecture Behavioral of ExecuteMemory is
 	 signal DM_Reg              : STD_LOGIC := '0';
 	 signal Imm_Offset_Reg      : STD_LOGIC_VECTOR(15 downto 0) := (others => '0');
 	 signal Out_Port_Reg        : STD_LOGIC := '0';
+     signal call_Reg            : STD_LOGIC := '0';
 	 
 begin
 
@@ -97,11 +100,11 @@ begin
     begin
 	 
         if rst = '1' then
-		  
+		    call_Reg <= '0';
             Mem_Read_Reg      <= '0';
             Interrupt_Reg     <= '0';
             ALU_Result_Reg    <= (others => '0');
-            Sp_Load_Reg       <= '0';
+            Sp_Load_Reg       <= (others => '0');
             Swap_Reg          <= '0';
             Rsrc1_Reg         <= (others => '0');
 				Rsrc2_Reg         <= (others => '0');
@@ -129,7 +132,7 @@ begin
             Return_Signal  <= '0';
             Mem_Write      <= '0';
             ALU_Result     <= (others => '0');
-            Sp_Load        <= '0';
+            Sp_Load        <= (others => '0');
             Rsrc1          <= (others => '0');
 				Rsrc2          <= (others => '0');
 				Rd             <= (others => '0');
@@ -152,7 +155,7 @@ begin
         elsif rising_edge(clk) then
 		  
             if enable = '1' then
-				
+				call_Reg <= call_In;
                 Mem_Read_Reg      <= Mem_Read_In;
                 Interrupt_Reg     <= Interrupt_In;
                 ALU_Result_Reg    <= ALU_Result_In;
