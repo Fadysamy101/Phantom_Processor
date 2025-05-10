@@ -34,6 +34,7 @@ entity DecodeExecute is
         J_SC_In                    : in STD_LOGIC_VECTOR(1 downto 0);
 		  Opcode_In                  : in STD_LOGIC_VECTOR(4 downto 0);
 		  DM_In                      : in STD_LOGIC;
+		  Out_Port_In                : in STD_LOGIC;
 
         Mem_Read       : out STD_LOGIC;
         Interrupt      : out STD_LOGIC;
@@ -59,7 +60,8 @@ entity DecodeExecute is
         J_SC           : out STD_LOGIC_VECTOR(1 downto 0);
 		  ALU_SLC        : out STD_LOGIC_VECTOR(4 downto 0);
 		  DM             : out STD_LOGIC;
-		  Imm_Offset     : out STD_LOGIC_VECTOR(15 downto 0)
+		  Imm_Offset     : out STD_LOGIC_VECTOR(15 downto 0);
+		  Out_Port       : out STD_LOGIC
     );
 	 
 end DecodeExecute;
@@ -92,6 +94,7 @@ architecture Behavioral of DecodeExecute is
     signal J_SC_Reg                    : STD_LOGIC_VECTOR(1 downto 0) := (others => '0');
 	 signal Opcode_Reg                  : STD_LOGIC_VECTOR(4 downto 0) := (others => '0');
 	 signal DM_Reg                      : STD_LOGIC := '0';
+	 signal Out_Port_Reg                : STD_LOGIC := '0';
 	 
 begin
 
@@ -127,6 +130,7 @@ begin
             J_SC_Reg         <= (others => '0');
 				Opcode_Reg       <= (others => '0');
 				DM_Reg           <= '0';
+				Out_Port_Reg     <= '0';
 
             Mem_Read       <= '0';
             Interrupt      <= '0';
@@ -153,6 +157,7 @@ begin
 				ALU_SLC        <= (others => '0');
 				DM             <= '0';
 				Imm_Offset     <= (others => '0');
+				Out_Port       <= '0';
 
         elsif rising_edge(clk) then
 		  
@@ -184,6 +189,7 @@ begin
                 J_SC_Reg         <= J_SC_In;
 					 Opcode_Reg       <= Opcode_In;
 					 DM_Reg           <= DM_In;
+					 Out_Port_Reg     <= Out_Port_In;
 					 
             end if;
 
@@ -214,6 +220,7 @@ begin
 				ALU_SLC        <= Opcode_Reg;
 				DM             <= DM_Reg;
 				Imm_Offset     <= Imm_Offset_Reg;
+				Out_Port       <= Out_Port_Reg;
 				
         end if;
 		  

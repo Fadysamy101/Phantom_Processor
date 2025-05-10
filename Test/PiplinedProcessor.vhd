@@ -690,7 +690,13 @@
 			  Interrupt      => if_interrupt_out,
 			  Instruction    => if_instr_out
 		 );
+        
+        ----- connecting F/D pipeline register to Decode stage -----
+        F_D_instruction <= if_instr_out;
+        F_D_PC_plus1 <= if_pc_out;
 
+        -- TODO: connect with writeback stage
+        
 
          Decode_Stage_inst: Decode_Stage
 		 port map 
@@ -759,6 +765,14 @@
 			  flush              => flush_sig
 		 );
 
+         ----- connecting Decode stage to D/E pipeline register -----
+         -- D_E_rs1_addr
+         -- D_E_rs2_addr
+         -- D_E_rd_addr
+         -- D_E_immediate
+         -- D_E_read_data1
+         -- D_E_read_data2
+
 		 -- Decode/Execute Stage
          en2 <= not stall(1);
 		 DE_Stage: DecodeExecute
@@ -766,15 +780,17 @@
 			  clk             => clk,
 			  rst             => rst,
 			  enable          => en2,
+
 			  -- Inputs from Fetch/Decode
 			  Pc_In           => if_pc_out,
-			  Read_Addr1_In   => if_instr_out(26 downto 24),
-			  Read_Addr2_In   => if_instr_out(23 downto 21),
+			  Read_Addr1_In   => D_E_rs1_addr,
+			  Read_Addr2_In   => D_E_rs2_addr,
 			  Interrupt_In    => if_interrupt_out,
-			  Rd_Addr_In      => if_instr_out(20 downto 18),
-			  Imm_Offset_In   => if_instr_out(15 downto 0),
-			  Rsrc1_Data_In   => reg_data_out1,
-			  Rsrc2_Data_In   => reg_data_out2,
+			  Rd_Addr_In      => D_E_rd_addr,
+			  Imm_Offset_In   => D_E_immediate,
+			  Rsrc1_Data_In   => D_E_read_data1,
+			  Rsrc2_Data_In   => D_E_read_data2,
+
 			  -- Control signals in
 			  Swap_In         => Controller_Swap_In,
 			  Set_Carry_In    => Controller_Set_Carry_In,
@@ -794,6 +810,7 @@
 			  J_SC_In         => Controller_J_SC_In,  -- Combined jump signals
 			  Opcode_In       => if_instr_out(31 downto 27),
 			  DM_In           => Controller_DM_In    ,  -- TODO: Connect DM
+
 			  -- Outputs to Execute/Memory
 			  Mem_Read        => id_mem_read_out,
 			  Interrupt       => id_interrupt_out,
@@ -821,7 +838,8 @@
 			  DM              => id_dm_out,
 			  Imm_Offset      => id_imm_offset_out
 		 );
-         --Execute Stage
+
+        --Execute Stage
         -- Forwarding Unit
             Forwarding_Unit_inst: Forwarding_Unit
              port map(
