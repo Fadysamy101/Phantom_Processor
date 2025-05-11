@@ -133,33 +133,33 @@ begin
 				DM_Reg           <= '0';
 				Out_Port_Reg     <= '0';
 
-            Mem_Read       <= '0';
-            Interrupt      <= '0';
-            Reg1_Data      <= (others => '0');
-            Reg2_Data      <= (others => '0');
-            Swap           <= '0';
-            Rsrc1          <= (others => '0');
-				Rsrc2          <= (others => '0');
-				Rd             <= (others => '0');
-            Reg_Write      <= '0';
-            IN_Port        <= '0';
-            Pc             <= (others => '0');
-            Set_Carry      <= '0';
-            Sp_Inc         <= '0';
-            Sp_Dec         <= '0';
-            Sp_Enable      <= '0';
-            RTI            <= '0';
-            Return_Signal  <= '0';
-            Call           <= '0';
-            ALU_Srcl       <= '0';
-            Branch         <= '0';
-            Update_Flag    <= '0';
-            Mem_Write      <= '0';
-            J_SC           <= (others => '0');
-				ALU_SLC        <= (others => '0');
-				DM             <= '0';
-				Imm_Offset     <= (others => '0');
-				Out_Port       <= '0';
+            --Mem_Read       <= '0';
+--            Interrupt      <= '0';
+--            Reg1_Data      <= (others => '0');
+--            Reg2_Data      <= (others => '0');
+--            Swap           <= '0';
+--            Rsrc1          <= (others => '0');
+--				Rsrc2          <= (others => '0');
+--				Rd             <= (others => '0');
+--            Reg_Write      <= '0';
+--            IN_Port        <= '0';
+--            Pc             <= (others => '0');
+--            Set_Carry      <= '0';
+--            Sp_Inc         <= '0';
+--            Sp_Dec         <= '0';
+--            Sp_Enable      <= '0';
+--            RTI            <= '0';
+--            Return_Signal  <= '0';
+--            Call           <= '0';
+--            ALU_Srcl       <= '0';
+--            Branch         <= '0';
+--            Update_Flag    <= '0';
+--            Mem_Write      <= '0';
+--            J_SC           <= (others => '0');
+--				ALU_SLC        <= (others => '0');
+--				DM             <= '0';
+--				Imm_Offset     <= (others => '0');
+--				Out_Port       <= '0';
 
         elsif rising_edge(clk) then
 		  
@@ -195,9 +195,15 @@ begin
 					 
             end if;
 
-        elsif falling_edge(clk) then
+        --elsif falling_edge(clk) then
 		  
-            Mem_Read       <= Mem_Read_Reg;
+            
+				
+        end if;
+		  
+    end process; 
+	 
+				Mem_Read       <= Mem_Read_Reg;
             Interrupt      <= Interrupt_Reg;
             Reg1_Data      <= Rsrc1_Data_Reg;
             Reg2_Data      <= Rsrc2_Data_Reg;
@@ -224,9 +230,5 @@ begin
 				DM             <= DM_Reg;
 				Imm_Offset     <= Imm_Offset_Reg;
 				Out_Port       <= Out_Port_Reg;
-				
-        end if;
-		  
-    end process;
 	 
 end Behavioral;
