@@ -222,13 +222,13 @@ begin
             J_SC           <= J_SC_IN;
 				ALU_SLC        <= Opcode_IN;
 				DM             <= DM_IN;
-				Imm_Offset     <= Imm_Offset_IN;
+				
 				Out_Port       <= Out_Port_IN;
             
 				
         end if;
 		  
     end process; 
-	 
+	 Imm_Offset     <= Imm_Offset_Reg;
 	 
 end Behavioral;
