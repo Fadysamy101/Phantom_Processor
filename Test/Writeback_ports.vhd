@@ -195,15 +195,15 @@ begin
 		  
 		  
 		  --------handling write address 1----------------------------
-		  if in_port_flag = '1' then
+		--   if in_port_flag = '1' then
 		  
-		  Write_address1_signal <= dst_address_in;
+		--   Write_address1_signal <= dst_address_in;
 
-		  else
+		--   else
 		  
-		  Write_address1_signal <= dst_address_in;
+		--   Write_address1_signal <= dst_address_in;
 		  
-		  end if;
+		--   end if;
 		  
 		  ------------------------------------------------------------d
 		  
@@ -213,10 +213,14 @@ begin
 		  
 		  
 		  if swap_flag = '1' then
-		  
-		  Write_address2_signal <= read_address1;
-		  
-		  end if;
+
+          Write_address1_signal <= read_address1;
+          Write_address2_signal <= dst_address_in;
+
+          else 
+          Write_address1_signal <= dst_address_in;
+
+          end if;
 		  
 		  ------------------------------------------------------------d		  
 		  
