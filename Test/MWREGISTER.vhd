@@ -84,22 +84,24 @@ begin
                 IN_Port_Reg     <= IN_Port_In;
                 Out_Port_Reg    <= Out_Port_In;
             end if;
+		elsif falling_edge(clk) then
+			 Read_Data   <= Read_Data_Reg;
+			 ALU_Result  <= ALU_Result_Reg;
+			 Rd          <= Rd_Reg;
+			 Rsrc1       <= Rsrc1_Reg;
+			 Rsrc2       <= Rsrc2_Reg;
+			 Mem_Read    <= Mem_Read_Reg;
+			 Reg1_Data   <= Reg1_Data_Reg;
+			 Reg2_Data   <= Reg2_Data_Reg;
+			 Swap        <= Swap_Reg;
+			 Reg_Write   <= Reg_Write_Reg;
+			 IN_Port     <= IN_Port_Reg;
         end if;
     end process;
    
     -- Continuous assignments for outputs
     -- Output values are directly driven by the register values
-    Read_Data   <= Read_Data_Reg;
-    ALU_Result  <= ALU_Result_Reg;
-    Rd          <= Rd_Reg;
-    Rsrc1       <= Rsrc1_Reg;
-    Rsrc2       <= Rsrc2_Reg;
-    Mem_Read    <= Mem_Read_Reg;
-    Reg1_Data   <= Reg1_Data_Reg;
-    Reg2_Data   <= Reg2_Data_Reg;
-    Swap        <= Swap_Reg;
-    Reg_Write   <= Reg_Write_Reg;
-    IN_Port     <= IN_Port_Reg;
+ 
     Out_Port    <= Out_Port_Reg;
      
 end Behavioral;

@@ -36,7 +36,7 @@ end entity Reg;
 
 architecture behavioral of Reg is
 
-    type reg_array is array ((2**address_bits)-1 downto 0) of std_logic_vector(word_width-1 downto 0);
+    type reg_array is array (0 to (2**address_bits)-1) of std_logic_vector(word_width-1 downto 0);
     signal REGISTERS : reg_array;
 	 signal read_address1: std_logic_vector(address_bits-1 downto 0);
 	 signal read_address2: std_logic_vector(address_bits-1 downto 0);

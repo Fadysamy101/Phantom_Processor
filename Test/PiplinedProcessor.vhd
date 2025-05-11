@@ -411,7 +411,39 @@ component Memory IS
         Read_data       : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0)
     );
 END component;
-		 
+
+component UnifiedMemory IS
+    GENERIC (
+        Address_bits : INTEGER := 12;  -- 12 bits = 4096 memory locations
+        Data_width   : INTEGER := 32   -- 32-bit data width
+    );
+    PORT (
+        clk             : IN STD_LOGIC;
+        reset           : IN STD_LOGIC;
+
+        -- Instruction memory interface
+        PC              : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
+        Instruction     : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+        
+        -- Data memory control signals
+        Mem_Read        : IN STD_LOGIC;
+        Mem_Write       : IN STD_LOGIC;
+
+        -- Address inputs for data memory
+        DM_address      : IN STD_LOGIC;  -- Selector for address source
+        ALU_result      : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
+        SP_Load         : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
+        SP_INC          : IN STD_LOGIC;
+        Call            : IN STD_LOGIC;
+
+        -- Data inputs
+        Rsrc1           : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+        PC_Flag_1       : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+
+        -- Data memory output
+        Read_data       : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0)
+    );
+END component;
 		 
 		 -- Stack
 		 component stack_pointer is
@@ -977,37 +1009,7 @@ END component;
 		
 
 		 -- ALU input multiplexers with forwarding
-		 process(forward_rs1, id_rsrc1_data_out, ex_alu_result_out, mw_alu_result_out)
-		 begin
-			  case forward_rs1 is
-					when "00" =>    -- No forwarding
-						 alu_a <= id_rsrc1_data_out;
-					when "01" =>    -- Forward from WB stage
-						 alu_a <= mw_alu_result_out;
-					when "10" =>    -- Forward from MEM stage
-						 alu_a <= ex_alu_result_out;
-					when others =>
-						 alu_a <= (others => '0');
-			  end case;
-		 end process;
-
-		 process(forward_rs2, id_rsrc2_data_out, ex_alu_result_out, mw_alu_result_out, id_alu_srcl_out, id_imm_offset_out)
-		 begin
-			  if id_alu_srcl_out = '1' then
-					alu_b <= std_logic_vector(resize(signed(id_imm_offset_out), 32));
-			  else
-					case forward_rs2 is
-						 when "00" =>    -- No forwarding
-							  alu_b <= id_rsrc2_data_out;
-						 when "01" =>    -- Forward from WB stage
-							  alu_b <= mw_alu_result_out;
-						 when "10" =>    -- Forward from MEM stage
-							  alu_b <= ex_alu_result_out;
-						 when others =>
-							  alu_b <= (others => '0');
-					end case;
-			  end if;
-		 end process;    
+	
 		 -- Execute/Memory Stage
 		 EM_Stage: ExecuteMemory
 		 port map(
@@ -1193,6 +1195,24 @@ END component;
             Flush => flush
         );
         -- Next PC Logic
+
+		UnifiedMemory_inst: UnifiedMemory
+		port map(
+			clk => clk,
+			reset => rst,
+			PC => pc_out,
+			Instruction => if_instr_out,
+			Mem_Read => ex_mem_read_out,
+			Mem_Write => ex_mem_write_out,
+			DM_address => ex_dm_addr_out,
+			ALU_result => ALU_result(11 downto 0),
+			SP_Load => ex_sp_load_out,
+			SP_INC => ex_sp_inc_out,
+			Call => ex_call_out,
+			Rsrc1 => ex_reg1_data_out,
+			PC_Flag_1 => Pc_plus_flags,
+			Read_data => Read_data_memory
+		);
     
 
 	end Structural;

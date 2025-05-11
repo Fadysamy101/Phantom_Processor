@@ -195,40 +195,40 @@ begin
 					 
             end if;
 
-        --elsif falling_edge(clk) then
-		  
+        elsif falling_edge(clk) then
+			
+				Mem_Read       <= Mem_Read_Reg;
+            Interrupt      <= Interrupt_IN;
+            Reg1_Data      <= Rsrc1_Data_IN;
+            Reg2_Data      <= Rsrc2_Data_IN;
+            Swap           <= Swap_IN;
+            Rsrc1          <= Read_Addr1_IN;
+				Rsrc2          <= Read_Addr2_IN;
+				Rd             <= Rd_Addr_IN;
+            Reg_Write      <= Reg_Write_IN;
+            IN_Port        <= IN_Port_IN;
+            Pc             <= Pc_IN;
+            Set_Carry      <= Set_Carry_IN;
+            Sp_Inc         <= Sp_Inc_IN;
+            Sp_Dec         <= Sp_Dec_IN;
+            Sp_Enable      <= Sp_Enable_IN;
+            RTI            <= RTI_IN;
+            Return_Signal  <= Return_Signal_IN;
+            Call           <= Call_IN;
+            ALU_Srcl       <= ALU_Srcl_IN;
+            Branch         <= Branch_IN;
+            Update_Flag    <= Update_Flag_IN;
+            Mem_Write      <= Mem_Write_IN;
+            J_SC           <= J_SC_IN;
+				ALU_SLC        <= Opcode_IN;
+				DM             <= DM_IN;
+				Imm_Offset     <= Imm_Offset_IN;
+				Out_Port       <= Out_Port_IN;
             
 				
         end if;
 		  
     end process; 
 	 
-				Mem_Read       <= Mem_Read_Reg;
-            Interrupt      <= Interrupt_Reg;
-            Reg1_Data      <= Rsrc1_Data_Reg;
-            Reg2_Data      <= Rsrc2_Data_Reg;
-            Swap           <= Swap_Reg;
-            Rsrc1          <= Read_Addr1_Reg;
-				Rsrc2          <= Read_Addr2_Reg;
-				Rd             <= Rd_Addr_Reg;
-            Reg_Write      <= Reg_Write_Reg;
-            IN_Port        <= IN_Port_Reg;
-            Pc             <= Pc_Reg;
-            Set_Carry      <= Set_Carry_Reg;
-            Sp_Inc         <= Sp_Inc_Reg;
-            Sp_Dec         <= Sp_Dec_Reg;
-            Sp_Enable      <= Sp_Enable_Reg;
-            RTI            <= RTI_Reg;
-            Return_Signal  <= Return_Signal_Reg;
-            Call           <= Call_Reg;
-            ALU_Srcl       <= ALU_Srcl_Reg;
-            Branch         <= Branch_Reg;
-            Update_Flag    <= Update_Flag_Reg;
-            Mem_Write      <= Mem_Write_Reg;
-            J_SC           <= J_SC_Reg;
-				ALU_SLC        <= Opcode_Reg;
-				DM             <= DM_Reg;
-				Imm_Offset     <= Imm_Offset_Reg;
-				Out_Port       <= Out_Port_Reg;
 	 
 end Behavioral;
