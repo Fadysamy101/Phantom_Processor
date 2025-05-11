@@ -411,7 +411,39 @@ component Memory IS
         Read_data       : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0)
     );
 END component;
-		 
+
+component UnifiedMemory IS
+    GENERIC (
+        Address_bits : INTEGER := 12;  -- 12 bits = 4096 memory locations
+        Data_width   : INTEGER := 32   -- 32-bit data width
+    );
+    PORT (
+        clk             : IN STD_LOGIC;
+        reset           : IN STD_LOGIC;
+
+        -- Instruction memory interface
+        PC              : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
+        Instruction     : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+        
+        -- Data memory control signals
+        Mem_Read        : IN STD_LOGIC;
+        Mem_Write       : IN STD_LOGIC;
+
+        -- Address inputs for data memory
+        DM_address      : IN STD_LOGIC;  -- Selector for address source
+        ALU_result      : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
+        SP_Load         : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
+        SP_INC          : IN STD_LOGIC;
+        Call            : IN STD_LOGIC;
+
+        -- Data inputs
+        Rsrc1           : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+        PC_Flag_1       : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+
+        -- Data memory output
+        Read_data       : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0)
+    );
+END component;
 		 
 		 -- Stack
 		 component stack_pointer is
@@ -1163,6 +1195,24 @@ END component;
             Flush => flush
         );
         -- Next PC Logic
+
+		UnifiedMemory_inst: UnifiedMemory
+		port map(
+			clk => clk,
+			reset => rst,
+			PC => pc_out,
+			Instruction => if_instr_out,
+			Mem_Read => ex_mem_read_out,
+			Mem_Write => ex_mem_write_out,
+			DM_address => ex_dm_addr_out,
+			ALU_result => ALU_result(11 downto 0),
+			SP_Load => ex_sp_load_out,
+			SP_INC => ex_sp_inc_out,
+			Call => ex_call_out,
+			Rsrc1 => ex_reg1_data_out,
+			PC_Flag_1 => Pc_plus_flags,
+			Read_data => Read_data_memory
+		);
     
 
 	end Structural;
