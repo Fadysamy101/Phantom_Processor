@@ -153,7 +153,7 @@
 				
 				when "01111" => -- LDM Rdst, Imm
 					RegWrite <= '1';
-					  
+					immediate_Value_signal <= '1';  
 					
 				
 				when "10000" => -- LDD Rdst, offset(Rsrc1)
