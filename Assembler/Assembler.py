@@ -251,7 +251,14 @@ class Assembler:
                         # No operands - use default values
                         binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
                     
-                    elif opcode in ['NOT', 'INC', 'IN', 'POP']:
+                    elif opcode in ['NOT', 'INC']:
+                        # Modified: Format: opcode Rdst
+                        # For NOT and INC, use Rdst as both Rdst and Rsrc1
+                        rdst_bin = self.register_to_binary(operands[0])
+                        rsrc1_bin = rdst_bin  # Set Rsrc1 to be the same as Rdst
+                        binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
+                    
+                    elif opcode in ['IN', 'POP']:
                         # Format: opcode Rdst
                         rdst_bin = self.register_to_binary(operands[0])
                         binary = f"{opcode_bin}{rsrc1_bin}{rsrc2_bin}{rdst_bin}00{imm_bin}"
