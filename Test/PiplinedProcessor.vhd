@@ -982,7 +982,7 @@ END component;
 --                Operand2 => Operand2
 --            );
  
-
+		   Operand2 <= (31 downto 16 => id_imm_offset_out(15)) & id_imm_offset_out;
             -- ALU
             ALU_inst:ALU
              port map(
