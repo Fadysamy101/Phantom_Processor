@@ -40,15 +40,17 @@ begin
                 Instruction_Reg <= Instruction_In;
                 Interrupt_Reg   <= Interrupt_In;
             end if;
+			elsif falling_edge(clk) then
+				  Pc          <= Pc_in;
+				 Rsrc1       <= instruction_in(26 downto 24);
+				 Rsrc2       <= instruction_in(23 downto 21);
+				 Instruction <= Instruction_In;
+				 Interrupt   <= Interrupt_In;
+     
         end if;
     end process;
     
     -- Continuous assignments for outputs
     -- Output values are directly driven by the register values
-    Pc          <= Pc_Reg;
-    Rsrc1       <= Instruction_Reg(26 downto 24);
-    Rsrc2       <= Instruction_Reg(23 downto 21);
-    Instruction <= Instruction_Reg;
-    Interrupt   <= Interrupt_Reg;
-     
+  
 end Behavioral;

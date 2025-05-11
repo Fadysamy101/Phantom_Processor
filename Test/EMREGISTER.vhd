@@ -184,37 +184,37 @@ begin
 					 
             end if;
 
-        --elsif falling_edge(clk) then
-		  
+        elsif falling_edge(clk) then
+				RTI            <= RTI_IN;
+            Mem_Read       <= Mem_Read_IN;
+            Return_Signal  <= Return_Signal_IN;
+            Mem_Write      <= Mem_Write_IN;
+            ALU_Result     <= ALU_Result_IN;
+            Sp_Load        <= Sp_Load_IN;
+            Rsrc1          <= Rsrc1_IN;
+				Rsrc2          <= Rsrc2_IN;
+				Rd             <= Rd_IN;
+            Pc             <= Pc_IN;
+            Set_Carry      <= Set_Carry_IN;
+            Sp_Inc         <= Sp_Inc_IN;
+            Sp_Dec         <= Sp_Dec_IN;
+            Sp_Enable      <= Sp_Enable_IN;
+            Branch         <= Branch_IN;
+            Update_Flag    <= Update_Flag_IN;
+            Reg1_Data      <= Reg1_Data_IN;
+            Reg2_Data      <= Reg2_Data_IN;
+            Swap           <= Swap_IN;
+            Reg_Write      <= Reg_Write_IN;
+            IN_Port        <= IN_Port_IN;
+				DM_Addr        <= DM_IN;
+				Index          <= Imm_Offset_IN;
+				Out_Port       <= Out_Port_IN;
             
 				
         end if;
 		  
     end process;
 	 
-				RTI            <= RTI_Reg;
-            Mem_Read       <= Mem_Read_Reg;
-            Return_Signal  <= Return_Signal_Reg;
-            Mem_Write      <= Mem_Write_Reg;
-            ALU_Result     <= ALU_Result_Reg;
-            Sp_Load        <= Sp_Load_Reg;
-            Rsrc1          <= Rsrc1_Reg;
-				Rsrc2          <= Rsrc2_Reg;
-				Rd             <= Rd_Reg;
-            Pc             <= Pc_Reg;
-            Set_Carry      <= Set_Carry_Reg;
-            Sp_Inc         <= Sp_Inc_Reg;
-            Sp_Dec         <= Sp_Dec_Reg;
-            Sp_Enable      <= Sp_Enable_Reg;
-            Branch         <= Branch_Reg;
-            Update_Flag    <= Update_Flag_Reg;
-            Reg1_Data      <= Reg1_Data_Reg;
-            Reg2_Data      <= Reg2_Data_Reg;
-            Swap           <= Swap_Reg;
-            Reg_Write      <= Reg_Write_Reg;
-            IN_Port        <= IN_Port_Reg;
-				DM_Addr        <= DM_Reg;
-				Index          <= Imm_Offset_Reg;
-				Out_Port       <= Out_Port_Reg;
+			
 	 
 end Behavioral;

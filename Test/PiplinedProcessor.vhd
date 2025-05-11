@@ -977,37 +977,7 @@ END component;
 		
 
 		 -- ALU input multiplexers with forwarding
-		 process(forward_rs1, id_rsrc1_data_out, ex_alu_result_out, mw_alu_result_out)
-		 begin
-			  case forward_rs1 is
-					when "00" =>    -- No forwarding
-						 alu_a <= id_rsrc1_data_out;
-					when "01" =>    -- Forward from WB stage
-						 alu_a <= mw_alu_result_out;
-					when "10" =>    -- Forward from MEM stage
-						 alu_a <= ex_alu_result_out;
-					when others =>
-						 alu_a <= (others => '0');
-			  end case;
-		 end process;
-
-		 process(forward_rs2, id_rsrc2_data_out, ex_alu_result_out, mw_alu_result_out, id_alu_srcl_out, id_imm_offset_out)
-		 begin
-			  if id_alu_srcl_out = '1' then
-					alu_b <= std_logic_vector(resize(signed(id_imm_offset_out), 32));
-			  else
-					case forward_rs2 is
-						 when "00" =>    -- No forwarding
-							  alu_b <= id_rsrc2_data_out;
-						 when "01" =>    -- Forward from WB stage
-							  alu_b <= mw_alu_result_out;
-						 when "10" =>    -- Forward from MEM stage
-							  alu_b <= ex_alu_result_out;
-						 when others =>
-							  alu_b <= (others => '0');
-					end case;
-			  end if;
-		 end process;    
+	
 		 -- Execute/Memory Stage
 		 EM_Stage: ExecuteMemory
 		 port map(
