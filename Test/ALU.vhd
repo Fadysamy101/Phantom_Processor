@@ -51,7 +51,7 @@ begin
     offset_sign_extended <= (31 downto 16 => offset(15)) & offset; 
     
     -- Main ALU operation logic
-    process(operand1, operand2, ALU_OP, A_unsigned, B_unsigned, offset, Imm, imm_sign_extended, offset_sign_extended)
+    process(operand1, operand2, ALU_OP, A_unsigned, B_unsigned, offset, Imm, imm_sign_extended, offset_sign_extended, result_unsigned)
     begin
         -- Default values
         result <= (others => '0');

@@ -127,30 +127,30 @@ begin
 				Imm_Offset_Reg    <= (others => '0');
 				Out_Port_Reg      <= '0';
 
-            RTI            <= '0';
-            Mem_Read       <= '0';
-            Return_Signal  <= '0';
-            Mem_Write      <= '0';
-            ALU_Result     <= (others => '0');
-            Sp_Load        <= (others => '0');
-            Rsrc1          <= (others => '0');
-				Rsrc2          <= (others => '0');
-				Rd             <= (others => '0');
-            Pc             <= (others => '0');
-            Set_Carry      <= '0';
-            Sp_Inc         <= '0';
-            Sp_Dec         <= '0';
-            Sp_Enable      <= '0';
-            Branch         <= '0';
-            Update_Flag    <= '0';
-            Reg1_Data      <= (others => '0');
-            Reg2_Data      <= (others => '0');
-            Swap           <= '0';
-            Reg_Write      <= '0';
-            IN_Port        <= '0';
-				DM_Addr        <= '0';
-				Index          <= (others => '0');
-				Out_Port       <= '0';
+--            RTI            <= '0';
+--            Mem_Read       <= '0';
+--            Return_Signal  <= '0';
+--            Mem_Write      <= '0';
+--            ALU_Result     <= (others => '0');
+--            Sp_Load        <= (others => '0');
+--            Rsrc1          <= (others => '0');
+--				Rsrc2          <= (others => '0');
+--				Rd             <= (others => '0');
+--            Pc             <= (others => '0');
+--            Set_Carry      <= '0';
+--            Sp_Inc         <= '0';
+--            Sp_Dec         <= '0';
+--            Sp_Enable      <= '0';
+--            Branch         <= '0';
+--            Update_Flag    <= '0';
+--            Reg1_Data      <= (others => '0');
+--            Reg2_Data      <= (others => '0');
+--            Swap           <= '0';
+--            Reg_Write      <= '0';
+--            IN_Port        <= '0';
+--				DM_Addr        <= '0';
+--				Index          <= (others => '0');
+--				Out_Port       <= '0';
 
         elsif rising_edge(clk) then
 		  
@@ -184,9 +184,15 @@ begin
 					 
             end if;
 
-        elsif falling_edge(clk) then
+        --elsif falling_edge(clk) then
 		  
-            RTI            <= RTI_Reg;
+            
+				
+        end if;
+		  
+    end process;
+	 
+				RTI            <= RTI_Reg;
             Mem_Read       <= Mem_Read_Reg;
             Return_Signal  <= Return_Signal_Reg;
             Mem_Write      <= Mem_Write_Reg;
@@ -210,9 +216,5 @@ begin
 				DM_Addr        <= DM_Reg;
 				Index          <= Imm_Offset_Reg;
 				Out_Port       <= Out_Port_Reg;
-				
-        end if;
-		  
-    end process;
 	 
 end Behavioral;

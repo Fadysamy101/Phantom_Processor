@@ -435,7 +435,7 @@ END component;
 			  Port (
 				  clk          : in  STD_LOGIC;
 				  rst          : in  STD_LOGIC;
-				  enable       : in  STD_LOGIC;
+				  en       : in  STD_LOGIC;
 
 				  Read_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
 				  ALU_Result_In    : in STD_LOGIC_VECTOR(31 downto 0);
@@ -769,7 +769,7 @@ END component;
 		 port map(
 			  clk            => clk,
 			  rst            => rst,
-			  en             => pc_enable,
+			  en             => '1',
 			  Pc_in          => pc_out,
 			  Instruction_In => instruction_from_instruction_memory,
 			  Interrupt_In   => '0',  -- TODO: Connect interrupt signal
@@ -844,9 +844,9 @@ END component;
             we2_swap           => wr_we2_swap,             -- from WB stage
             write_address_1    => wr_Write_address1,       -- from WB stage
             write_address_2    => wr_Write_address2,       -- from WB stage
-            read_address_1     => instruction_from_instruction_memory(26 downto 24), -- rs1
-            read_address2_1    => instruction_from_instruction_memory(23 downto 21), -- rs2
-            read_address2_2    => instruction_from_instruction_memory(20 downto 18), -- rd
+            read_address_1     => if_instr_out(26 downto 24), -- rs1
+            read_address2_1    => if_instr_out(23 downto 21), -- rs2
+            read_address2_2    => if_instr_out(20 downto 18), -- rd
             data_in_1          => wr_Write_data1,          -- from WB stage
             data_in_2          => wr_Write_data2,          -- from WB stage
             data_out1          => read_data1,
@@ -921,37 +921,41 @@ END component;
 			  DM              => id_dm_out,
 			  Imm_Offset      => id_imm_offset_out,
 			  Out_Port		  => ID_OUT
-		 );
-
+		 ); 
+			
+			
+			Controller_ALU_Srcl_In <= Controller_Immediate_Value_signal;
+			
+			
         --Execute Stage
         -- Forwarding Unit
-            Forwarding_Unit_inst: Forwarding_Unit
-             port map(
-                D_EX_rs1 => D_EX_rs1,
-                D_EX_rs2 => D_EX_rs2,
-				Rarc1_addr => id_rsrc1_out,
-				Rarc2_addr => id_rsrc2_out,
-                EX_M_rd => EX_M_rd,
-                M_WB_rd => M_WB_rd,
-                EX_M_RegWrite => EX_M_RegWrite,
-                M_WB_RegWrite => M_WB_RegWrite,
-                M_WB_Rd_data => M_WB_Rd_data,
-                EX_M_Rd_data => EX_M_Rd_data,
-                Rarc1_data => Rarc1_data,
-                Rarc2_Data => Rarc2_Data,
-          
-                Immediate => Immediate,
-                IMM_Sel => IMM_Sel,
-                Operand1 => Operand1,
-                Operand2 => Operand2
-            );
-
+--            Forwarding_Unit_inst: Forwarding_Unit
+--             port map(
+--                D_EX_rs1 => id_rsrc1_out,
+--                D_EX_rs2 => id_rsrc2_out,
+--				Rarc1_addr => id_rsrc1_out,
+--				Rarc2_addr => id_rsrc2_out,
+--                EX_M_rd => EX_M_rd,
+--                M_WB_rd => M_WB_rd,
+--                EX_M_RegWrite => EX_M_RegWrite,
+--                M_WB_RegWrite => M_WB_RegWrite,
+--                M_WB_Rd_data => M_WB_Rd_data,
+--                EX_M_Rd_data => EX_M_Rd_data,
+--                Rarc1_data => id_rsrc1_data_out,
+--                Rarc2_Data => id_rsrc2_data_out,
+--          
+--                Immediate => Immediate,
+--                IMM_Sel => IMM_Sel,
+--                Operand1 => Operand1,
+--                Operand2 => Operand2
+--            );
+ 
 
             -- ALU
             ALU_inst:ALU
              port map(
-                operand1 => operand1,
-                operand2 => operand2,
+                operand1 => id_rsrc1_data_out,
+                operand2 => id_rsrc2_data_out,
                 ALU_OP => id_alu_slc_out,
                 offset =>Operand2(15 downto 0) ,
                 Imm => Operand2(15 downto 0), 
@@ -1097,7 +1101,7 @@ END component;
 		 port map(
 			  clk          => clk,
 			  rst          => rst,
-			  enable       => '1',
+			  en       => '1',
 			  -- Inputs from Execute/Memory
 			  Read_Data_In     => Read_data_memory,
 			  ALU_Result_In    => ex_alu_result_out,
