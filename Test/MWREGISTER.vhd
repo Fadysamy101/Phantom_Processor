@@ -2,10 +2,11 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity MemoryWrite is
-    Port (
-        clk          : in  STD_LOGIC;
-        rst          : in  STD_LOGIC;
-        en           : in  STD_LOGIC;
+    Port 
+    (
+        clk              : in  STD_LOGIC;
+        rst              : in  STD_LOGIC;
+        en               : in  STD_LOGIC;
 
         Read_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
         ALU_Result_In    : in STD_LOGIC_VECTOR(31 downto 0);
@@ -19,19 +20,19 @@ entity MemoryWrite is
         Reg_Write_In     : in STD_LOGIC;
         IN_Port_In       : in STD_LOGIC;
         Out_Port_In      : in STD_LOGIC;
-
-        Read_Data     : out STD_LOGIC_VECTOR(31 downto 0);
-        ALU_Result    : out STD_LOGIC_VECTOR(31 downto 0);
-        Rd            : out STD_LOGIC_VECTOR(2 downto 0);
-        Rsrc1         : out STD_LOGIC_VECTOR(2 downto 0);
-        Rsrc2         : out STD_LOGIC_VECTOR(2 downto 0);
-        Mem_Read      : out STD_LOGIC;
-        Reg1_Data     : out STD_LOGIC_VECTOR(31 downto 0);
-        Reg2_Data     : out STD_LOGIC_VECTOR(31 downto 0);
-        Swap          : out STD_LOGIC;
-        Reg_Write     : out STD_LOGIC;
-        IN_Port       : out STD_LOGIC;
-        Out_Port      : out STD_LOGIC
+        -- Outputs
+        Read_Data        : out STD_LOGIC_VECTOR(31 downto 0);
+        ALU_Result       : out STD_LOGIC_VECTOR(31 downto 0);
+        Rd               : out STD_LOGIC_VECTOR(2 downto 0);
+        Rsrc1            : out STD_LOGIC_VECTOR(2 downto 0);
+        Rsrc2            : out STD_LOGIC_VECTOR(2 downto 0);
+        Mem_Read         : out STD_LOGIC;
+        Reg1_Data        : out STD_LOGIC_VECTOR(31 downto 0);
+        Reg2_Data        : out STD_LOGIC_VECTOR(31 downto 0);
+        Swap             : out STD_LOGIC;
+        Reg_Write        : out STD_LOGIC;
+        IN_Port          : out STD_LOGIC;
+        Out_Port         : out STD_LOGIC
     );
 end MemoryWrite;
 
@@ -40,9 +41,9 @@ architecture Behavioral of MemoryWrite is
     signal Read_Data_Reg     : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
     signal ALU_Result_Reg    : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
     signal Mem_Read_Reg      : STD_LOGIC := '0';
-    signal Rsrc1_Reg         : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
-    signal Rsrc2_Reg         : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
-    signal Rd_Reg            : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
+    signal Rsrc1_Reg         : STD_LOGIC_VECTOR(2 downto 0)  := (others => '0');
+    signal Rsrc2_Reg         : STD_LOGIC_VECTOR(2 downto 0)  := (others => '0');
+    signal Rd_Reg            : STD_LOGIC_VECTOR(2 downto 0)  := (others => '0');
     signal Reg1_Data_Reg     : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
     signal Reg2_Data_Reg     : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
     signal Swap_Reg          : STD_LOGIC := '0';

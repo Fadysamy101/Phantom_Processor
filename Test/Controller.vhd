@@ -13,7 +13,7 @@
 			
 			-- Memory control
 			MemRead     : out STD_LOGIC;
-			DM_address : out STD_LOGIC;
+			DM_address  : out STD_LOGIC;
 			MemWrite    : out STD_LOGIC;
 			MemToReg    : out STD_LOGIC;
 			-- Stack control

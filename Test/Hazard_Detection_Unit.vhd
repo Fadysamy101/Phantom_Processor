@@ -4,16 +4,16 @@ use IEEE.NUMERIC_STD.ALL;
 entity Hazard_Detection_Unit is
     port
     (    
-        FD_RS1 : in std_logic_vector(2 downto 0);
-        FD_RS2 : in std_logic_vector(2 downto 0);
-        D_Ex_rd : in std_logic_vector(2 downto 0);
-        D_EX_Mem_Read: in std_logic;
-        D_EX_Mem_Write: in std_logic;
-        Data_interface_needed: in std_logic;
-        Branch_Taken: in std_logic;
+        FD_RS1                  : in std_logic_vector(2 downto 0);
+        FD_RS2                  : in std_logic_vector(2 downto 0);
+        D_Ex_rd                 : in std_logic_vector(2 downto 0);
+        D_EX_Mem_Read           : in std_logic;
+        D_EX_Mem_Write          : in std_logic;
+        Data_interface_needed   : in std_logic;
+        Branch_Taken            : in std_logic;
         -- Outputs
-        Stall: out std_logic_vector(1 downto 0);
-        Flush: out std_logic_vector(1 downto 0)
+        Stall                   : out std_logic_vector(1 downto 0);
+        Flush                   : out std_logic_vector(1 downto 0)
 
     );
 end entity; 

@@ -4,9 +4,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity DecodeExecute is
 
     Port (
-        clk                     : in  STD_LOGIC;
-        rst                     : in  STD_LOGIC;
-        enable                  : in  STD_LOGIC;
+        clk                        : in  STD_LOGIC;
+        rst                        : in  STD_LOGIC;
+        enable                     : in  STD_LOGIC;
 
         Pc_In                      : in STD_LOGIC_VECTOR(31 downto 0);
         Read_Addr1_In              : in STD_LOGIC_VECTOR(2 downto 0);
@@ -28,41 +28,38 @@ entity DecodeExecute is
         Branch_In                  : in STD_LOGIC;
         Mem_Read_In                : in STD_LOGIC;
         Reg_Write_In               : in STD_LOGIC;
-        Update_Flag_In             : in STD_LOGIC;
-        IN_Port_In                 : in STD_LOGIC;
-        Mem_Write_In               : in STD_LOGIC;
-        J_SC_In                    : in STD_LOGIC_VECTOR(1 downto 0);
-		  Opcode_In                  : in STD_LOGIC_VECTOR(4 downto 0);
-		  DM_In                      : in STD_LOGIC;
-		  Out_Port_In                : in STD_LOGIC;
+          Update_Flag_In           : in STD_LOGIC;
+          IN_Port_In               : in STD_LOGIC;
+          Mem_Write_In             : in STD_LOGIC;
+          J_SC_In                  : in STD_LOGIC_VECTOR(1 downto 0);
+		  Opcode_In                : in STD_LOGIC_VECTOR(4 downto 0);
+		  DM_In                    : in STD_LOGIC;
 
-        Mem_Read       : out STD_LOGIC;
-        Interrupt      : out STD_LOGIC;
-        Reg1_Data      : out STD_LOGIC_VECTOR(31 downto 0);
-        Reg2_Data      : out STD_LOGIC_VECTOR(31 downto 0);
-        Swap           : out STD_LOGIC;
-        Rsrc1          : out STD_LOGIC_VECTOR(2 downto 0);
-		  Rsrc2          : out STD_LOGIC_VECTOR(2 downto 0);
-		  Rd             : out STD_LOGIC_VECTOR(2 downto 0);
-        Reg_Write      : out STD_LOGIC;
-        IN_Port        : out STD_LOGIC;
-        Pc             : out STD_LOGIC_VECTOR(31 downto 0);
-        Set_Carry      : out STD_LOGIC;
-        Sp_Inc         : out STD_LOGIC;
-        Sp_Dec         : out STD_LOGIC;
-        Sp_Enable      : out STD_LOGIC;
-        RTI            : out STD_LOGIC;
-        Return_Signal  : out STD_LOGIC;
-        Call           : out STD_LOGIC;
-        ALU_Srcl       : out STD_LOGIC;
-        Branch         : out STD_LOGIC;
-        Update_Flag    : out STD_LOGIC;
-        Mem_Write      : out STD_LOGIC;
-        J_SC           : out STD_LOGIC_VECTOR(1 downto 0);
+        Mem_Read                   : out STD_LOGIC;
+        Interrupt                  : out STD_LOGIC;
+        Reg1_Data                  : out STD_LOGIC_VECTOR(31 downto 0);
+        Reg2_Data                  : out STD_LOGIC_VECTOR(31 downto 0);
+        Swap                       : out STD_LOGIC;
+        Rsrc1                      : out STD_LOGIC_VECTOR(2 downto 0);
+		  Rd                       : out STD_LOGIC_VECTOR(2 downto 0);
+        Reg_Write                  : out STD_LOGIC;
+        IN_Port                    : out STD_LOGIC;
+        Pc                         : out STD_LOGIC_VECTOR(31 downto 0);
+        Set_Carry                  : out STD_LOGIC;
+        Sp_Inc                     : out STD_LOGIC;
+        Sp_Dec                     : out STD_LOGIC;
+        Sp_Enable                  : out STD_LOGIC;
+        RTI                        : out STD_LOGIC;
+        Return_Signal              : out STD_LOGIC;
+        Call                       : out STD_LOGIC;
+        ALU_Srcl                   : out STD_LOGIC;
+        Branch                     : out STD_LOGIC;
+        Update_Flag                : out STD_LOGIC;
+        Mem_Write                  : out STD_LOGIC;
+        J_SC                       : out STD_LOGIC_VECTOR(1 downto 0);
 		  ALU_SLC        : out STD_LOGIC_VECTOR(4 downto 0);
 		  DM             : out STD_LOGIC;
-		  Imm_Offset     : out STD_LOGIC_VECTOR(15 downto 0);
-		  Out_Port       : out STD_LOGIC
+		  Imm_Offset     : out STD_LOGIC_VECTOR(15 downto 0)
     );
 	 
 end DecodeExecute;
@@ -95,7 +92,6 @@ architecture Behavioral of DecodeExecute is
     signal J_SC_Reg                    : STD_LOGIC_VECTOR(1 downto 0) := (others => '0');
 	 signal Opcode_Reg                  : STD_LOGIC_VECTOR(4 downto 0) := (others => '0');
 	 signal DM_Reg                      : STD_LOGIC := '0';
-	 signal Out_Port_Reg                : STD_LOGIC := '0';
 	 
 begin
 
@@ -131,35 +127,32 @@ begin
             J_SC_Reg         <= (others => '0');
 				Opcode_Reg       <= (others => '0');
 				DM_Reg           <= '0';
-				Out_Port_Reg     <= '0';
 
-            --Mem_Read       <= '0';
---            Interrupt      <= '0';
---            Reg1_Data      <= (others => '0');
---            Reg2_Data      <= (others => '0');
---            Swap           <= '0';
---            Rsrc1          <= (others => '0');
---				Rsrc2          <= (others => '0');
---				Rd             <= (others => '0');
---            Reg_Write      <= '0';
---            IN_Port        <= '0';
---            Pc             <= (others => '0');
---            Set_Carry      <= '0';
---            Sp_Inc         <= '0';
---            Sp_Dec         <= '0';
---            Sp_Enable      <= '0';
---            RTI            <= '0';
---            Return_Signal  <= '0';
---            Call           <= '0';
---            ALU_Srcl       <= '0';
---            Branch         <= '0';
---            Update_Flag    <= '0';
---            Mem_Write      <= '0';
---            J_SC           <= (others => '0');
---				ALU_SLC        <= (others => '0');
---				DM             <= '0';
---				Imm_Offset     <= (others => '0');
---				Out_Port       <= '0';
+            Mem_Read       <= '0';
+            Interrupt      <= '0';
+            Reg1_Data      <= (others => '0');
+            Reg2_Data      <= (others => '0');
+            Swap           <= '0';
+            Rsrc1          <= (others => '0');
+				Rd             <= (others => '0');
+            Reg_Write      <= '0';
+            IN_Port        <= '0';
+            Pc             <= (others => '0');
+            Set_Carry      <= '0';
+            Sp_Inc         <= '0';
+            Sp_Dec         <= '0';
+            Sp_Enable      <= '0';
+            RTI            <= '0';
+            Return_Signal  <= '0';
+            Call           <= '0';
+            ALU_Srcl       <= '0';
+            Branch         <= '0';
+            Update_Flag    <= '0';
+            Mem_Write      <= '0';
+            J_SC           <= (others => '0');
+				ALU_SLC        <= (others => '0');
+				DM             <= '0';
+				Imm_Offset     <= (others => '0');
 
         elsif rising_edge(clk) then
 		  
@@ -191,44 +184,39 @@ begin
                 J_SC_Reg         <= J_SC_In;
 					 Opcode_Reg       <= Opcode_In;
 					 DM_Reg           <= DM_In;
-					 Out_Port_Reg     <= Out_Port_In;
 					 
             end if;
 
         elsif falling_edge(clk) then
-			
-				Mem_Read       <= Mem_Read_Reg;
-            Interrupt      <= Interrupt_IN;
-            Reg1_Data      <= Rsrc1_Data_IN;
-            Reg2_Data      <= Rsrc2_Data_IN;
-            Swap           <= Swap_IN;
-            Rsrc1          <= Read_Addr1_IN;
-				Rsrc2          <= Read_Addr2_IN;
-				Rd             <= Rd_Addr_IN;
-            Reg_Write      <= Reg_Write_IN;
-            IN_Port        <= IN_Port_IN;
-            Pc             <= Pc_IN;
-            Set_Carry      <= Set_Carry_IN;
-            Sp_Inc         <= Sp_Inc_IN;
-            Sp_Dec         <= Sp_Dec_IN;
-            Sp_Enable      <= Sp_Enable_IN;
-            RTI            <= RTI_IN;
-            Return_Signal  <= Return_Signal_IN;
-            Call           <= Call_IN;
-            ALU_Srcl       <= ALU_Srcl_IN;
-            Branch         <= Branch_IN;
-            Update_Flag    <= Update_Flag_IN;
-            Mem_Write      <= Mem_Write_IN;
-            J_SC           <= J_SC_IN;
-				ALU_SLC        <= Opcode_IN;
-				DM             <= DM_IN;
-				
-				Out_Port       <= Out_Port_IN;
-            
+		  
+            Mem_Read       <= Mem_Read_Reg;
+            Interrupt      <= Interrupt_Reg;
+            Reg1_Data      <= Rsrc1_Data_Reg;
+            Reg2_Data      <= Rsrc2_Data_Reg;
+            Swap           <= Swap_Reg;
+            Rsrc1          <= Read_Addr1_Reg;
+				Rd             <= Rd_Addr_Reg;
+            Reg_Write      <= Reg_Write_Reg;
+            IN_Port        <= IN_Port_Reg;
+            Pc             <= Pc_Reg;
+            Set_Carry      <= Set_Carry_Reg;
+            Sp_Inc         <= Sp_Inc_Reg;
+            Sp_Dec         <= Sp_Dec_Reg;
+            Sp_Enable      <= Sp_Enable_Reg;
+            RTI            <= RTI_Reg;
+            Return_Signal  <= Return_Signal_Reg;
+            Call           <= Call_Reg;
+            ALU_Srcl       <= ALU_Srcl_Reg;
+            Branch         <= Branch_Reg;
+            Update_Flag    <= Update_Flag_Reg;
+            Mem_Write      <= Mem_Write_Reg;
+            J_SC           <= J_SC_Reg;
+				ALU_SLC        <= Opcode_Reg;
+				DM             <= DM_Reg;
+				Imm_Offset     <= Imm_Offset_Reg;
 				
         end if;
 		  
-    end process; 
-	 Imm_Offset     <= Imm_Offset_Reg;
+    end process;
 	 
 end Behavioral;

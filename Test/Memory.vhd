@@ -24,7 +24,7 @@ ENTITY Memory IS
 
         -- Data inputs
         Rsrc1           : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
-        PC_Flag_1        : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+        PC_Flag_1       : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
 
         -- Data memory interface
         Read_data       : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0)
@@ -37,7 +37,7 @@ ARCHITECTURE Behavioral OF Memory IS
 
     SIGNAL WriteAddress : STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
     SIGNAL ReadAddress  : STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
-    SIGNAL Write_data   : STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+    SIGNAL Write_data   : STD_LOGIC_VECTOR(Data_width - 1 DOWNTO   0);
 BEGIN
 
     -- Address MUX logic

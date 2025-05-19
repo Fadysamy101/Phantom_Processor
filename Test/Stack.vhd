@@ -19,8 +19,8 @@ end stack_pointer;
 
 architecture Behavioral of stack_pointer is
     -- Internal signals
-    signal SP_reg   : STD_LOGIC_VECTOR(11 downto 0); -- Current SP value
-    signal SP_next  : STD_LOGIC_VECTOR(11 downto 0); -- Next SP value
+    signal SP_reg        : STD_LOGIC_VECTOR(11 downto 0); -- Current SP value
+    signal SP_next       : STD_LOGIC_VECTOR(11 downto 0); -- Next SP value
     signal SP_inc_result : STD_LOGIC_VECTOR(11 downto 0); -- SP + 1
     signal SP_dec_result : STD_LOGIC_VECTOR(11 downto 0); -- SP - 1
 

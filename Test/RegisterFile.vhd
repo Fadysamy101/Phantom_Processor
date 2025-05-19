@@ -10,24 +10,24 @@ entity Reg is
     );
 	 
     port(
-        clk          : in std_logic;
-        rst          : in std_logic;
-		  we1           : in std_logic;
-        address_sel_sw  : in std_logic;  
-		  we2_swap      : in std_logic;
+        clk                : in std_logic;
+        rst                : in std_logic;
+		  we1              : in std_logic;
+        address_sel_sw     : in std_logic;  
+		  we2_swap         : in std_logic;
 		  
-        write_address_1   : in std_logic_vector(address_bits-1 downto 0);
-		  write_address_2   : in std_logic_vector(address_bits-1 downto 0);
+        write_address_1    : in std_logic_vector(address_bits-1 downto 0);
+		  write_address_2  : in std_logic_vector(address_bits-1 downto 0);
 		  
-        read_address_1   : in std_logic_vector(address_bits-1 downto 0);
-        read_address2_1  : in std_logic_vector(address_bits-1 downto 0);
+        read_address_1     : in std_logic_vector(address_bits-1 downto 0);
+        read_address2_1    : in std_logic_vector(address_bits-1 downto 0);
 		  read_address2_2  : in std_logic_vector(address_bits-1 downto 0);
 		  
-        data_in_1      : in std_logic_vector(word_width-1 downto 0);
-		  data_in_2      : in std_logic_vector(word_width-1 downto 0);
+        data_in_1          : in std_logic_vector(word_width-1 downto 0);
+		  data_in_2        : in std_logic_vector(word_width-1 downto 0);
 		  
-        data_out1    : out std_logic_vector(word_width-1 downto 0);
-        data_out2    : out std_logic_vector(word_width-1 downto 0)
+        data_out1          : out std_logic_vector(word_width-1 downto 0);
+        data_out2          : out std_logic_vector(word_width-1 downto 0)
     );
 	 
 end entity Reg;
@@ -36,8 +36,8 @@ end entity Reg;
 
 architecture behavioral of Reg is
 
-    type reg_array is array (0 to (2**address_bits)-1) of std_logic_vector(word_width-1 downto 0);
-    signal REGISTERS : reg_array;
+    type reg_array is array ((2**address_bits)-1 downto 0) of std_logic_vector(word_width-1 downto 0);
+     signal REGISTERS : reg_array;
 	 signal read_address1: std_logic_vector(address_bits-1 downto 0);
 	 signal read_address2: std_logic_vector(address_bits-1 downto 0);
 	 
