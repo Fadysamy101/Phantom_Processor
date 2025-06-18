@@ -21,8 +21,7 @@ entity Forwarding_Unit is
     EX_M_Rd_data  : in std_logic_vector(31 downto 0);
     Rarc1_data    : in std_logic_vector(31 downto 0);
     Rarc2_Data    : in std_logic_vector(31 downto 0);
-    Rarc1_addr    : in std_logic_vector(2 downto 0);
-    Rarc2_addr    : in std_logic_vector(2 downto 0);
+
     Immediate     : in std_logic_vector(15 downto 0);
     
     -- Immediate selection control
@@ -38,8 +37,8 @@ end entity Forwarding_Unit;
 
 architecture Behavioral of Forwarding_Unit is
   -- Internal signals for multiplexers
-  signal sel_operand1 : std_logic_vector(1 downto 0);
-  signal sel_operand2 : std_logic_vector(1 downto 0);
+  signal sel_operand1   : std_logic_vector(1 downto 0);
+  signal sel_operand2   : std_logic_vector(1 downto 0);
   signal final_operand2 : std_logic_vector(31 downto 0); -- Intermediate signal for operand2
 begin
   -- Forwarding logic process
@@ -68,7 +67,7 @@ begin
 
   
   -- Operand multiplexers
-  operand_selection: process(sel_operand1, sel_operand2, Rarc1_data, Rarc2_Data, M_WB_Rd_data, EX_M_Rd_data, Immediate, IMM_Sel)
+  operand_selection: process(sel_operand1, sel_operand2, Rarc1_data, Rarc2_Data, M_WB_Rd_data, EX_M_Rd_data)
   begin
     -- Operand1 multiplexer
     case sel_operand1 is
@@ -93,15 +92,20 @@ begin
       when others => 
         final_operand2 <= Rarc2_Data;     -- Default
     end case;
-    
-    -- Second stage - select between register value and immediate value
+   
+
+  end process operand_selection;
+   
+  -- Second stage - select between register value and immediate value
+  process(final_operand2, IMM_Sel, Immediate)
+  begin
     if (IMM_Sel = '1') then
       -- Sign extend the immediate value from 16 to 32 bits
       Operand2 <= std_logic_vector(resize(signed(Immediate), 32));
     else
       Operand2 <= final_operand2; -- Use the forwarded or register value
     end if;
-    
-  end process operand_selection;
+      
+  end process;  
   
 end architecture Behavioral;
