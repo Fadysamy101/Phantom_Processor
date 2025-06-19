@@ -92,7 +92,7 @@ begin
                 
             when "00111" =>  -- MOV
                 -- Move (pass B to output)
-                result <= operand2;
+                result <= operand1;
                 update_z <= '0';  -- MOV does not update flags
                 update_n <= '0';
                 update_c <= '0';

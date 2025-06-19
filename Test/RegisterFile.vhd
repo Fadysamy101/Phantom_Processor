@@ -36,7 +36,7 @@ end entity Reg;
 
 architecture behavioral of Reg is
 
-    type reg_array is array ((2**address_bits)-1 downto 0) of std_logic_vector(word_width-1 downto 0);
+    type reg_array is array (0 to (2**address_bits)-1 ) of std_logic_vector(word_width-1 downto 0);
      signal REGISTERS : reg_array;
 	 signal read_address1: std_logic_vector(address_bits-1 downto 0);
 	 signal read_address2: std_logic_vector(address_bits-1 downto 0);
@@ -48,12 +48,13 @@ begin
     begin
 	 
         if rst = '1' then
-            
-            for i in 0 to (2**address_bits)-1 loop
+            --COMMENTED OUT FOR TESTING 
+
+            -- for i in 0 to (2**address_bits)-1 loop
 				
-                REGISTERS(i) <= (others => '0');
+            --     REGISTERS(i) <= (others => '0');
 					 
-            end loop;
+            -- end loop;
 				
 
         elsif rising_edge(clk) then
@@ -68,20 +69,22 @@ begin
 			 
             end if;
 				
-				if address_sel_sw = '0' then
-				read_address1 <= read_address_1;
-				read_address2 <= read_address2_1;
+				-- if address_sel_sw = '0' then
+				-- read_address1 <= read_address_1;
+				-- read_address2 <= read_address2_1;
 
-				else
+				-- else
 				
-				read_address1 <= read_address2_2;
-				read_address2 <= read_address_1;
+				-- read_address1 <= read_address2_2;
+				-- read_address2 <= read_address_1;
 				
-				end if;
+				-- end if;
 				
         end if;
     end process;
-	 
+	read_address1<= read_address_1 when address_sel_sw = '0' else read_address2_2;
+    read_address2<= read_address2_1 when address_sel_sw = '0' else read_address_1;
+         
 	 
 	
 	 

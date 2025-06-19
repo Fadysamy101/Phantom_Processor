@@ -18,7 +18,7 @@
 		 
 		-- Component declarations:
 		
-		-- PC_new
+		-- PC_new Y
 		-- Instruction Memory
 		
 		-- Fetch/DEC register
@@ -73,6 +73,35 @@
 		  
 		);
 		end component;
+		Component UnifiedMemory IS
+    GENERIC (
+        Address_bits : INTEGER := 12;  -- 12 bits = 4096 memory locations
+        Data_width   : INTEGER := 32   -- 32-bit data width
+    );
+    PORT (
+        clk             : IN STD_LOGIC;
+        reset           : IN STD_LOGIC;
+        -- Data memory control signals
+        Mem_Read        : IN STD_LOGIC;
+        Mem_Write       : IN STD_LOGIC;
+        PC_From_Counter : IN STD_LOGIC_VECTOR(11 DOWNTO 0);
+
+        -- Address inputs for data memory
+        DM_address      : IN STD_LOGIC;  -- Selector for address source
+        ALU_result      : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
+        SP_Load         : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
+        SP_INC          : IN STD_LOGIC;
+        Call            : IN STD_LOGIC;
+
+        -- Data inputs
+        Rsrc1           : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+        PC_Flag_1       : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+
+        -- Data memory output
+        Read_data       : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+         Struct_hazard_detected: out STD_LOGIC
+    );
+	END Component;
 		
 		
 		-- Fetch/Dec register
@@ -383,67 +412,36 @@ end component;
 		 
 		 -- Memory
 		 
-component Memory IS
-    GENERIC (
-        Address_bits : INTEGER := 12;
-        Data_width   : INTEGER := 32
-    );
-    PORT (
-        clk             : IN STD_LOGIC;
-        reset           : IN STD_LOGIC;
+-- component Memory IS
+--     GENERIC (
+--         Address_bits : INTEGER := 12;
+--         Data_width   : INTEGER := 32
+--     );
+--     PORT (
+--         clk             : IN STD_LOGIC;
+--         reset           : IN STD_LOGIC;
 
-        -- Control signals
-        Mem_Read        : IN STD_LOGIC;
-        Mem_Write       : IN STD_LOGIC;
+--         -- Control signals
+--         Mem_Read        : IN STD_LOGIC;
+--         Mem_Write       : IN STD_LOGIC;
 
-        -- Address inputs
-        DM_address      : IN STD_LOGIC;
-        ALU_result      : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
-        SP_Load         : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
-        SP_INC          : IN STD_LOGIC;
-        Call            : IN STD_LOGIC;
+--         -- Address inputs
+--         DM_address      : IN STD_LOGIC;
+--         ALU_result      : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
+--         SP_Load         : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
+--         SP_INC          : IN STD_LOGIC;
+--         Call            : IN STD_LOGIC;
 
-        -- Data inputs
-        Rsrc1           : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
-        PC_Flag_1        : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+--         -- Data inputs
+--         Rsrc1           : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+--         PC_Flag_1        : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
 
-        -- Data memory interface
-        Read_data       : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0)
-    );
-END component;
+--         -- Data memory interface
+--         Read_data       : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0)
+--     );
+-- END component;
 
-component UnifiedMemory IS
-    GENERIC (
-        Address_bits : INTEGER := 12;  -- 12 bits = 4096 memory locations
-        Data_width   : INTEGER := 32   -- 32-bit data width
-    );
-    PORT (
-        clk             : IN STD_LOGIC;
-        reset           : IN STD_LOGIC;
 
-        -- Instruction memory interface
-        PC              : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
-        Instruction     : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
-        
-        -- Data memory control signals
-        Mem_Read        : IN STD_LOGIC;
-        Mem_Write       : IN STD_LOGIC;
-
-        -- Address inputs for data memory
-        DM_address      : IN STD_LOGIC;  -- Selector for address source
-        ALU_result      : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
-        SP_Load         : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
-        SP_INC          : IN STD_LOGIC;
-        Call            : IN STD_LOGIC;
-
-        -- Data inputs
-        Rsrc1           : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
-        PC_Flag_1       : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
-
-        -- Data memory output
-        Read_data       : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0)
-    );
-END component;
 		 
 		 -- Stack
 		 component stack_pointer is
@@ -766,6 +764,8 @@ END component;
          --PC_new signals
        signal branch_addr_se : STD_LOGIC_VECTOR(31 downto 0);
        signal en2 : STD_LOGIC;
+	  
+
 
 	begin
 		 --Pipeline registers
@@ -790,20 +790,19 @@ END component;
         PC_loaded_from_memory=> PC_loaded_from_memory,
         PC=>pc_out                   
         );
-        InstructionMemory_inst: InstructionMemory
-         port map(
-            PC => pc_out(11 downto 0),
-            data_bus => instruction_from_instruction_memory
-        );
-
-      
+        -- InstructionMemory_inst: InstructionMemory
+        --  port map(
+        --     PC => pc_out(11 downto 0),
+        --     data_bus => instruction_from_instruction_memory
+        -- );
+	
 		 FD_Stage: FetchDecode
 		 port map(
 			  clk            => clk,
 			  rst            => rst,
 			  en             => '1',
 			  Pc_in          => pc_out,
-			  Instruction_In => instruction_from_instruction_memory,
+			  Instruction_In => Read_data_memory,
 			  Interrupt_In   => '0',  -- TODO: Connect interrupt signal
 			  Pc             => if_pc_out,
 			  Rsrc1          => rs1_addr_FD,  -- Connected directly to register file
@@ -811,8 +810,26 @@ END component;
 			  Interrupt      => if_interrupt_out,
 			  Instruction    => if_instr_out
 		 );
-        
-        
+          PC_Plus_Flags<=   STD_LOGIC_VECTOR(unsigned(ccr_from_CCR_out&id_pc_out(27 downto 0)) +1) ;
+		  
+        	UnifiedMemory_inst: UnifiedMemory
+		 port map(
+			clk => clk,
+			reset => rst,
+			Mem_Read => ex_mem_read_out,
+			Mem_Write => ex_mem_write_out,
+			PC_From_Counter => pc_out(11 downto 0),
+			DM_address => ex_dm_addr_out,
+			ALU_result => ALU_result(11 downto 0),
+			SP_Load => ex_sp_load_out(11 downto 0),
+			SP_INC => ex_sp_inc_out,
+			Call => ex_call_out,
+			Rsrc1 => ex_reg1_data_out,
+			PC_Flag_1 =>  PC_Plus_Flags,
+			Read_data =>Read_data_memory 
+			
+		);
+      
         Controller_inst : Controller
         port map (
             opcode => if_instr_out(31 downto 27),
@@ -981,7 +998,7 @@ END component;
 --                Operand1 => Operand1,
 --                Operand2 => Operand2
 --            );
- 
+		
 		   Operand2 <= (31 downto 16 => id_imm_offset_out(15)) & id_imm_offset_out;
             -- ALU
             ALU_inst:ALU
@@ -1083,22 +1100,22 @@ END component;
 			 SP_out => SP_out
 		 );
 		 Pc_plus_flags<= CCR_from_CCR_out(3 downto 0) &id_pc_out(27 downto 0);
-		 Memory_inst:Memory
+		--  Memory_inst:Memory
 		 
-		  port map(
-			 clk => clk,
-			 reset => rst,
-			 Mem_Read => ex_mem_read_out,
-			 Mem_Write => ex_mem_write_out,
-			 DM_address => ex_dm_addr_out,
-			 ALU_result => ALU_result(11 downto 0),
-			 SP_Load => ex_sp_load_out,
-			 SP_INC => ex_sp_inc_out,
-			 Call => ex_call_out,
-			 Rsrc1 => ex_reg1_data_out,
-			 PC_Flag_1 => Pc_plus_flags,
-			 Read_data => Read_data_memory
-		 );
+		--   port map(
+		-- 	 clk => clk,
+		-- 	 reset => rst,
+		-- 	 Mem_Read => ex_mem_read_out,
+		-- 	 Mem_Write => ex_mem_write_out,
+		-- 	 DM_address => ex_dm_addr_out,
+		-- 	 ALU_result => ALU_result(11 downto 0),
+		-- 	 SP_Load => ex_sp_load_out,
+		-- 	 SP_INC => ex_sp_inc_out,
+		-- 	 Call => ex_call_out,
+		-- 	 Rsrc1 => ex_reg1_data_out,
+		-- 	 PC_Flag_1 => Pc_plus_flags,
+		-- 	 Read_data => Read_data_memory
+		--  );
 		 MW_Stage: MemoryWrite
 		 port map(
 			  clk          => clk,
@@ -1196,23 +1213,6 @@ END component;
         );
         -- Next PC Logic
 
-		UnifiedMemory_inst: UnifiedMemory
-		port map(
-			clk => clk,
-			reset => rst,
-			PC => pc_out,
-			Instruction => if_instr_out,
-			Mem_Read => ex_mem_read_out,
-			Mem_Write => ex_mem_write_out,
-			DM_address => ex_dm_addr_out,
-			ALU_result => ALU_result(11 downto 0),
-			SP_Load => ex_sp_load_out,
-			SP_INC => ex_sp_inc_out,
-			Call => ex_call_out,
-			Rsrc1 => ex_reg1_data_out,
-			PC_Flag_1 => Pc_plus_flags,
-			Read_data => Read_data_memory
-		);
-    
+	
 
 	end Structural;

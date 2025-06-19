@@ -17,40 +17,31 @@ entity FetchDecode is
     );
      
 end FetchDecode;
-
 architecture Behavioral of FetchDecode is
-    -- Internal registers to store input values
     signal Pc_Reg          : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
     signal Instruction_Reg : STD_LOGIC_VECTOR(31 downto 0) := (others => '0');
     signal Interrupt_Reg   : STD_LOGIC := '0';
-     
 begin
-    -- Sequential process for register updates
+    -- Register inputs on rising edge
     process (clk, rst)
     begin
         if rst = '1' then
-            -- Reset all registers to default values
             Pc_Reg          <= (others => '0');
             Instruction_Reg <= (others => '0');
             Interrupt_Reg   <= '0';
         elsif rising_edge(clk) then
-            -- On rising edge, update registers if enabled
             if en = '1' then
                 Pc_Reg          <= Pc_in;
                 Instruction_Reg <= Instruction_In;
                 Interrupt_Reg   <= Interrupt_In;
             end if;
-			elsif falling_edge(clk) then
-				  Pc          <= Pc_in;
-				 Rsrc1       <= instruction_in(26 downto 24);
-				 Rsrc2       <= instruction_in(23 downto 21);
-				 Instruction <= Instruction_In;
-				 Interrupt   <= Interrupt_In;
-     
         end if;
     end process;
-    
-    -- Continuous assignments for outputs
-    -- Output values are directly driven by the register values
-  
+
+    -- Combinational decode (continuous assignments)
+    Pc          <= Pc_Reg;
+    Rsrc1       <= Instruction_Reg(26 downto 24);  -- Use registered instruction
+    Rsrc2       <= Instruction_Reg(23 downto 21);  -- Use registered instruction
+    Instruction <= Instruction_Reg;
+    Interrupt   <= Interrupt_Reg;
 end Behavioral;

@@ -5,21 +5,21 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity Writeback is
     Port (        
-		  clk          : in STD_logic;
-		  rst          : in STD_logic;
-		  Opcode       : in STD_LOGIC_VECTOR (2 downto 0);
-		  alu_result   : in std_logic_vector(7 downto 0);
-        Cout 			: in std_logic;
-		  dst1_address  : in STD_LOGIC_VECTOR (2 downto 0);
-          dst2_address  : in STD_LOGIC_VECTOR (2 downto  0);
-		  RegWrite 		: in STD_LOGIC;
+		  clk               : in STD_logic;
+		  rst               : in STD_logic;
+		  Opcode            : in STD_LOGIC_VECTOR (2 downto 0);
+		  alu_result        : in std_logic_vector(7 downto 0);
+        Cout 			    : in std_logic;
+		  dst1_address      : in STD_LOGIC_VECTOR (2 downto 0);
+          dst2_address      : in STD_LOGIC_VECTOR (2 downto  0);
+		  RegWrite 		    : in STD_LOGIC;
 		  
 		  
-		  Opcode_out      : out STD_LOGIC_VECTOR (2 downto 0);
-		  dst1_address_out : out STD_LOGIC_VECTOR (2 downto 0);
-		  dst2_address_out : out STD_LOGIC_VECTOR (2 downto 0);
-		  RegWrite_out 	: out STD_LOGIC;
-		  alu_result_out  : out std_logic_vector(7 downto 0);
+		  Opcode_out        : out STD_LOGIC_VECTOR (2 downto 0);
+		  dst1_address_out  : out STD_LOGIC_VECTOR (2 downto 0);
+		  dst2_address_out  : out STD_LOGIC_VECTOR (2 downto 0);
+		  RegWrite_out  	: out STD_LOGIC;
+		  alu_result_out    : out std_logic_vector(7 downto 0);
         Cout_out 			: out std_logic
   
 		  
