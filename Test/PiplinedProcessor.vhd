@@ -558,7 +558,7 @@ end component;
 		 end component;
 
 		 --Fetch stage
-         signal instruction_from_instruction_memory : STD_LOGIC_VECTOR(31 downto 0);
+ 
 		 -- Pipeline register signals
 		 -- IF/ID signals
 		 signal if_pc_out          : STD_LOGIC_VECTOR(31 downto 0);
@@ -697,7 +697,8 @@ end component;
 		 signal mw_out_port_out     : STD_LOGIC;
 		 signal mw_reg_write_out  : STD_LOGIC;
 		 signal  Read_data_memory    : STD_LOGIC_VECTOR(31 downto 0);
-		 signal  Pc_plus_flags : STD_LOGIC_VECTOR(31 downto 0);
+		 signal  Pc_plus_flags1 : STD_LOGIC_VECTOR(31 downto 0);
+		 signal  Pc_plus_flags2 : STD_LOGIC_VECTOR(31 downto 0);
 		 
  
 		 
@@ -810,7 +811,8 @@ end component;
 			  Interrupt      => if_interrupt_out,
 			  Instruction    => if_instr_out
 		 );
-          PC_Plus_Flags<=   STD_LOGIC_VECTOR(unsigned(ccr_from_CCR_out&id_pc_out(27 downto 0)) +1) ;
+        PC_Plus_Flags1 <= ccr_from_CCR_out & id_pc_out(27 downto 0);
+        PC_Plus_Flags2 <=STD_LOGIC_VECTOR(UNSIGNED(Pc_plus_flags1)+1) ;
 		  
         	UnifiedMemory_inst: UnifiedMemory
 		 port map(
@@ -825,7 +827,7 @@ end component;
 			SP_INC => ex_sp_inc_out,
 			Call => ex_call_out,
 			Rsrc1 => ex_reg1_data_out,
-			PC_Flag_1 =>  PC_Plus_Flags,
+			PC_Flag_1 =>  PC_Plus_Flags2,
 			Read_data =>Read_data_memory 
 			
 		);
@@ -1038,7 +1040,7 @@ end component;
 			  Mem_Read_In     => id_mem_read_out,
 			  Interrupt_In    => '0',  -- TODO: Connect interrupt
 			  ALU_Result_In   => alu_result,
-			  Sp_Load_In      => ((others => '0') ),  -- TODO: Connect SP load
+			  Sp_Load_In      => SP_out,  -- TODO: Connect SP load
 			  Swap_In         => id_swap_out,
 			  Rsrc1_In        => id_rsrc1_out,
 			  Rsrc2_In        => id_rsrc2_out,
@@ -1099,7 +1101,7 @@ end component;
 			 SP_mem => ex_sp_load_out,
 			 SP_out => SP_out
 		 );
-		 Pc_plus_flags<= CCR_from_CCR_out(3 downto 0) &id_pc_out(27 downto 0);
+		
 		--  Memory_inst:Memory
 		 
 		--   port map(

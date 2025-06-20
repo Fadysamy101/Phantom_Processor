@@ -16,7 +16,7 @@ entity CCR is
 end entity;
 
 architecture Behavioral of CCR is
-    signal CCR_reg : std_logic_vector(3 downto 0);
+    signal CCR_reg : std_logic_vector(3 downto 0):= (others => '0');  -- Initialize CCR register
 begin
     process(clk, reset)
     begin

@@ -138,7 +138,14 @@ begin
                 update_z <= '1';  -- Update zero flag
                 update_n <= '1';  -- Update negative flag
                 update_c <= '1';  -- Update carry flag
+            when  "01111" => --LDM
+                -- Load immediate value into result
+                result <= imm_sign_extended;  -- Immediate value to result
+                update_z <= '0';  -- Update zero flag
+                update_n <= '0';  -- Update negative flag
+                update_c <= '0';  -- Carry flag not updated
                 
+           
             when "10000" | "10001" =>  -- ADDRESS for load/store
                 -- Address calculation with proper sign extension 
                 result <= std_logic_vector(unsigned(operand1) + unsigned(offset_sign_extended)); 

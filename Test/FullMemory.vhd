@@ -40,7 +40,7 @@ ARCHITECTURE Behavioral OF UnifiedMemory IS
     SIGNAL Write_data   : STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
     SIGNAL instr_read_data : STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
     signal data_bus : STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
-    signal latch:STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+  
 
 BEGIN
      
@@ -81,7 +81,7 @@ BEGIN
         if reset = '1' then
             data_bus <= (others => '0');
             Struct_hazard_detected <= '0';
-        else 
+        else
             Struct_hazard_detected <= '0';
 
             if Mem_Write = '1' and rising_edge(clk) then

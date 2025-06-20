@@ -1,6 +1,93 @@
-# ERROR: No extended dataflow license exists
-# vsim PiplinedProcessor 
-# Start time: 01:06:59 on Jun 20,2025
+# vsim unifiedmemory 
+# Start time: 02:14:44 on Jun 20,2025
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.unifiedmemory(behavioral)
+mem load -i {C:/Users/johns/Desktop/Arch Project/Test/asm_example.mem} /unifiedmemory/memory
+add wave -position end  sim:/unifiedmemory/Address_bits
+add wave -position end  sim:/unifiedmemory/Data_width
+add wave -position end  sim:/unifiedmemory/clk
+add wave -position end  sim:/unifiedmemory/reset
+add wave -position end  sim:/unifiedmemory/Mem_Read
+add wave -position end  sim:/unifiedmemory/Mem_Write
+add wave -position end  sim:/unifiedmemory/PC_From_Counter
+add wave -position end  sim:/unifiedmemory/DM_address
+add wave -position end  sim:/unifiedmemory/ALU_result
+add wave -position end  sim:/unifiedmemory/SP_Load
+add wave -position end  sim:/unifiedmemory/SP_INC
+add wave -position end  sim:/unifiedmemory/Call
+add wave -position end  sim:/unifiedmemory/Rsrc1
+add wave -position end  sim:/unifiedmemory/PC_Flag_1
+add wave -position end  sim:/unifiedmemory/Read_data
+add wave -position end  sim:/unifiedmemory/Struct_hazard_detected
+add wave -position end  sim:/unifiedmemory/memory
+add wave -position end  sim:/unifiedmemory/WriteAddress
+add wave -position end  sim:/unifiedmemory/ReadAddress
+add wave -position end  sim:/unifiedmemory/Write_data
+add wave -position end  sim:/unifiedmemory/instr_read_data
+add wave -position end  sim:/unifiedmemory/data_bus
+add wave -position end  sim:/unifiedmemory/latch
+force -freeze sim:/unifiedmemory/SP_INC 1 0
+force -freeze sim:/unifiedmemory/clk 1 0, 0 {50 ps} -r 100
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /unifiedmemory
+force -freeze sim:/unifiedmemory/SP_Load x\"FFF\" 0
+run
+run
+force -freeze sim:/unifiedmemory/Mem_Read 1 0
+run
+run
+run
+force -freeze sim:/unifiedmemory/SP_Load x\"000\" 0
+run
+run
+run
+run
+run
+quit -sim
+# End time: 02:24:32 on Jun 20,2025, Elapsed time: 0:09:48
+# Errors: 0, Warnings: 1
+vsim work.unifiedmemory
+# vsim work.unifiedmemory 
+# Start time: 02:24:45 on Jun 20,2025
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.unifiedmemory(behavioral)
+add wave -position end  sim:/unifiedmemory/Address_bits
+add wave -position end  sim:/unifiedmemory/Data_width
+add wave -position end  sim:/unifiedmemory/clk
+add wave -position end  sim:/unifiedmemory/reset
+add wave -position end  sim:/unifiedmemory/Mem_Read
+add wave -position end  sim:/unifiedmemory/Mem_Write
+add wave -position end  sim:/unifiedmemory/PC_From_Counter
+add wave -position end  sim:/unifiedmemory/DM_address
+add wave -position end  sim:/unifiedmemory/ALU_result
+add wave -position end  sim:/unifiedmemory/SP_Load
+add wave -position end  sim:/unifiedmemory/SP_INC
+add wave -position end  sim:/unifiedmemory/Call
+add wave -position end  sim:/unifiedmemory/Rsrc1
+add wave -position end  sim:/unifiedmemory/PC_Flag_1
+add wave -position end  sim:/unifiedmemory/Read_data
+add wave -position end  sim:/unifiedmemory/Struct_hazard_detected
+add wave -position end  sim:/unifiedmemory/memory
+add wave -position end  sim:/unifiedmemory/WriteAddress
+add wave -position end  sim:/unifiedmemory/ReadAddress
+add wave -position end  sim:/unifiedmemory/Write_data
+add wave -position end  sim:/unifiedmemory/instr_read_data
+add wave -position end  sim:/unifiedmemory/data_bus
+add wave -position end  sim:/unifiedmemory/latch
+mem load -filltype value -filldata 01101001000000000000000000000000 -fillradix symbolic /unifiedmemory/memory(0)
+quit -sim
+# End time: 02:27:05 on Jun 20,2025, Elapsed time: 0:02:20
+# Errors: 0, Warnings: 0
+vsim work.piplinedprocessor
+# vsim work.piplinedprocessor 
+# Start time: 02:27:08 on Jun 20,2025
 # Loading std.standard
 # Loading std.textio(body)
 # Loading ieee.std_logic_1164(body)
@@ -19,29 +106,165 @@
 # Loading work.memorywrite(behavioral)
 # Loading work.writeback_ports(behavioral)
 # Loading work.hazard_detection_unit(behavioral)
-mem load -i {C:/Users/johns/Desktop/Arch Project/Test/asm_example.mem} /piplinedprocessor/UnifiedMemory_inst/memory
-mem load -i {C:/Users/johns/Desktop/Arch Project/Test/Registers.mem} /piplinedprocessor/register_file_inst/REGISTERS
 add wave -position end  sim:/piplinedprocessor/clk
 add wave -position end  sim:/piplinedprocessor/rst
-add wave -position end  sim:/piplinedprocessor/register_file_inst/address_bits
-add wave -position end  sim:/piplinedprocessor/register_file_inst/word_width
-add wave -position end  sim:/piplinedprocessor/register_file_inst/clk
-add wave -position end  sim:/piplinedprocessor/register_file_inst/rst
-add wave -position end  sim:/piplinedprocessor/register_file_inst/we1
-add wave -position end  sim:/piplinedprocessor/register_file_inst/address_sel_sw
-add wave -position end  sim:/piplinedprocessor/register_file_inst/we2_swap
-add wave -position end  sim:/piplinedprocessor/register_file_inst/write_address_1
-add wave -position end  sim:/piplinedprocessor/register_file_inst/write_address_2
-add wave -position end  sim:/piplinedprocessor/register_file_inst/read_address_1
-add wave -position end  sim:/piplinedprocessor/register_file_inst/read_address2_1
-add wave -position end  sim:/piplinedprocessor/register_file_inst/read_address2_2
-add wave -position end  sim:/piplinedprocessor/register_file_inst/data_in_1
-add wave -position end  sim:/piplinedprocessor/register_file_inst/data_in_2
-add wave -position end  sim:/piplinedprocessor/register_file_inst/data_out1
-add wave -position end  sim:/piplinedprocessor/register_file_inst/data_out2
-add wave -position end  sim:/piplinedprocessor/register_file_inst/REGISTERS
-add wave -position end  sim:/piplinedprocessor/register_file_inst/read_address1
-add wave -position end  sim:/piplinedprocessor/register_file_inst/read_address2
+add wave -position end  sim:/piplinedprocessor/in_port
+add wave -position end  sim:/piplinedprocessor/out_port
+add wave -position end  sim:/piplinedprocessor/instruction_from_instruction_memory
+add wave -position end  sim:/piplinedprocessor/if_pc_out
+add wave -position end  sim:/piplinedprocessor/if_instr_out
+add wave -position end  sim:/piplinedprocessor/if_interrupt_out
+add wave -position end  sim:/piplinedprocessor/Controller_J_SC_In
+add wave -position end  sim:/piplinedprocessor/Controller_Swap_In
+add wave -position end  sim:/piplinedprocessor/Controller_Set_Carry_In
+add wave -position end  sim:/piplinedprocessor/Controller_Sp_Inc_In
+add wave -position end  sim:/piplinedprocessor/Controller_Sp_Dec_In
+add wave -position end  sim:/piplinedprocessor/Controller_Sp_Enable_In
+add wave -position end  sim:/piplinedprocessor/Controller_Return_Signal_In
+add wave -position end  sim:/piplinedprocessor/Controller_Call_In
+add wave -position end  sim:/piplinedprocessor/Controller_ALU_Srcl_In
+add wave -position end  sim:/piplinedprocessor/Controller_Branch_In
+add wave -position end  sim:/piplinedprocessor/Controller_Mem_Read_In
+add wave -position end  sim:/piplinedprocessor/Controller_Reg_Write_In
+add wave -position end  sim:/piplinedprocessor/Controller_Update_Flag_In
+add wave -position end  sim:/piplinedprocessor/Controller_IN_Port_In
+add wave -position end  sim:/piplinedprocessor/Controller_Mem_Write_In
+add wave -position end  sim:/piplinedprocessor/Controller_DM_In
+add wave -position end  sim:/piplinedprocessor/Controller_Jump
+add wave -position end  sim:/piplinedprocessor/Controller_OutPort
+add wave -position end  sim:/piplinedprocessor/Controller_Halt
+add wave -position end  sim:/piplinedprocessor/Controller_Immediate_Value_signal
+add wave -position end  sim:/piplinedprocessor/Controller_FlagsSave
+add wave -position end  sim:/piplinedprocessor/Controller_FlagsRestore
+add wave -position end  sim:/piplinedprocessor/Controller_IntAck
+add wave -position end  sim:/piplinedprocessor/Controller_MemToReg
+add wave -position end  sim:/piplinedprocessor/wb_reg_write
+add wave -position end  sim:/piplinedprocessor/ctrl_swap
+add wave -position end  sim:/piplinedprocessor/swap_enable
+add wave -position end  sim:/piplinedprocessor/swap_reg_addr
+add wave -position end  sim:/piplinedprocessor/reg_rs1_addr
+add wave -position end  sim:/piplinedprocessor/reg_rd_addr
+add wave -position end  sim:/piplinedprocessor/reg_rs2_addr
+add wave -position end  sim:/piplinedprocessor/write_data
+add wave -position end  sim:/piplinedprocessor/swap_data
+add wave -position end  sim:/piplinedprocessor/read_data1
+add wave -position end  sim:/piplinedprocessor/read_data2
+add wave -position end  sim:/piplinedprocessor/wb_reg_addr
+add wave -position end  sim:/piplinedprocessor/id_pc_out
+add wave -position end  sim:/piplinedprocessor/id_rsrc1_out
+add wave -position end  sim:/piplinedprocessor/id_rsrc2_out
+add wave -position end  sim:/piplinedprocessor/id_rd_out
+add wave -position end  sim:/piplinedprocessor/id_imm_offset_out
+add wave -position end  sim:/piplinedprocessor/id_rsrc1_data_out
+add wave -position end  sim:/piplinedprocessor/id_rsrc2_data_out
+add wave -position end  sim:/piplinedprocessor/id_swap_out
+add wave -position end  sim:/piplinedprocessor/id_set_carry_out
+add wave -position end  sim:/piplinedprocessor/id_sp_inc_out
+add wave -position end  sim:/piplinedprocessor/id_sp_dec_out
+add wave -position end  sim:/piplinedprocessor/id_sp_enable_out
+add wave -position end  sim:/piplinedprocessor/id_rti_out
+add wave -position end  sim:/piplinedprocessor/id_return_sig_out
+add wave -position end  sim:/piplinedprocessor/id_call_out
+add wave -position end  sim:/piplinedprocessor/id_alu_srcl_out
+add wave -position end  sim:/piplinedprocessor/id_interrupt_out
+add wave -position end  sim:/piplinedprocessor/id_branch_out
+add wave -position end  sim:/piplinedprocessor/id_mem_read_out
+add wave -position end  sim:/piplinedprocessor/id_reg_write_out
+add wave -position end  sim:/piplinedprocessor/id_update_flag_out
+add wave -position end  sim:/piplinedprocessor/id_in_port_out
+add wave -position end  sim:/piplinedprocessor/id_mem_write_out
+add wave -position end  sim:/piplinedprocessor/id_j_sc_out
+add wave -position end  sim:/piplinedprocessor/id_alu_slc_out
+add wave -position end  sim:/piplinedprocessor/id_dm_out
+add wave -position end  sim:/piplinedprocessor/ex_mem_rti_out
+add wave -position end  sim:/piplinedprocessor/ex_mem_read_out
+add wave -position end  sim:/piplinedprocessor/ex_return_sig_out
+add wave -position end  sim:/piplinedprocessor/ex_mem_write_out
+add wave -position end  sim:/piplinedprocessor/ex_alu_result_out
+add wave -position end  sim:/piplinedprocessor/ex_sp_load_out
+add wave -position end  sim:/piplinedprocessor/ex_rsrc1_out
+add wave -position end  sim:/piplinedprocessor/ex_rsrc2_out
+add wave -position end  sim:/piplinedprocessor/ex_rd_out
+add wave -position end  sim:/piplinedprocessor/ex_pc_out
+add wave -position end  sim:/piplinedprocessor/ex_set_carry_out
+add wave -position end  sim:/piplinedprocessor/ex_sp_inc_out
+add wave -position end  sim:/piplinedprocessor/ex_sp_dec_out
+add wave -position end  sim:/piplinedprocessor/ex_sp_enable_out
+add wave -position end  sim:/piplinedprocessor/ex_branch_out
+add wave -position end  sim:/piplinedprocessor/ex_update_flag_out
+add wave -position end  sim:/piplinedprocessor/ex_reg1_data_out
+add wave -position end  sim:/piplinedprocessor/ex_reg2_data_out
+add wave -position end  sim:/piplinedprocessor/ex_swap_out
+add wave -position end  sim:/piplinedprocessor/ex_reg_write_out
+add wave -position end  sim:/piplinedprocessor/ex_in_port_out
+add wave -position end  sim:/piplinedprocessor/ex_dm_addr_out
+add wave -position end  sim:/piplinedprocessor/ex_index_out
+add wave -position end  sim:/piplinedprocessor/ex_out_port_out
+add wave -position end  sim:/piplinedprocessor/ex_call_out
+add wave -position end  sim:/piplinedprocessor/alu_a
+add wave -position end  sim:/piplinedprocessor/alu_b
+add wave -position end  sim:/piplinedprocessor/ccr_from_CCR_out
+add wave -position end  sim:/piplinedprocessor/CCR_from_Alu
+add wave -position end  sim:/piplinedprocessor/D_EX_rs1
+add wave -position end  sim:/piplinedprocessor/D_EX_rs2
+add wave -position end  sim:/piplinedprocessor/EX_M_rd
+add wave -position end  sim:/piplinedprocessor/M_WB_rd
+add wave -position end  sim:/piplinedprocessor/EX_M_RegWrite
+add wave -position end  sim:/piplinedprocessor/M_WB_RegWrite
+add wave -position end  sim:/piplinedprocessor/M_WB_Rd_data
+add wave -position end  sim:/piplinedprocessor/EX_M_Rd_data
+add wave -position end  sim:/piplinedprocessor/Rarc1_data
+add wave -position end  sim:/piplinedprocessor/Rarc2_Data
+add wave -position end  sim:/piplinedprocessor/Immediate
+add wave -position end  sim:/piplinedprocessor/IMM_Sel
+add wave -position end  sim:/piplinedprocessor/Operand1
+add wave -position end  sim:/piplinedprocessor/Operand2
+add wave -position end  sim:/piplinedprocessor/mw_read_data_out
+add wave -position end  sim:/piplinedprocessor/mw_alu_result_out
+add wave -position end  sim:/piplinedprocessor/mw_Rd
+add wave -position end  sim:/piplinedprocessor/mw_reg1_addr_out
+add wave -position end  sim:/piplinedprocessor/mw_reg2_addr_out
+add wave -position end  sim:/piplinedprocessor/mw_mem_read_out
+add wave -position end  sim:/piplinedprocessor/mw_reg1_data_out
+add wave -position end  sim:/piplinedprocessor/mw_reg2_data_out
+add wave -position end  sim:/piplinedprocessor/mw_swap_out
+add wave -position end  sim:/piplinedprocessor/mw_in_port_out
+add wave -position end  sim:/piplinedprocessor/mw_out_port_out
+add wave -position end  sim:/piplinedprocessor/mw_reg_write_out
+add wave -position end  sim:/piplinedprocessor/Read_data_memory
+add wave -position end  sim:/piplinedprocessor/Pc_plus_flags
+add wave -position end  sim:/piplinedprocessor/stall
+add wave -position end  sim:/piplinedprocessor/flush
+add wave -position end  sim:/piplinedprocessor/ex_mem_read_sig
+add wave -position end  sim:/piplinedprocessor/ex_mem_write_sig
+add wave -position end  sim:/piplinedprocessor/data_hazard_needed_sig
+add wave -position end  sim:/piplinedprocessor/branch_taken_sig
+add wave -position end  sim:/piplinedprocessor/forward_rs1
+add wave -position end  sim:/piplinedprocessor/forward_rs2
+add wave -position end  sim:/piplinedprocessor/alu_result
+add wave -position end  sim:/piplinedprocessor/in_J_SC
+add wave -position end  sim:/piplinedprocessor/reg_data_out1
+add wave -position end  sim:/piplinedprocessor/reg_data_out2
+add wave -position end  sim:/piplinedprocessor/rs1_addr_FD
+add wave -position end  sim:/piplinedprocessor/rs2_addr_FD
+add wave -position end  sim:/piplinedprocessor/pc_in
+add wave -position end  sim:/piplinedprocessor/pc_out
+add wave -position end  sim:/piplinedprocessor/pc_enable
+add wave -position end  sim:/piplinedprocessor/PC_loaded_from_memory
+add wave -position end  sim:/piplinedprocessor/sp_out
+add wave -position end  sim:/piplinedprocessor/zero_flag
+add wave -position end  sim:/piplinedprocessor/neg_flag
+add wave -position end  sim:/piplinedprocessor/carry_flag
+add wave -position end  sim:/piplinedprocessor/wr_Write_data1
+add wave -position end  sim:/piplinedprocessor/wr_Write_data2
+add wave -position end  sim:/piplinedprocessor/wr_Write_address1
+add wave -position end  sim:/piplinedprocessor/wr_Write_address2
+add wave -position end  sim:/piplinedprocessor/wr_we1
+add wave -position end  sim:/piplinedprocessor/wr_we2_swap
+add wave -position end  sim:/piplinedprocessor/id_out
+add wave -position end  sim:/piplinedprocessor/sp_enable_or
+add wave -position end  sim:/piplinedprocessor/branch_addr_se
+add wave -position end  sim:/piplinedprocessor/en2
 force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
 force -freeze sim:/piplinedprocessor/rst 0 0
 run
@@ -51,13 +274,355 @@ run
 #    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
 # ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
 #    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+restart
+mem load -filltype value -filldata 01101001000000000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(0)
+mem load -filltype value -filldata 01110000000001000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(1)
+mem load -i {C:/Users/johns/Desktop/Arch Project/Test/Registers.mem} /piplinedprocessor/register_file_inst/REGISTERS
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+run
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 500 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 600 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 600 ps  Iteration: 3  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 600 ps  Iteration: 3  Instance: /piplinedprocessor/register_file_inst
+run
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Address_bits
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Data_width
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/clk
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/reset
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Mem_Read
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Mem_Write
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/PC_From_Counter
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/DM_address
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/ALU_result
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/SP_Load
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/SP_INC
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Call
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Rsrc1
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/PC_Flag_1
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Read_data
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Struct_hazard_detected
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/memory
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/WriteAddress
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/ReadAddress
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Write_data
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/instr_read_data
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/data_bus
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/latch
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 800 ps  Iteration: 1  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 800 ps  Iteration: 1  Instance: /piplinedprocessor/register_file_inst
+restart
+mem load -i {C:/Users/johns/Desktop/Arch Project/Test/Registers.mem} /piplinedprocessor/UnifiedMemory_inst/memory
+mem load -i {C:/Users/johns/Desktop/Arch Project/Test/asm_example.mem} /piplinedprocessor/UnifiedMemory_inst/memory
+mem load -i {C:/Users/johns/Desktop/Arch Project/Test/Registers.mem} /piplinedprocessor/register_file_inst/REGISTERS
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
 run
 run
 run
 run
 run
-add wave -position end sim:/piplinedprocessor/ALU_inst/*
 run
+restart
+mem load -filltype value -filldata 01101001000000000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(0)
+mem load -filltype value -filldata 01110000000001000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(1)
+mem load -i {C:/Users/johns/Desktop/Arch Project/Test/Registers.mem} /piplinedprocessor/register_file_inst/REGISTERS
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 400 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 500 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 500 ps  Iteration: 3  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 500 ps  Iteration: 3  Instance: /piplinedprocessor/register_file_inst
+# WARNING: No extended dataflow license exists
+add wave -position 11  sim:/piplinedprocessor/ex_sp_load_out
+add wave -position 12  sim:/piplinedprocessor/stack_pointer_inst/clk
+add wave -position 13  sim:/piplinedprocessor/stack_pointer_inst/rst
+add wave -position 14  sim:/piplinedprocessor/stack_pointer_inst/SP_enable
+add wave -position 15  sim:/piplinedprocessor/stack_pointer_inst/SP_INC
+add wave -position 16  sim:/piplinedprocessor/stack_pointer_inst/SP_DEC
+add wave -position 17  sim:/piplinedprocessor/stack_pointer_inst/SP_mem
+add wave -position 18  sim:/piplinedprocessor/stack_pointer_inst/SP_out
+add wave -position 19  sim:/piplinedprocessor/stack_pointer_inst/SP_reg
+add wave -position 20  sim:/piplinedprocessor/stack_pointer_inst/SP_next
+add wave -position 21  sim:/piplinedprocessor/stack_pointer_inst/SP_inc_result
+add wave -position 22  sim:/piplinedprocessor/stack_pointer_inst/SP_dec_result
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 700 ps  Iteration: 1  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 700 ps  Iteration: 1  Instance: /piplinedprocessor/register_file_inst
+run
+restart
+mem load -filltype value -filldata 01101001000000000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(0)
+mem load -filltype value -filldata 01110000000001000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(1)
+mem load -i {C:/Users/johns/Desktop/Arch Project/Test/Registers.mem} /piplinedprocessor/register_file_inst/REGISTERS
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+force -freeze sim:/piplinedprocessor/stack_pointer_inst/clk 1 0, 0 {50 ps} -r 100
+# ** Warning: (vsim-8780) Forcing /piplinedprocessor/clk as root of /piplinedprocessor/stack_pointer_inst/clk specified in the force.
+run
+run
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 500 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 600 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 600 ps  Iteration: 3  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 600 ps  Iteration: 3  Instance: /piplinedprocessor/register_file_inst
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 800 ps  Iteration: 1  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 800 ps  Iteration: 1  Instance: /piplinedprocessor/register_file_inst
+vcom *vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 02:48:37 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# -- Compiling entity Reg
+# -- Compiling architecture behavioral of Reg
+# -- Compiling entity stack_pointer
+# -- Compiling architecture Behavioral of stack_pointer
+# -- Compiling entity Writeback
+# -- Compiling architecture Behavioral of Writeback
+# -- Compiling entity Writeback_ports
+# -- Compiling architecture Behavioral of Writeback_ports
+# End time: 02:48:37 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+vcom *vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 02:48:41 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# -- Compiling entity Reg
+# -- Compiling architecture behavioral of Reg
+# -- Compiling entity stack_pointer
+# -- Compiling architecture Behavioral of stack_pointer
+# -- Compiling entity Writeback
+# -- Compiling architecture Behavioral of Writeback
+# -- Compiling entity Writeback_ports
+# -- Compiling architecture Behavioral of Writeback_ports
+# End time: 02:48:41 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+restart
+# Loading work.piplinedprocessor(structural)
+# Loading work.pc_new(behavioral)
+# Loading work.fetchdecode(behavioral)
+# Loading work.unifiedmemory(behavioral)
+# Loading work.controller(behavioral)
+# Loading work.reg(behavioral)
+# Loading work.decodeexecute(behavioral)
+# Loading work.alu(behavioral)
+# Loading work.ccr(behavioral)
+# Loading work.executememory(behavioral)
+# Loading work.stack_pointer(behavioral)
+# Loading work.memorywrite(behavioral)
+# Loading work.writeback_ports(behavioral)
+# Loading work.hazard_detection_unit(behavioral)
+mem load -filltype value -filldata 01101001000000000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(0)
+mem load -filltype value -filldata 01110000000001000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(1)
+mem load -i {C:/Users/johns/Desktop/Arch Project/Test/Registers.mem} /piplinedprocessor/register_file_inst/REGISTERS
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 400 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+restart
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+run
+run
+run
+run
+run
+run
+run
+quit -sim
+# End time: 02:51:55 on Jun 20,2025, Elapsed time: 0:24:47
+# Errors: 0, Warnings: 42
+vsim work.piplinedprocessor
+# vsim work.piplinedprocessor 
+# Start time: 02:51:56 on Jun 20,2025
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading work.piplinedprocessor(structural)
+# Loading work.pc_new(behavioral)
+# Loading work.fetchdecode(behavioral)
+# Loading work.unifiedmemory(behavioral)
+# Loading work.controller(behavioral)
+# Loading work.reg(behavioral)
+# Loading work.decodeexecute(behavioral)
+# Loading work.alu(behavioral)
+# Loading work.ccr(behavioral)
+# Loading work.executememory(behavioral)
+# Loading work.stack_pointer(behavioral)
+# Loading work.memorywrite(behavioral)
+# Loading work.writeback_ports(behavioral)
+# Loading work.hazard_detection_unit(behavioral)
+add wave -position end  sim:/piplinedprocessor/clk
+add wave -position end  sim:/piplinedprocessor/rst
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+force -freeze sim:/piplinedprocessor/rst 0 0
+mem load -filltype value -filldata 01101001000000000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(0)
+mem load -filltype value -filldata 01110000000001000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(1)
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 400 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 500 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+add wave -position end  sim:/piplinedprocessor/Pc_plus_flags
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 800 ps  Iteration: 1  Instance: /piplinedprocessor/UnifiedMemory_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 800 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 1100 ps  Iteration: 1  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 1200 ps  Iteration: 1  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 1400 ps  Iteration: 1  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 1600 ps  Iteration: 1  Instance: /piplinedprocessor/UnifiedMemory_inst
 run
 restart
 run
@@ -67,4 +632,1184 @@ run
 #    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
 # ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
 #    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+run
+run
+run
 restart
+force -freeze sim:/piplinedprocessor/rst 0 0
+force -freeze sim:/piplinedprocessor/clk 1 0
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+run
+run
+run
+run
+run
+force -freeze sim:/piplinedprocessor/rst 1 0
+run
+run
+run
+run
+force -freeze sim:/piplinedprocessor/rst 0 0
+run
+run
+run
+run
+restart
+com *.vhd
+# ambiguous command name "com": compare compareOptionsRule compareSetDefaults compile compileDialog compileorderlist
+vcom *.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 02:56:43 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# ** Error (suppressible): PiplinedProcessor.vhd(1102): (vcom-1272) Length of expected is 32; length of actual is 33.
+# ** Error: PiplinedProcessor.vhd(1218): VHDL Compiler exiting
+# End time: 02:56:43 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 2, Warnings: 0
+# C:/intelFPGA/18.1/modelsim_ase/win32aloem/vcom failed.
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+noforce sim:/piplinedprocessor/clk
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+run
+force -freeze sim:/piplinedprocessor/rst 1 0
+run
+run
+run
+add wave -position end  sim:/piplinedprocessor/if_pc_out
+run
+run
+run
+run
+run
+run
+add wave -position end  sim:/piplinedprocessor/id_pc_out
+run
+run
+run
+add wave -position end  sim:/piplinedprocessor/ex_pc_out
+run
+run
+run
+run
+vcom *.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 03:03:07 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# -- Compiling entity Reg
+# -- Compiling architecture behavioral of Reg
+# -- Compiling entity stack_pointer
+# -- Compiling architecture Behavioral of stack_pointer
+# -- Compiling entity Writeback
+# -- Compiling architecture Behavioral of Writeback
+# -- Compiling entity Writeback_ports
+# -- Compiling architecture Behavioral of Writeback_ports
+# End time: 03:03:08 on Jun 20,2025, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+run
+run
+restart
+# Loading work.piplinedprocessor(structural)
+# Loading work.pc_new(behavioral)
+# Loading work.fetchdecode(behavioral)
+# Loading work.unifiedmemory(behavioral)
+# Loading work.controller(behavioral)
+# Loading work.reg(behavioral)
+# Loading work.decodeexecute(behavioral)
+# Loading work.alu(behavioral)
+# Loading work.ccr(behavioral)
+# Loading work.executememory(behavioral)
+# Loading work.stack_pointer(behavioral)
+# Loading work.memorywrite(behavioral)
+# Loading work.writeback_ports(behavioral)
+# Loading work.hazard_detection_unit(behavioral)
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+run
+force -freeze sim:/piplinedprocessor/rst 0 0
+run
+run
+run
+run
+vcom *.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 03:03:59 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# -- Compiling entity Reg
+# -- Compiling architecture behavioral of Reg
+# -- Compiling entity stack_pointer
+# -- Compiling architecture Behavioral of stack_pointer
+# -- Compiling entity Writeback
+# -- Compiling architecture Behavioral of Writeback
+# -- Compiling entity Writeback_ports
+# -- Compiling architecture Behavioral of Writeback_ports
+# End time: 03:03:59 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+restart
+# Loading work.piplinedprocessor(structural)
+# Loading work.pc_new(behavioral)
+# Loading work.fetchdecode(behavioral)
+# Loading work.unifiedmemory(behavioral)
+# Loading work.controller(behavioral)
+# Loading work.reg(behavioral)
+# Loading work.decodeexecute(behavioral)
+# Loading work.alu(behavioral)
+# Loading work.ccr(behavioral)
+# Loading work.executememory(behavioral)
+# Loading work.stack_pointer(behavioral)
+# Loading work.memorywrite(behavioral)
+# Loading work.writeback_ports(behavioral)
+# Loading work.hazard_detection_unit(behavioral)
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+force -freeze sim:/piplinedprocessor/rst 1 0
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+force -freeze sim:/piplinedprocessor/rst 0 0
+run
+vcom *.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 03:05:56 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# -- Compiling entity Reg
+# -- Compiling architecture behavioral of Reg
+# -- Compiling entity stack_pointer
+# -- Compiling architecture Behavioral of stack_pointer
+# -- Compiling entity Writeback
+# -- Compiling architecture Behavioral of Writeback
+# -- Compiling entity Writeback_ports
+# -- Compiling architecture Behavioral of Writeback_ports
+# End time: 03:05:56 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+restart
+# Loading work.piplinedprocessor(structural)
+# Loading work.pc_new(behavioral)
+# Loading work.fetchdecode(behavioral)
+# Loading work.unifiedmemory(behavioral)
+# Loading work.controller(behavioral)
+# Loading work.reg(behavioral)
+# Loading work.decodeexecute(behavioral)
+# Loading work.alu(behavioral)
+# Loading work.ccr(behavioral)
+# Loading work.executememory(behavioral)
+# Loading work.stack_pointer(behavioral)
+# Loading work.memorywrite(behavioral)
+# Loading work.writeback_ports(behavioral)
+# Loading work.hazard_detection_unit(behavioral)
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+force -freeze sim:/piplinedprocessor/rst 0 0
+run
+run
+run
+noforce sim:/piplinedprocessor/rst
+force -freeze sim:/piplinedprocessor/rst 0 0
+run
+run
+run
+run
+vcom *vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 03:06:51 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# -- Compiling entity Reg
+# -- Compiling architecture behavioral of Reg
+# -- Compiling entity stack_pointer
+# -- Compiling architecture Behavioral of stack_pointer
+# -- Compiling entity Writeback
+# -- Compiling architecture Behavioral of Writeback
+# -- Compiling entity Writeback_ports
+# -- Compiling architecture Behavioral of Writeback_ports
+# End time: 03:06:51 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+vcom *.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 03:06:56 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# -- Compiling entity Reg
+# -- Compiling architecture behavioral of Reg
+# -- Compiling entity stack_pointer
+# -- Compiling architecture Behavioral of stack_pointer
+# -- Compiling entity Writeback
+# -- Compiling architecture Behavioral of Writeback
+# -- Compiling entity Writeback_ports
+# -- Compiling architecture Behavioral of Writeback_ports
+# End time: 03:06:56 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+vcom *.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 03:07:23 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# -- Compiling entity Reg
+# -- Compiling architecture behavioral of Reg
+# -- Compiling entity stack_pointer
+# -- Compiling architecture Behavioral of stack_pointer
+# -- Compiling entity Writeback
+# -- Compiling architecture Behavioral of Writeback
+# -- Compiling entity Writeback_ports
+# -- Compiling architecture Behavioral of Writeback_ports
+# End time: 03:07:23 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+vcom *.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 03:09:22 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# ** Error: PiplinedProcessor.vhd(1104): Illegal target for signal assignment.
+# ** Error: PiplinedProcessor.vhd(1104): (vcom-1136) Unknown identifier "Pc_plus_flags".
+# ** Error: PiplinedProcessor.vhd(1220): VHDL Compiler exiting
+# End time: 03:09:22 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 3, Warnings: 0
+# C:/intelFPGA/18.1/modelsim_ase/win32aloem/vcom failed.
+# Break key hit
+vcom *.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 03:10:38 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# ** Error: PiplinedProcessor.vhd(830): (vcom-1136) Unknown identifier "PC_Plus_Flags2".
+# ** Error: PiplinedProcessor.vhd(1220): VHDL Compiler exiting
+# End time: 03:10:38 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 2, Warnings: 0
+# C:/intelFPGA/18.1/modelsim_ase/win32aloem/vcom failed.
+vcom *.vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 03:10:53 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# -- Compiling entity Reg
+# -- Compiling architecture behavioral of Reg
+# -- Compiling entity stack_pointer
+# -- Compiling architecture Behavioral of stack_pointer
+# -- Compiling entity Writeback
+# -- Compiling architecture Behavioral of Writeback
+# -- Compiling entity Writeback_ports
+# -- Compiling architecture Behavioral of Writeback_ports
+# End time: 03:10:53 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+restart
+# Loading work.piplinedprocessor(structural)
+# Loading work.pc_new(behavioral)
+# Loading work.fetchdecode(behavioral)
+# Loading work.unifiedmemory(behavioral)
+# Loading work.controller(behavioral)
+# Loading work.reg(behavioral)
+# Loading work.decodeexecute(behavioral)
+# Loading work.alu(behavioral)
+# Loading work.ccr(behavioral)
+# Loading work.executememory(behavioral)
+# Loading work.stack_pointer(behavioral)
+# Loading work.memorywrite(behavioral)
+# Loading work.writeback_ports(behavioral)
+# Loading work.hazard_detection_unit(behavioral)
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+run
+run
+force -freeze sim:/piplinedprocessor/rst 0 0
+run
+run
+run
+add wave -position 3  sim:/piplinedprocessor/Pc_plus_flags
+run
+run
+add wave -position end  sim:/piplinedprocessor/Pc_plus_flags1
+run
+run
+vcom *vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 03:12:14 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# -- Compiling entity Reg
+# -- Compiling architecture behavioral of Reg
+# -- Compiling entity stack_pointer
+# -- Compiling architecture Behavioral of stack_pointer
+# -- Compiling entity Writeback
+# -- Compiling architecture Behavioral of Writeback
+# -- Compiling entity Writeback_ports
+# -- Compiling architecture Behavioral of Writeback_ports
+# End time: 03:12:14 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+restart
+# Loading work.piplinedprocessor(structural)
+# Loading work.pc_new(behavioral)
+# Loading work.fetchdecode(behavioral)
+# Loading work.unifiedmemory(behavioral)
+# Loading work.controller(behavioral)
+# Loading work.reg(behavioral)
+# Loading work.decodeexecute(behavioral)
+# Loading work.alu(behavioral)
+# Loading work.ccr(behavioral)
+# Loading work.executememory(behavioral)
+# Loading work.stack_pointer(behavioral)
+# Loading work.memorywrite(behavioral)
+# Loading work.writeback_ports(behavioral)
+# Loading work.hazard_detection_unit(behavioral)
+# Warning in wave window restart: (vish-4014) No objects found matching '/piplinedprocessor/Pc_plus_flags'. 
+# Warning in wave window restart: (vish-4014) No objects found matching '/piplinedprocessor/Pc_plus_flags'. 
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+force -freeze sim:/piplinedprocessor/rst 0 0
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+run
+run
+add wave -position end  sim:/piplinedprocessor/Pc_plus_flags2
+run
+run
+run
+run
+run
+run
+run
+run
+add wave -position end  sim:/piplinedprocessor/ccr_from_CCR_out
+force -freeze sim:/piplinedprocessor/ccr_from_CCR_out 1111 0
+run
+run
+run
+run
+run
+restart
+mem load -filltype value -filldata 01101001000000000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(0)
+mem load -filltype value -filldata 01110000000001000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(1)
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+force -freeze sim:/piplinedprocessor/ccr_from_CCR_out 0000 0
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+force -freeze sim:/piplinedprocessor/rst 0 0
+run
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 400 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 500 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 800 ps  Iteration: 1  Instance: /piplinedprocessor/UnifiedMemory_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 800 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 1 ns  Iteration: 1  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 1200 ps  Iteration: 1  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+vcom *vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 03:17:45 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# -- Compiling entity Reg
+# -- Compiling architecture behavioral of Reg
+# -- Compiling entity stack_pointer
+# -- Compiling architecture Behavioral of stack_pointer
+# -- Compiling entity Writeback
+# -- Compiling architecture Behavioral of Writeback
+# -- Compiling entity Writeback_ports
+# -- Compiling architecture Behavioral of Writeback_ports
+# End time: 03:17:46 on Jun 20,2025, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+add wave -position end  sim:/piplinedprocessor/clk
+add wave -position end  sim:/piplinedprocessor/rst
+add wave -position end  sim:/piplinedprocessor/in_port
+add wave -position end  sim:/piplinedprocessor/out_port
+add wave -position end  sim:/piplinedprocessor/instruction_from_instruction_memory
+add wave -position end  sim:/piplinedprocessor/if_pc_out
+add wave -position end  sim:/piplinedprocessor/if_instr_out
+add wave -position end  sim:/piplinedprocessor/if_interrupt_out
+add wave -position end  sim:/piplinedprocessor/Controller_J_SC_In
+add wave -position end  sim:/piplinedprocessor/Controller_Swap_In
+add wave -position end  sim:/piplinedprocessor/Controller_Set_Carry_In
+add wave -position end  sim:/piplinedprocessor/Controller_Sp_Inc_In
+add wave -position end  sim:/piplinedprocessor/Controller_Sp_Dec_In
+add wave -position end  sim:/piplinedprocessor/Controller_Sp_Enable_In
+add wave -position end  sim:/piplinedprocessor/Controller_Return_Signal_In
+add wave -position end  sim:/piplinedprocessor/Controller_Call_In
+add wave -position end  sim:/piplinedprocessor/Controller_ALU_Srcl_In
+add wave -position end  sim:/piplinedprocessor/Controller_Branch_In
+add wave -position end  sim:/piplinedprocessor/Controller_Mem_Read_In
+add wave -position end  sim:/piplinedprocessor/Controller_Reg_Write_In
+add wave -position end  sim:/piplinedprocessor/Controller_Update_Flag_In
+add wave -position end  sim:/piplinedprocessor/Controller_IN_Port_In
+add wave -position end  sim:/piplinedprocessor/Controller_Mem_Write_In
+add wave -position end  sim:/piplinedprocessor/Controller_DM_In
+add wave -position end  sim:/piplinedprocessor/Controller_Jump
+add wave -position end  sim:/piplinedprocessor/Controller_OutPort
+add wave -position end  sim:/piplinedprocessor/Controller_Halt
+add wave -position end  sim:/piplinedprocessor/Controller_Immediate_Value_signal
+add wave -position end  sim:/piplinedprocessor/Controller_FlagsSave
+add wave -position end  sim:/piplinedprocessor/Controller_FlagsRestore
+add wave -position end  sim:/piplinedprocessor/Controller_IntAck
+add wave -position end  sim:/piplinedprocessor/Controller_MemToReg
+add wave -position end  sim:/piplinedprocessor/wb_reg_write
+add wave -position end  sim:/piplinedprocessor/ctrl_swap
+add wave -position end  sim:/piplinedprocessor/swap_enable
+add wave -position end  sim:/piplinedprocessor/swap_reg_addr
+add wave -position end  sim:/piplinedprocessor/reg_rs1_addr
+add wave -position end  sim:/piplinedprocessor/reg_rd_addr
+add wave -position end  sim:/piplinedprocessor/reg_rs2_addr
+add wave -position end  sim:/piplinedprocessor/write_data
+add wave -position end  sim:/piplinedprocessor/swap_data
+add wave -position end  sim:/piplinedprocessor/read_data1
+add wave -position end  sim:/piplinedprocessor/read_data2
+add wave -position end  sim:/piplinedprocessor/wb_reg_addr
+add wave -position end  sim:/piplinedprocessor/id_pc_out
+add wave -position end  sim:/piplinedprocessor/id_rsrc1_out
+add wave -position end  sim:/piplinedprocessor/id_rsrc2_out
+add wave -position end  sim:/piplinedprocessor/id_rd_out
+add wave -position end  sim:/piplinedprocessor/id_imm_offset_out
+add wave -position end  sim:/piplinedprocessor/id_rsrc1_data_out
+add wave -position end  sim:/piplinedprocessor/id_rsrc2_data_out
+add wave -position end  sim:/piplinedprocessor/id_swap_out
+add wave -position end  sim:/piplinedprocessor/id_set_carry_out
+add wave -position end  sim:/piplinedprocessor/id_sp_inc_out
+add wave -position end  sim:/piplinedprocessor/id_sp_dec_out
+add wave -position end  sim:/piplinedprocessor/id_sp_enable_out
+add wave -position end  sim:/piplinedprocessor/id_rti_out
+add wave -position end  sim:/piplinedprocessor/id_return_sig_out
+add wave -position end  sim:/piplinedprocessor/id_call_out
+add wave -position end  sim:/piplinedprocessor/id_alu_srcl_out
+add wave -position end  sim:/piplinedprocessor/id_interrupt_out
+add wave -position end  sim:/piplinedprocessor/id_branch_out
+add wave -position end  sim:/piplinedprocessor/id_mem_read_out
+add wave -position end  sim:/piplinedprocessor/id_reg_write_out
+add wave -position end  sim:/piplinedprocessor/id_update_flag_out
+add wave -position end  sim:/piplinedprocessor/id_in_port_out
+add wave -position end  sim:/piplinedprocessor/id_mem_write_out
+add wave -position end  sim:/piplinedprocessor/id_j_sc_out
+add wave -position end  sim:/piplinedprocessor/id_alu_slc_out
+add wave -position end  sim:/piplinedprocessor/id_dm_out
+add wave -position end  sim:/piplinedprocessor/ex_mem_rti_out
+add wave -position end  sim:/piplinedprocessor/ex_mem_read_out
+add wave -position end  sim:/piplinedprocessor/ex_return_sig_out
+add wave -position end  sim:/piplinedprocessor/ex_mem_write_out
+add wave -position end  sim:/piplinedprocessor/ex_alu_result_out
+add wave -position end  sim:/piplinedprocessor/ex_sp_load_out
+add wave -position end  sim:/piplinedprocessor/ex_rsrc1_out
+add wave -position end  sim:/piplinedprocessor/ex_rsrc2_out
+add wave -position end  sim:/piplinedprocessor/ex_rd_out
+add wave -position end  sim:/piplinedprocessor/ex_pc_out
+add wave -position end  sim:/piplinedprocessor/ex_set_carry_out
+add wave -position end  sim:/piplinedprocessor/ex_sp_inc_out
+add wave -position end  sim:/piplinedprocessor/ex_sp_dec_out
+add wave -position end  sim:/piplinedprocessor/ex_sp_enable_out
+add wave -position end  sim:/piplinedprocessor/ex_branch_out
+add wave -position end  sim:/piplinedprocessor/ex_update_flag_out
+add wave -position end  sim:/piplinedprocessor/ex_reg1_data_out
+add wave -position end  sim:/piplinedprocessor/ex_reg2_data_out
+add wave -position end  sim:/piplinedprocessor/ex_swap_out
+add wave -position end  sim:/piplinedprocessor/ex_reg_write_out
+add wave -position end  sim:/piplinedprocessor/ex_in_port_out
+add wave -position end  sim:/piplinedprocessor/ex_dm_addr_out
+add wave -position end  sim:/piplinedprocessor/ex_index_out
+add wave -position end  sim:/piplinedprocessor/ex_out_port_out
+add wave -position end  sim:/piplinedprocessor/ex_call_out
+add wave -position end  sim:/piplinedprocessor/alu_a
+add wave -position end  sim:/piplinedprocessor/alu_b
+add wave -position end  sim:/piplinedprocessor/ccr_from_CCR_out
+add wave -position end  sim:/piplinedprocessor/CCR_from_Alu
+add wave -position end  sim:/piplinedprocessor/D_EX_rs1
+add wave -position end  sim:/piplinedprocessor/D_EX_rs2
+add wave -position end  sim:/piplinedprocessor/EX_M_rd
+add wave -position end  sim:/piplinedprocessor/M_WB_rd
+add wave -position end  sim:/piplinedprocessor/EX_M_RegWrite
+add wave -position end  sim:/piplinedprocessor/M_WB_RegWrite
+add wave -position end  sim:/piplinedprocessor/M_WB_Rd_data
+add wave -position end  sim:/piplinedprocessor/EX_M_Rd_data
+add wave -position end  sim:/piplinedprocessor/Rarc1_data
+add wave -position end  sim:/piplinedprocessor/Rarc2_Data
+add wave -position end  sim:/piplinedprocessor/Immediate
+add wave -position end  sim:/piplinedprocessor/IMM_Sel
+add wave -position end  sim:/piplinedprocessor/Operand1
+add wave -position end  sim:/piplinedprocessor/Operand2
+add wave -position end  sim:/piplinedprocessor/mw_read_data_out
+add wave -position end  sim:/piplinedprocessor/mw_alu_result_out
+add wave -position end  sim:/piplinedprocessor/mw_Rd
+add wave -position end  sim:/piplinedprocessor/mw_reg1_addr_out
+add wave -position end  sim:/piplinedprocessor/mw_reg2_addr_out
+add wave -position end  sim:/piplinedprocessor/mw_mem_read_out
+add wave -position end  sim:/piplinedprocessor/mw_reg1_data_out
+add wave -position end  sim:/piplinedprocessor/mw_reg2_data_out
+add wave -position end  sim:/piplinedprocessor/mw_swap_out
+add wave -position end  sim:/piplinedprocessor/mw_in_port_out
+add wave -position end  sim:/piplinedprocessor/mw_out_port_out
+add wave -position end  sim:/piplinedprocessor/mw_reg_write_out
+add wave -position end  sim:/piplinedprocessor/Read_data_memory
+add wave -position end  sim:/piplinedprocessor/Pc_plus_flags1
+add wave -position end  sim:/piplinedprocessor/Pc_plus_flags2
+add wave -position end  sim:/piplinedprocessor/stall
+add wave -position end  sim:/piplinedprocessor/flush
+add wave -position end  sim:/piplinedprocessor/ex_mem_read_sig
+add wave -position end  sim:/piplinedprocessor/ex_mem_write_sig
+add wave -position end  sim:/piplinedprocessor/data_hazard_needed_sig
+add wave -position end  sim:/piplinedprocessor/branch_taken_sig
+add wave -position end  sim:/piplinedprocessor/forward_rs1
+add wave -position end  sim:/piplinedprocessor/forward_rs2
+add wave -position end  sim:/piplinedprocessor/alu_result
+add wave -position end  sim:/piplinedprocessor/in_J_SC
+add wave -position end  sim:/piplinedprocessor/reg_data_out1
+add wave -position end  sim:/piplinedprocessor/reg_data_out2
+add wave -position end  sim:/piplinedprocessor/rs1_addr_FD
+add wave -position end  sim:/piplinedprocessor/rs2_addr_FD
+add wave -position end  sim:/piplinedprocessor/pc_in
+add wave -position end  sim:/piplinedprocessor/pc_out
+add wave -position end  sim:/piplinedprocessor/pc_enable
+add wave -position end  sim:/piplinedprocessor/PC_loaded_from_memory
+add wave -position end  sim:/piplinedprocessor/sp_out
+add wave -position end  sim:/piplinedprocessor/zero_flag
+add wave -position end  sim:/piplinedprocessor/neg_flag
+add wave -position end  sim:/piplinedprocessor/carry_flag
+add wave -position end  sim:/piplinedprocessor/wr_Write_data1
+add wave -position end  sim:/piplinedprocessor/wr_Write_data2
+add wave -position end  sim:/piplinedprocessor/wr_Write_address1
+add wave -position end  sim:/piplinedprocessor/wr_Write_address2
+add wave -position end  sim:/piplinedprocessor/wr_we1
+add wave -position end  sim:/piplinedprocessor/wr_we2_swap
+add wave -position end  sim:/piplinedprocessor/id_out
+add wave -position end  sim:/piplinedprocessor/sp_enable_or
+add wave -position end  sim:/piplinedprocessor/branch_addr_se
+add wave -position end  sim:/piplinedprocessor/en2
+restart
+# Loading work.piplinedprocessor(structural)
+# Loading work.pc_new(behavioral)
+# Loading work.fetchdecode(behavioral)
+# Loading work.unifiedmemory(behavioral)
+# Loading work.controller(behavioral)
+# Loading work.reg(behavioral)
+# Loading work.decodeexecute(behavioral)
+# Loading work.alu(behavioral)
+# Loading work.ccr(behavioral)
+# Loading work.executememory(behavioral)
+# Loading work.stack_pointer(behavioral)
+# Loading work.memorywrite(behavioral)
+# Loading work.writeback_ports(behavioral)
+# Loading work.hazard_detection_unit(behavioral)
+mem load -filltype value -filldata 01101001000000000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(0)
+mem load -filltype value -filldata 01110000000001000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(1)
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Mem_Read
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Mem_Write
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/PC_From_Counter
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/DM_address
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/ALU_result
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/SP_Load
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/SP_INC
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Call
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Rsrc1
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/PC_Flag_1
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Read_data
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Struct_hazard_detected
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/memory
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/WriteAddress
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/ReadAddress
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/Write_data
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/instr_read_data
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/data_bus
+add wave -position end  sim:/piplinedprocessor/UnifiedMemory_inst/latch
+run
+run
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+run
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 700 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 800 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+add wave -position 12 sim:/piplinedprocessor/stack_pointer_inst/*
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 1100 ps  Iteration: 1  Instance: /piplinedprocessor/UnifiedMemory_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 1100 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+restart
+mem load -filltype value -filldata 01101001000000000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(0)
+mem load -filltype value -filldata 01110000000001000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(1)
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+run
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 500 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 600 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+vcom *vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 03:30:59 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# -- Compiling entity Reg
+# -- Compiling architecture behavioral of Reg
+# -- Compiling entity stack_pointer
+# -- Compiling architecture Behavioral of stack_pointer
+# -- Compiling entity Writeback
+# -- Compiling architecture Behavioral of Writeback
+# -- Compiling entity Writeback_ports
+# -- Compiling architecture Behavioral of Writeback_ports
+# End time: 03:30:59 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+vcom *vhd
+# Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+# Start time: 03:31:50 on Jun 20,2025
+# vcom -reportprogress 300 ALU.vhd CCR.vhd Controller.vhd DEREGISTER.vhd EMREGISTER.vhd FDREGISTER.vhd Forwarding_Unit.vhd FullMemory.vhd Hazard_Detection_Unit.vhd MWREGISTER.vhd PC_new.vhd PiplinedProcessor.vhd RegisterFile.vhd Stack.vhd Writeback.vhd Writeback_ports.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity ALU
+# -- Compiling architecture Behavioral of ALU
+# -- Compiling entity CCR
+# -- Compiling architecture Behavioral of CCR
+# -- Compiling entity Controller
+# -- Compiling architecture Behavioral of Controller
+# -- Compiling entity DecodeExecute
+# -- Compiling architecture Behavioral of DecodeExecute
+# -- Compiling entity ExecuteMemory
+# -- Compiling architecture Behavioral of ExecuteMemory
+# -- Compiling entity FetchDecode
+# -- Compiling architecture Behavioral of FetchDecode
+# -- Compiling entity Forwarding_Unit
+# -- Compiling architecture Behavioral of Forwarding_Unit
+# -- Compiling entity UnifiedMemory
+# -- Compiling architecture Behavioral of UnifiedMemory
+# -- Compiling entity Hazard_Detection_Unit
+# -- Compiling architecture Behavioral of Hazard_Detection_Unit
+# -- Compiling entity MemoryWrite
+# -- Compiling architecture Behavioral of MemoryWrite
+# -- Compiling entity PC_New
+# -- Compiling architecture Behavioral of PC_New
+# -- Compiling entity PiplinedProcessor
+# -- Compiling architecture Structural of PiplinedProcessor
+# -- Compiling entity Reg
+# -- Compiling architecture behavioral of Reg
+# -- Compiling entity stack_pointer
+# -- Compiling architecture Behavioral of stack_pointer
+# -- Compiling entity Writeback
+# -- Compiling architecture Behavioral of Writeback
+# -- Compiling entity Writeback_ports
+# -- Compiling architecture Behavioral of Writeback_ports
+# End time: 03:31:50 on Jun 20,2025, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+restart
+# Loading work.piplinedprocessor(structural)
+# Loading work.pc_new(behavioral)
+# Loading work.fetchdecode(behavioral)
+# Loading work.unifiedmemory(behavioral)
+# Loading work.controller(behavioral)
+# Loading work.reg(behavioral)
+# Loading work.decodeexecute(behavioral)
+# Loading work.alu(behavioral)
+# Loading work.ccr(behavioral)
+# Loading work.executememory(behavioral)
+# Loading work.stack_pointer(behavioral)
+# Loading work.memorywrite(behavioral)
+# Loading work.writeback_ports(behavioral)
+# Loading work.hazard_detection_unit(behavioral)
+mem load -filltype value -filldata {01101001000000000000000000000000 } -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(0)
+mem load -filltype value -filldata 01110000000001000000000000000000 -fillradix symbolic /piplinedprocessor/UnifiedMemory_inst/memory(1)
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+run
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 600 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 700 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+restart
+mem load -i {C:/Users/johns/Desktop/Arch Project/Test/Registers.mem} /piplinedprocessor/register_file_inst/REGISTERS
+mem load -i {C:/Users/johns/Desktop/Arch Project/Test/Registers.mem} /piplinedprocessor/register_file_inst/REGISTERS
+mem load -i {C:/Users/johns/Desktop/Arch Project/Test/asm_example.mem} /piplinedprocessor/UnifiedMemory_inst/memory
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/register_file_inst
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 0 ps  Iteration: 0  Instance: /piplinedprocessor/UnifiedMemory_inst
+force -freeze sim:/piplinedprocessor/clk 1 0, 0 {50 ps} -r 100
+run
+run
+run
+run
+run
+run
+run
+run
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 1 ns  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+# ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+#    Time: 1100 ps  Iteration: 2  Instance: /piplinedprocessor/UnifiedMemory_inst
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+run
+# End time: 03:43:26 on Jun 20,2025, Elapsed time: 0:51:30
+# Errors: 12, Warnings: 66
