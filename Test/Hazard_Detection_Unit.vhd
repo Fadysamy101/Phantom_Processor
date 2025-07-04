@@ -11,9 +11,11 @@ entity Hazard_Detection_Unit is
         D_EX_Mem_Write          : in std_logic;
         Data_interface_needed   : in std_logic;
         Branch_Taken            : in std_logic;
+        interrupt               : in std_logic;
         -- Outputs
         Stall                   : out std_logic_vector(1 downto 0);
         Flush                   : out std_logic_vector(1 downto 0)
+     
 
     );
 end entity; 
@@ -35,7 +37,7 @@ architecture Behavioral of Hazard_Detection_Unit is
                 Stall <= "01"; --Disable FD register and PC
                 Flush <= "10"; --Flush Decode control signals
     
-            elsif (Data_interface_needed = '1') then
+            elsif (Data_interface_needed = '1' and interrupt='0') then
                 -- Structural hazard (shared memory) → stall
                 Stall <= "01";
                 Flush <= "00";

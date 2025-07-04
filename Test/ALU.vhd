@@ -148,14 +148,15 @@ begin
            
             when "10000" | "10001" =>  -- ADDRESS for load/store
                 -- Address calculation with proper sign extension 
-                result <= std_logic_vector(unsigned(operand1) + unsigned(offset_sign_extended)); 
+                result <= std_logic_vector(unsigned(operand2) + unsigned(offset_sign_extended)); 
+                result <= operand1;  -- Store address in result
                 -- LDD/STD does not update flags
             
             when "10010" | "10011" | "10100" | "10101" | "10110" | "11000" =>  -- jz/jn/jc/jmp/call/int
                 -- Zero-extended immediate for branch targets 
                 result <= x"0000" & imm;  -- Immediate value to result
                 -- Branch operations don't update flags
-                
+           
             when others =>
                 -- Undefined operation
                 result <= (others => '0');

@@ -2,23 +2,23 @@
 	use IEEE.STD_LOGIC_1164.ALL;
 	use IEEE.NUMERIC_STD.ALL;
 
-	entity PipelineProcessor is
+	entity PiplinedProcessor is
 		 Port (
 			  clk        : in STD_LOGIC;
 			  rst        : in STD_LOGIC;
-		 
+		 	  INTR_IN    : in STD_LOGIC;
 			  -- I/O ports
 			  in_port    : in STD_LOGIC_VECTOR(31 downto 0);
 			  out_port   : out STD_LOGIC_VECTOR(31 downto 0)
 		 );
-	end PipelineProcessor;
+	end PiplinedProcessor;
 
-	architecture Structural of PipelineProcessor is
+	architecture Structural of PiplinedProcessor is
 		
 		 
 		-- Component declarations:
 		
-		-- PC_new
+		-- PC_new Y
 		-- Instruction Memory
 		
 		-- Fetch/DEC register
@@ -40,213 +40,273 @@
 		
 		-- Writeback
 		
-		
+		--flip flop
 		-- Fetch
 		-- PC_New
 		component PC_New is
 		Port 
 		(
-			clk                   : in STD_LOGIC;
-			rst                   : in STD_LOGIC;
-			stall                 : in STD_LOGIC;  -- Hazard detection
-			branch                : in STD_LOGIC;  -- From EX stage
-			in_from_CCR           : in STD_LOGIC_VECTOR(3 downto 0);
-			in_J_SC               : in STD_LOGIC_VECTOR(1 downto 0);
-			Call                  : in STD_LOGIC;
-			branch_addr           : in STD_LOGIC_VECTOR(31 downto 0); -- From ALU
-			RTI                   : in std_logic;
-			Return_flag           : in std_logic;
-			Interrupt             : in std_logic;
-			PC_loaded_from_memory : in STD_LOGIC_VECTOR(31 downto 0);
-		  
-			PC                    : out STD_LOGIC_VECTOR(31 downto 0)
+		clk                   : in STD_LOGIC;
+        rst                   : in STD_LOGIC;
+        PC_initial            : in STD_LOGIC_VECTOR(31 downto 0); -- Initial PC value
+        stall                 : in STD_LOGIC;  -- Hazard detection
+        branch                : in STD_LOGIC;  -- From EX stage
+        in_from_CCR           : in STD_LOGIC_VECTOR(3 downto 0);
+        in_J_SC               : in STD_LOGIC_VECTOR(1 downto 0);
+        Call                  : in STD_LOGIC;
+        branch_addr           : in STD_LOGIC_VECTOR(31 downto 0); -- From ALU
+        RTI                   : in std_logic;
+        Return_flag           : in std_logic;
+        Interrupt             : in std_logic;
+        PC_loaded_from_memory : in STD_LOGIC_VECTOR(31 downto 0);
+        PC                    : out STD_LOGIC_VECTOR(31 downto 0);
+        branch_detected       : out STD_LOGIC
 		);
 		end component;
 		
 		
 		-- Instruction Memory
-		component InstructionMemory is
-		Port 
-		(        
-			PC 		  : in STD_LOGIC_VECTOR (11 downto 0); 
-			data_bus : out STD_LOGIC_VECTOR ( 31 downto 0)
-		  
-		);
-		end component;
+		
+		Component UnifiedMemory IS
+    GENERIC (
+        Address_bits : INTEGER := 12;  -- 12 bits = 4096 memory locations
+        Data_width   : INTEGER := 32   -- 32-bit data width
+    );
+    PORT (
+   clk             : IN STD_LOGIC;
+        reset           : IN STD_LOGIC; 
+        INTR_iN       : IN STD_LOGIC; -- Interrupt input, single bit
+        -- Data memory control signals
+        Mem_Read        : IN STD_LOGIC;
+        Mem_Write       : IN STD_LOGIC;
+        PC_From_Counter : IN STD_LOGIC_VECTOR(11 DOWNTO 0);
+
+        -- Address inputs for data memory
+        DM_address      : IN STD_LOGIC;  -- Selector for address source
+        ALU_result      : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
+        SP_Load         : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
+        SP_INC          : IN STD_LOGIC;
+        Call            : IN STD_LOGIC;
+        interrupt       : IN STD_LOGIC;
+
+        -- Data inputs
+        Rsrc1           : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+        PC_Flag_1       : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+
+        -- Data memory output
+        Read_data       : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
+        Struct_hazard_detected: out STD_LOGIC;
+        --Initial PC
+        PC_initial      : out STD_LOGIC_VECTOR(31 DOWNTO 0)
+    );
+	END Component;
 		
 		
 		-- Fetch/Dec register
-		 component FetchDecode is
-			  Port 
-			  (
-					clk            : in  STD_LOGIC;
-					rst            : in  STD_LOGIC;
-					en             : in  STD_LOGIC;
-					Pc_in          : in  STD_LOGIC_VECTOR(31 downto 0);
-					Instruction_In : in  STD_LOGIC_VECTOR(31 downto 0);
-					Interrupt_In   : in  STD_LOGIC;
-					
-					Pc             : out STD_LOGIC_VECTOR(31 downto 0);
-					Rsrc1          : out STD_LOGIC_VECTOR(2 downto 0);
-					Rsrc2          : out STD_LOGIC_VECTOR(2 downto 0);
-					Interrupt      : out STD_LOGIC;
-					Instruction    : out STD_LOGIC_VECTOR(31 downto 0)
-			  );
-		 end component; 
-		 
+		component FetchDecode
+		Port (
+			clk            : in  STD_LOGIC;
+			rst            : in  STD_LOGIC;
+			en             : in  STD_LOGIC;
+			Pc_in          : in  STD_LOGIC_VECTOR(31 downto 0);
+			Instruction_In : in  STD_LOGIC_VECTOR(31 downto 0);
+			Interrupt_In   : in  STD_LOGIC;
+
+			Pc             : out STD_LOGIC_VECTOR(31 downto 0);
+			Rsrc1          : out STD_LOGIC_VECTOR(2 downto 0);
+			Rsrc2          : out STD_LOGIC_VECTOR(2 downto 0);
+			Interrupt      : out STD_LOGIC;
+			Instruction    : out STD_LOGIC_VECTOR(31 downto 0)
+		);
+	end component;
 		 
 		-- Decode
-		-- Decode stage
-		component Decode_Stage is
-			 Port (
-				  -- Clock and reset
-				  clk               : in  STD_LOGIC;
-				  rst               : in  STD_LOGIC;
-				  
-				  -- Input from IF/ID pipeline register
-				  instruction       : in  STD_LOGIC_VECTOR(31 downto 0);
-				  PC_plus1          : in  STD_LOGIC_VECTOR(31 downto 0);
-				  
-				  -- Input from Write Back stage
-				  write_data        : in  STD_LOGIC_VECTOR(31 downto 0);
-				  wb_reg_addr       : in  STD_LOGIC_VECTOR(2 downto 0);
-				  wb_reg_write      : in  STD_LOGIC;
-				  
-				  -- Input for swap operation
-				  swap_data         : in  STD_LOGIC_VECTOR(31 downto 0);
-				  swap_reg_addr     : in  STD_LOGIC_VECTOR(2 downto 0);
-				  swap_enable       : in  STD_LOGIC;
-				  
-				  -- Hazard Detection inputs
-				  ex_mem_read       : in  STD_LOGIC;
-				  ex_mem_write      : in  STD_LOGIC;
-				  ex_dest_reg       : in  STD_LOGIC_VECTOR(2 downto 0);
-				  data_hazard_needed: in  STD_LOGIC;
-				  branch_taken      : in  STD_LOGIC;
-				  
-				  -- Outputs to ID/EX pipeline register
-				  read_data1        : out STD_LOGIC_VECTOR(31 downto 0);
-				  read_data2        : out STD_LOGIC_VECTOR(31 downto 0);
-				  immediate         : out STD_LOGIC_VECTOR(15 downto 0);
-				  offset            : out STD_LOGIC_VECTOR(15 downto 0);
-				  rs1_addr          : out STD_LOGIC_VECTOR(2 downto 0);
-				  rs2_addr          : out STD_LOGIC_VECTOR(2 downto 0);
-				  rd_addr           : out STD_LOGIC_VECTOR(2 downto 0);
-				  
-				  -- Control signals to ID/EX pipeline register
-				  reg_write         : out STD_LOGIC;
-				  alu_src1          : out STD_LOGIC;
-				  alu_src2          : out STD_LOGIC;
-				  mem_read          : out STD_LOGIC;
-				  mem_write         : out STD_LOGIC;
-				  mem_to_reg        : out STD_LOGIC;
-				  sp_inc            : out STD_LOGIC;
-				  sp_dec            : out STD_LOGIC;
-				  sp_enable         : out STD_LOGIC;
-				  branch            : out STD_LOGIC;
-				  jump              : out STD_LOGIC;
-				  call              : out STD_LOGIC;
-				  return_sig        : out STD_LOGIC;
-				  set_carry         : out STD_LOGIC;
-				  update_flag       : out STD_LOGIC;
-				  swap              : out STD_LOGIC;
-				  out_port          : out STD_LOGIC;
-				  in_port           : out STD_LOGIC;
-				  halt              : out STD_LOGIC;
-				  j_sc              : out STD_LOGIC_VECTOR(1 downto 0);
-				  int_ack           : out STD_LOGIC;
-				  flags_save        : out STD_LOGIC;
-				  flags_restore     : out STD_LOGIC;
-				  
-				  -- To hazard detection unit
-				  stall             : out STD_LOGIC_VECTOR(1 downto 0);
-				  flush             : out STD_LOGIC_VECTOR(1 downto 0)
-			 );
-		end component;
-		 
+        -- COntrol unit
+		component Controller is
+		Port (
+			opcode      : in  STD_LOGIC_VECTOR(4 downto 0);
+			
+            -- Execution control	
+			RegWrite    : out STD_LOGIC;
+			      
+			immediate_Value_signal: out std_logic;
+			
+			-- Memory control
+			MemRead     : out STD_LOGIC;
+			DM_address : out STD_LOGIC;
+			MemWrite    : out STD_LOGIC;
+			MemToReg    : out STD_LOGIC;
+
+			-- Stack control
+			Sp_Inc      : out STD_LOGIC;
+			Sp_Dec      : out STD_LOGIC;
+			Sp_Enable   : out STD_LOGIC;
+
+			-- Flow control
+			Branch      : out STD_LOGIC;
+			Jump        : out STD_LOGIC;
+			Call        : out STD_LOGIC;
+			ReturnSig   : out STD_LOGIC;
+
+			-- Flag control
+			Set_Carry   : out STD_LOGIC;
+			Update_Flag : out STD_LOGIC;
+
+			-- Special operations
+			Swap        : out STD_LOGIC;
+
+			-- I/O control
+			OutPort     : out STD_LOGIC;
+			InPort      : out STD_LOGIC;
+
+			-- System control
+			Halt        : out STD_LOGIC;
+
+			-- Jump conditions
+			J_SC	    : out STD_LOGIC_VECTOR(1 downto 0); -- Jump if Set Carry
+
+			-- Interrupt control
+			IntAck      : out STD_LOGIC;
+			FlagsSave   : out STD_LOGIC;
+			FlagsRestore: out STD_LOGIC
+		);
+	    end component;
+        
+
+        -- Hazard Detection Unit
+       
+
+
+        -- Register File
+        component Reg is
+        generic(
+            address_bits : integer := 3; 
+            word_width   : integer := 32   
+        );
+        
+        port(
+            clk          : in std_logic;
+            rst          : in std_logic;
+            we1           : in std_logic;
+            address_sel_sw  : in std_logic;  
+            we2_swap      : in std_logic;
+            
+            write_address_1   : in std_logic_vector(address_bits-1 downto 0);
+            write_address_2   : in std_logic_vector(address_bits-1 downto 0);
+            
+            read_address_1   : in std_logic_vector(address_bits-1 downto 0);
+            read_address2_1  : in std_logic_vector(address_bits-1 downto 0);
+            read_address2_2  : in std_logic_vector(address_bits-1 downto 0);
+            
+            data_in_1      : in std_logic_vector(word_width-1 downto 0);
+            data_in_2      : in std_logic_vector(word_width-1 downto 0);
+            
+            data_out1    : out std_logic_vector(word_width-1 downto 0);
+            data_out2    : out std_logic_vector(word_width-1 downto 0)
+        );
+        end component;
+
 		 
 		 -- DEC/EX register
-		 component DecodeExecute is
-			  Port (
-					clk             : in  STD_LOGIC;
-					rst             : in  STD_LOGIC;
-					enable          : in  STD_LOGIC;
-					
-					-- Inputs from Fetch/Decode
-					Pc_In           : in STD_LOGIC_VECTOR(31 downto 0);
-					Read_Addr1_In   : in STD_LOGIC_VECTOR(2 downto 0);
-					Read_Addr2_In   : in STD_LOGIC_VECTOR(2 downto 0);
-					Interrupt_In    : in STD_LOGIC;
-					Rd_Addr_In      : in STD_LOGIC_VECTOR(2 downto 0);
-					Imm_Offset_In   : in STD_LOGIC_VECTOR(15 downto 0);
-					Rsrc1_Data_In   : in STD_LOGIC_VECTOR(31 downto 0);
-					Rsrc2_Data_In   : in STD_LOGIC_VECTOR(31 downto 0);
-					
-					-- Control signals in
-					Swap_In         : in STD_LOGIC;
-					Set_Carry_In    : in STD_LOGIC;
-					Sp_Inc_In       : in STD_LOGIC;
-					Sp_Dec_In       : in STD_LOGIC;
-					Sp_Enable_In    : in STD_LOGIC;
-					RTI_In          : in STD_LOGIC;
-					Return_Signal_In: in STD_LOGIC;
-					Call_In         : in STD_LOGIC;
-					ALU_Srcl_In     : in STD_LOGIC;
-					Branch_In       : in STD_LOGIC;
-					Mem_Read_In     : in STD_LOGIC;
-					Reg_Write_In    : in STD_LOGIC;
-					Update_Flag_In  : in STD_LOGIC;
-					IN_Port_In      : in STD_LOGIC;
-					Mem_Write_In    : in STD_LOGIC;
-					J_SC_In         : in STD_LOGIC_VECTOR(1 downto 0);
-					Opcode_In       : in STD_LOGIC_VECTOR(4 downto 0);
-					DM_In           : in STD_LOGIC;
-					
-					-- Outputs to Execute/Memory
-					Mem_Read        : out STD_LOGIC;
-					Interrupt       : out STD_LOGIC;
-					Reg1_Data       : out STD_LOGIC_VECTOR(31 downto 0);
-					Reg2_Data       : out STD_LOGIC_VECTOR(31 downto 0);
-					Swap            : out STD_LOGIC;
-					Rsrc1           : out STD_LOGIC_VECTOR(2 downto 0);
-					Rd              : out STD_LOGIC_VECTOR(2 downto 0);
-					Reg_Write       : out STD_LOGIC;
-					IN_Port         : out STD_LOGIC;
-					Pc              : out STD_LOGIC_VECTOR(31 downto 0);
-					Set_Carry       : out STD_LOGIC;
-					Sp_Inc          : out STD_LOGIC;
-					Sp_Dec          : out STD_LOGIC;
-					Sp_Enable       : out STD_LOGIC;
-					RTI             : out STD_LOGIC;
-					Return_Signal   : out STD_LOGIC;
-					Call            : out STD_LOGIC;
-					ALU_Srcl        : out STD_LOGIC;
-					Branch          : out STD_LOGIC;
-					Update_Flag     : out STD_LOGIC;
-					Mem_Write       : out STD_LOGIC;
-					J_SC            : out STD_LOGIC_VECTOR(1 downto 0);
-					ALU_SLC         : out STD_LOGIC_VECTOR(4 downto 0);
-					DM              : out STD_LOGIC;
-					Imm_Offset      : out STD_LOGIC_VECTOR(15 downto 0)
-			  );
-		 end component;
+		component DecodeExecute
+    Port (
+        clk            : in  STD_LOGIC;
+        rst            : in  STD_LOGIC;
+        enable         : in  STD_LOGIC;
+		
+        Pc_In          : in  STD_LOGIC_VECTOR(31 downto 0);
+        Read_Addr1_In  : in  STD_LOGIC_VECTOR(2 downto 0);
+        Read_Addr2_In  : in  STD_LOGIC_VECTOR(2 downto 0);
+        Interrupt_In   : in  STD_LOGIC;
+        Rd_Addr_In     : in  STD_LOGIC_VECTOR(2 downto 0);
+        Imm_Offset_In  : in  STD_LOGIC_VECTOR(15 downto 0);
+        Rsrc1_Data_In  : in  STD_LOGIC_VECTOR(31 downto 0);
+        Rsrc2_Data_In  : in  STD_LOGIC_VECTOR(31 downto 0);
+        Swap_In        : in  STD_LOGIC;
+        Set_Carry_In   : in  STD_LOGIC;
+        Sp_Inc_In      : in  STD_LOGIC;
+        Sp_Dec_In      : in  STD_LOGIC;
+        Sp_Enable_In   : in  STD_LOGIC;
+        RTI_In         : in  STD_LOGIC;
+        Return_Signal_In : in  STD_LOGIC;
+        Call_In        : in  STD_LOGIC;
+        ALU_Srcl_In    : in  STD_LOGIC;
+        Branch_In      : in  STD_LOGIC;
+        Mem_Read_In    : in  STD_LOGIC;
+        Reg_Write_In   : in  STD_LOGIC;
+        Update_Flag_In : in  STD_LOGIC;
+        IN_Port_In     : in  STD_LOGIC;
+        Mem_Write_In   : in  STD_LOGIC;
+        J_SC_In        : in  STD_LOGIC_VECTOR(1 downto 0);
+        Opcode_In      : in  STD_LOGIC_VECTOR(4 downto 0);
+        DM_In          : in  STD_LOGIC;
+        Out_Port_In    : in  STD_LOGIC;
+
+        Mem_Read       : out STD_LOGIC;
+        Interrupt      : out STD_LOGIC;
+        Reg1_Data      : out STD_LOGIC_VECTOR(31 downto 0);
+        Reg2_Data      : out STD_LOGIC_VECTOR(31 downto 0);
+        Swap           : out STD_LOGIC;
+        Rsrc1          : out STD_LOGIC_VECTOR(2 downto 0);
+        Rsrc2          : out STD_LOGIC_VECTOR(2 downto 0);
+        Rd             : out STD_LOGIC_VECTOR(2 downto 0);
+        Reg_Write      : out STD_LOGIC;
+        IN_Port        : out STD_LOGIC;
+        Pc             : out STD_LOGIC_VECTOR(31 downto 0);
+        Set_Carry      : out STD_LOGIC;
+        Sp_Inc         : out STD_LOGIC;
+        Sp_Dec         : out STD_LOGIC;
+        Sp_Enable      : out STD_LOGIC;
+        RTI            : out STD_LOGIC;
+        Return_Signal  : out STD_LOGIC;
+        Call           : out STD_LOGIC;
+        ALU_Srcl       : out STD_LOGIC;
+        Branch         : out STD_LOGIC;
+        Update_Flag    : out STD_LOGIC;
+        Mem_Write      : out STD_LOGIC;
+        J_SC           : out STD_LOGIC_VECTOR(1 downto 0);
+        ALU_SLC        : out STD_LOGIC_VECTOR(4 downto 0);
+        DM             : out STD_LOGIC;
+        Imm_Offset     : out STD_LOGIC_VECTOR(15 downto 0);
+        Out_Port       : out STD_LOGIC
+    );
+end component;
+
 		 
 		 
 		 -- Forwarding Unit
-		 component Forwarding_Unit is
-			  port(
-					-- Source registers from Decode/Execute
-					D_EX_rs1      : in std_logic_vector(2 downto 0);
-					D_EX_rs2      : in std_logic_vector(2 downto 0);
-					-- Destination registers from Execute/Memory and Memory/Writeback
-					EX_M_rd       : in std_logic_vector(2 downto 0);
-					M_WB_rd       : in std_logic_vector(2 downto 0);
-					-- Outputs
-					Forward_array_Rs1 : out std_logic_vector(1 downto 0);
-					Forward_array_Rs2 : out std_logic_vector(1 downto 0)
-			  );
-		 end component;
-		 
+		component Forwarding_Unit is
+  port(
+    -- Input registers from Decode/Execute stage
+    D_EX_rs1      : in std_logic_vector(2 downto 0);
+    D_EX_rs2      : in std_logic_vector(2 downto 0);
+    
+    -- Destination registers from Execute/Memory and Memory/Writeback stages
+    EX_M_rd       : in std_logic_vector(2 downto 0);
+    M_WB_rd       : in std_logic_vector(2 downto 0);
+    
+    -- Register write enable signals
+    EX_M_RegWrite : in std_logic;
+    M_WB_RegWrite : in std_logic;
+    
+    -- Input data signals (as shown in the diagram)
+    M_WB_Rd_data  : in std_logic_vector(31 downto 0);
+    EX_M_Rd_data  : in std_logic_vector(31 downto 0);
+    Rarc1_data    : in std_logic_vector(31 downto 0);
+    Rarc2_Data    : in std_logic_vector(31 downto 0);
+
+   
+    
+    -- Immediate selection control
+    IMM_Sel       : in std_logic;  -- Signal to select immediate value
+    Immediate     : in std_logic_vector(15 downto 0);
+    -- Output control signals (as shown in the diagram)
+
+    -- Output operands (as shown in the diagram)
+    Operand1      : out std_logic_vector(31 downto 0);
+    Operand2      : out std_logic_vector(31 downto 0)
+  );
+end component Forwarding_Unit;
 		 
 		 -- ALU
 		 component ALU is
@@ -286,81 +346,69 @@
 		
 				 
 		 -- EX/MEM register
-		 component ExecuteMemory is
-			  Port (
-					clk             : in  STD_LOGIC;
-					rst             : in  STD_LOGIC;
-					enable          : in  STD_LOGIC;
-					
-					-- Inputs from Decode/Execute
-					Mem_Read_In     : in STD_LOGIC;
-					Interrupt_In    : in STD_LOGIC;
-					ALU_Result_In   : in STD_LOGIC_VECTOR(31 downto 0);
-					Sp_Load_In      : in STD_LOGIC;
-					Swap_In         : in STD_LOGIC;
-					Rsrc1_In        : in STD_LOGIC_VECTOR(2 downto 0);
-					Rd_In           : in STD_LOGIC_VECTOR(2 downto 0);
-					Reg1_Data_In    : in STD_LOGIC_VECTOR(31 downto 0);
-					Reg2_Data_In    : in STD_LOGIC_VECTOR(31 downto 0);
-					Reg_Write_In    : in STD_LOGIC;
-					IN_Port_In      : in STD_LOGIC;
-					Pc_In           : in STD_LOGIC_VECTOR(31 downto 0);
-					Set_Carry_In    : in STD_LOGIC;
-					Sp_Inc_In       : in STD_LOGIC;
-					Sp_Dec_In       : in STD_LOGIC;
-					Sp_Enable_In    : in STD_LOGIC;
-					Branch_In       : in STD_LOGIC;
-					Update_Flag_In  : in STD_LOGIC;
-					Mem_Write_In    : in STD_LOGIC;
-					RTI_In          : in STD_LOGIC;
-					Return_Signal_In: in STD_LOGIC;
-					DM_IN           : in STD_LOGIC;
-					Imm_Offset_In   : in STD_LOGIC_VECTOR(15 downto 0);
-					
-					-- Outputs to Memory/Writeback
-					RTI             : out STD_LOGIC;
-					Mem_Read        : out STD_LOGIC;
-					Return_Signal   : out STD_LOGIC;
-					Mem_Write       : out STD_LOGIC;
-					ALU_Result      : out STD_LOGIC_VECTOR(31 downto 0);
-					Sp_Load         : out STD_LOGIC;
-					Rsrc1           : out STD_LOGIC_VECTOR(2 downto 0);
-					Rd              : out STD_LOGIC_VECTOR(2 downto 0);
-					Pc              : out STD_LOGIC_VECTOR(31 downto 0);
-					Set_Carry       : out STD_LOGIC;
-					Sp_Inc          : out STD_LOGIC;
-					Sp_Dec          : out STD_LOGIC;
-					Sp_Enable       : out STD_LOGIC;
-					Branch          : out STD_LOGIC;
-					Update_Flag     : out STD_LOGIC;
-					Reg1_Data       : out STD_LOGIC_VECTOR(31 downto 0);
-					Reg2_Data       : out STD_LOGIC_VECTOR(31 downto 0);
-					Swap            : out STD_LOGIC;
-					Reg_Write       : out STD_LOGIC;
-					IN_Port         : out STD_LOGIC;
-					DM_Addr         : out STD_LOGIC;
-					Index           : out STD_LOGIC_VECTOR(15 downto 0)
-			  );
-		 end component;
-		 
-		 
-		 -- Memory
-		 component Memory IS
-			  GENERIC (
-					Address_bits : INTEGER := 12;
-					Data_width   : INTEGER := 32
-			  );
-			  PORT (
-					clk      : IN STD_LOGIC;
-					reset    : IN STD_LOGIC;
-					writeEn  : IN STD_LOGIC;
-					address  : IN STD_LOGIC_VECTOR(Address_bits - 1 DOWNTO 0);
-					readEn   : IN STD_LOGIC;
-					data_in  : IN STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0);
-					data_out : OUT STD_LOGIC_VECTOR(Data_width - 1 DOWNTO 0)
-			  );
-		 END component;
-		 
+		 component ExecuteMemory
+    Port (
+        clk             : in  STD_LOGIC;
+        rst             : in  STD_LOGIC;
+        enable          : in  STD_LOGIC;
+        Mem_Read_In        : in STD_LOGIC;
+        Interrupt_In       : in STD_LOGIC;
+        ALU_Result_In      : in STD_LOGIC_VECTOR(31 downto 0);
+          Sp_Load_In         : in STD_LOGIC_vector(11 downto 0);
+        Swap_In            : in STD_LOGIC;
+        Rsrc1_In           : in STD_LOGIC_VECTOR(2 downto 0);
+        Rsrc2_In           : in STD_LOGIC_VECTOR(2 downto 0);
+        Rd_In              : in STD_LOGIC_VECTOR(2 downto 0);
+        Reg1_Data_In       : in STD_LOGIC_VECTOR(31 downto 0);
+        Reg2_Data_In       : in STD_LOGIC_VECTOR(31 downto 0);
+        Reg_Write_In       : in STD_LOGIC;
+        IN_Port_In         : in STD_LOGIC;
+        Pc_In              : in STD_LOGIC_VECTOR(31 downto 0);
+        Set_Carry_In       : in STD_LOGIC;
+        Sp_Inc_In          : in STD_LOGIC;
+        Sp_Dec_In          : in STD_LOGIC;
+        Sp_Enable_In       : in STD_LOGIC;
+		flush_In           : in STD_LOGIC; 
+        Branch_In          : in STD_LOGIC;
+        Update_Flag_In     : in STD_LOGIC;
+        Mem_Write_In       : in STD_LOGIC;
+        RTI_In             : in STD_LOGIC;
+        Return_Signal_In   : in STD_LOGIC;
+        DM_IN              : in STD_LOGIC;
+        Imm_Offset_In      : in STD_LOGIC_VECTOR(15 downto 0);
+        Out_Port_In        : in STD_LOGIC;
+        call_In            : in STD_LOGIC;
+        RTI            : out STD_LOGIC;
+        Mem_Read       : out STD_LOGIC;
+        Return_Signal  : out STD_LOGIC;
+        Mem_Write      : out STD_LOGIC;
+        ALU_Result     : out STD_LOGIC_VECTOR(31 downto 0);
+        Sp_Load        : out STD_LOGIC_VECTOR( 11 downto 0);
+        Rsrc1          : out STD_LOGIC_VECTOR(2 downto 0);
+        Rsrc2          : out STD_LOGIC_VECTOR(2 downto 0);
+        Rd             : out STD_LOGIC_VECTOR(2 downto 0);
+        Pc             : out STD_LOGIC_VECTOR(31 downto 0);
+        Set_Carry      : out STD_LOGIC;
+        Sp_Inc         : out STD_LOGIC;
+        Sp_Dec         : out STD_LOGIC;
+        Sp_Enable      : out STD_LOGIC;
+        Branch         : out STD_LOGIC;
+        Update_Flag    : out STD_LOGIC;
+        Reg1_Data      : out STD_LOGIC_VECTOR(31 downto 0);
+        Reg2_Data      : out STD_LOGIC_VECTOR(31 downto 0);
+        Swap           : out STD_LOGIC;
+        Reg_Write      : out STD_LOGIC;
+        IN_Port        : out STD_LOGIC;
+        DM_Addr        : out STD_LOGIC;
+        Index          : out STD_LOGIC_VECTOR(15 downto 0);
+        Out_Port       : out STD_LOGIC;
+		call_out        : out STD_LOGIC;
+		 Interrupt_out      : out STD_LOGIC
+    );
+end component;
+
+	
+
 		 
 		 -- Stack
 		 component stack_pointer is
@@ -371,10 +419,10 @@
 			  SP_enable   : in STD_LOGIC;
 			  SP_INC      : in STD_LOGIC;  -- Pop operation
 			  SP_DEC      : in STD_LOGIC;  -- Push operation
-			  SP_mem      : in STD_LOGIC_VECTOR(15 downto 0);  -- SP from memory stage
+			  SP_mem      : in STD_LOGIC_VECTOR(11 downto 0);  -- SP from memory stage
 			  
 			  -- Output
-			  SP_out      : out STD_LOGIC_VECTOR(15 downto 0)
+			  SP_out      : out STD_LOGIC_VECTOR(11 downto 0)
 		 );
 		end component;
 		
@@ -382,41 +430,167 @@
 		 -- MEM/WB register
 		 component MemoryWrite is
 			  Port (
-					clk          : in  STD_LOGIC;
-					rst          : in  STD_LOGIC;
-					enable       : in  STD_LOGIC;
-					
-					-- Inputs from Execute/Memory
-					Read_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
-					ALU_Result_In    : in STD_LOGIC_VECTOR(31 downto 0);
-					Mem_Read_In      : in STD_LOGIC;
-					Rsrc1_In         : in STD_LOGIC_VECTOR(2 downto 0);
-					Rd_In            : in STD_LOGIC_VECTOR(2 downto 0);
-					Reg1_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
-					Reg2_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
-					Swap_In          : in STD_LOGIC;
-					Reg_Write_In     : in STD_LOGIC;
-					IN_Port_In       : in STD_LOGIC;
-					-- Outputs to Writeback
-					Read_Data     : out STD_LOGIC_VECTOR(31 downto 0);
-					ALU_Result    : out STD_LOGIC_VECTOR(31 downto 0);
-					Reg1_Addr     : out STD_LOGIC_VECTOR(2 downto 0);
-					Reg2_Addr     : out STD_LOGIC_VECTOR(2 downto 0);
-					Mem_Read      : out STD_LOGIC;
-					Reg1_Data     : out STD_LOGIC_VECTOR(31 downto 0);
-					Swap          : out STD_LOGIC;
-					IN_Port       : out STD_LOGIC;
-					Reg2_Write    : out STD_LOGIC
+				  clk          : in  STD_LOGIC;
+				  rst          : in  STD_LOGIC;
+				  en       : in  STD_LOGIC;
+
+				  Read_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
+				  ALU_Result_In    : in STD_LOGIC_VECTOR(31 downto 0);
+				  Mem_Read_In      : in STD_LOGIC;
+				  Rsrc1_In         : in STD_LOGIC_VECTOR(2 downto 0);
+				  Rsrc2_In         : in STD_LOGIC_VECTOR(2 downto 0);
+				  Rd_In            : in STD_LOGIC_VECTOR(2 downto 0);
+				  Reg1_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
+				  Reg2_Data_In     : in STD_LOGIC_VECTOR(31 downto 0);
+				  Swap_In          : in STD_LOGIC;
+				  Reg_Write_In     : in STD_LOGIC;
+				  IN_Port_In       : in STD_LOGIC;
+				  Out_Port_In      : in STD_LOGIC;
+
+				  Read_Data     : out STD_LOGIC_VECTOR(31 downto 0);
+				  ALU_Result    : out STD_LOGIC_VECTOR(31 downto 0);
+				  Rd            : out STD_LOGIC_VECTOR(2 downto 0);
+				  Rsrc1         : out STD_LOGIC_VECTOR(2 downto 0);
+				  Rsrc2         : out STD_LOGIC_VECTOR(2 downto 0);
+				  Mem_Read      : out STD_LOGIC;
+				  Reg1_Data     : out STD_LOGIC_VECTOR(31 downto 0);
+				  Reg2_Data     : out STD_LOGIC_VECTOR(31 downto 0);
+				  Swap          : out STD_LOGIC;
+				  Reg_Write     : out STD_LOGIC;
+				  IN_Port       : out STD_LOGIC;
+				  Out_Port       : out STD_LOGIC
+						  );
+		 end component;
+		 
+		 
+		 
+		 --Writeback_ports
+		 component Writeback_ports is
+		 Port (
+				  ----------------------------------inputs-------------------------------	
+				  clk        		   : in STD_logic;
+				  --rst        		: in STD_logic;
+				  In_port  				: in STD_LOGIC_VECTOR (31 downto 0);
+				  Memory_data  		: in STD_LOGIC_VECTOR (31 downto 0);
+				  Alu_result  			: in STD_LOGIC_VECTOR (31 downto 0);
+				  Memory_read_flag   : in STD_logic;
+				  
+				  
+
+				  read_data1  			: in STD_LOGIC_VECTOR (31 downto 0);
+				  read_data2  			: in STD_LOGIC_VECTOR (31 downto 0);
+				  swap_flag        	: in STD_logic;--reg_Write2 flag
+				  
+				  reg_write1_flag    : in STD_logic;
+				  
+				  read_address1  : in STD_LOGIC_VECTOR (2 downto 0);
+				  read_address2  : in STD_LOGIC_VECTOR (2 downto 0);
+				  dst_address_in : in STD_LOGIC_VECTOR (2 downto 0);
+				  
+				  in_port_flag   : in STD_logic;
+				  out_port_flag  : in STD_logic;
+				  
+				  
+				  ----------------------------------outputs-------------------------------
+				  Output_port  		: out STD_LOGIC_VECTOR (31 downto 0);---d
+				  
+				  Write_data1  		: out STD_LOGIC_VECTOR (31 downto 0);---d
+				  Write_data2  		: out STD_LOGIC_VECTOR (31 downto 0);---d
+				  
+				  Write_address1  : out STD_LOGIC_VECTOR (2 downto 0);
+				  Write_address2  : out STD_LOGIC_VECTOR (2 downto 0);
+				  --dst_address     : out STD_LOGIC_VECTOR (2 downto 0);
+				  
+				  we1   		 : out STD_logic;
+				  we2_swap   : out STD_logic
+		 
+		 );
+		 end component;
+		 
+
+         --Hazard Detection Unit
+         component Hazard_Detection_Unit is
+			  Port (
+					FD_RS1 : in std_logic_vector(2 downto 0);
+                    FD_RS2 : in std_logic_vector(2 downto 0);
+                    D_Ex_rd : in std_logic_vector(2 downto 0);
+                    D_EX_Mem_Read: in std_logic;
+                    D_EX_Mem_Write: in std_logic;
+                    Data_interface_needed: in std_logic;
+                    Branch_Taken: in std_logic;
+                    -- Outputs
+                    Stall: out std_logic_vector(1 downto 0);
+                    Flush: out std_logic_vector(1 downto 0)
 			  );
 		 end component;
+		component flipflop is
 
-		 
+		port (
+			clk     : in STD_LOGIC;
+			rst     : in STD_LOGIC;
+			D       : in STD_LOGIC;
+			Q       : out STD_LOGIC
+		);
+	end component;
+		component interrupt_handler is
+		port
+		(
+	  INTR_IN_HW : in std_logic;  -- Interrupt input, single bit
+      opcode   : in std_logic_vector(4 downto 0);
+      INTR_FROM_MEM_STAGE : in std_logic;  -- Interrupt from memory stage
+      stall_PC: out std_logic
+		);
+		end component;   
+	
+
+				--Fetch stage
+ 
 		 -- Pipeline register signals
 		 -- IF/ID signals
 		 signal if_pc_out          : STD_LOGIC_VECTOR(31 downto 0);
 		 signal if_instr_out       : STD_LOGIC_VECTOR(31 downto 0);
 		 signal if_interrupt_out   : STD_LOGIC;
-		 
+         
+         --Controller
+        signal Controller_J_SC_In           : STD_LOGIC_VECTOR(1 downto 0); --
+		signal Controller_Swap_In           : STD_LOGIC; --
+        signal Controller_Set_Carry_In      : STD_LOGIC;--
+        signal Controller_Sp_Inc_In         : STD_LOGIC;--
+        signal Controller_Sp_Dec_In         : STD_LOGIC;--
+        signal Controller_Sp_Enable_In      : STD_LOGIC;--
+        signal Controller_Return_Signal_In  : STD_LOGIC;--
+        signal Controller_Call_In           : STD_LOGIC;--
+        signal Controller_ALU_Srcl_In       : STD_LOGIC;
+        signal Controller_Branch_In         : STD_LOGIC;--
+        signal Controller_Mem_Read_In       : STD_LOGIC;--
+        signal Controller_Reg_Write_In      : STD_LOGIC;--
+        signal Controller_Update_Flag_In    : STD_LOGIC;--
+        signal Controller_IN_Port_In        : STD_LOGIC;--
+        signal Controller_Mem_Write_In      : STD_LOGIC;--
+        signal Controller_DM_In             : STD_LOGIC;--
+        signal Controller_Jump              : STD_LOGIC;--
+        signal Controller_OutPort           : STD_LOGIC;--
+        signal Controller_Halt              : STD_LOGIC;--
+        signal Controller_Immediate_Value_signal : STD_LOGIC;--
+        signal Controller_FlagsSave         : STD_LOGIC;--
+        signal Controller_FlagsRestore      : STD_LOGIC;--
+        signal Controller_IntAck            : STD_LOGIC;--
+        signal Controller_MemToReg          : STD_LOGIC;--
+        
+        -- Register File signals
+        signal wb_reg_write     : STD_LOGIC;
+        signal ctrl_swap        : STD_LOGIC;
+        signal swap_enable      : STD_LOGIC;
+        signal swap_reg_addr    : STD_LOGIC_VECTOR(2 downto 0);
+        signal reg_rs1_addr     : STD_LOGIC_VECTOR(2 downto 0);
+        signal reg_rd_addr      : STD_LOGIC_VECTOR(2 downto 0);
+        signal reg_rs2_addr     : STD_LOGIC_VECTOR(2 downto 0);
+        signal write_data       : STD_LOGIC_VECTOR(31 downto 0);
+        signal swap_data        : STD_LOGIC_VECTOR(31 downto 0);
+        signal read_data1       : STD_LOGIC_VECTOR(31 downto 0);
+        signal read_data2       : STD_LOGIC_VECTOR(31 downto 0);
+        signal wb_reg_addr     : STD_LOGIC_VECTOR(2 downto 0);
+
 		 -- ID/EX signals
 		 signal id_pc_out          : STD_LOGIC_VECTOR(31 downto 0);
 		 signal id_rsrc1_out       : STD_LOGIC_VECTOR(2 downto 0);
@@ -434,6 +608,7 @@
 		 signal id_return_sig_out  : STD_LOGIC;
 		 signal id_call_out        : STD_LOGIC;
 		 signal id_alu_srcl_out    : STD_LOGIC;
+         signal id_interrupt_out     : STD_LOGIC;
 		 signal id_branch_out      : STD_LOGIC;
 		 signal id_mem_read_out    : STD_LOGIC;
 		 signal id_reg_write_out   : STD_LOGIC;
@@ -443,17 +618,19 @@
 		 signal id_j_sc_out        : STD_LOGIC_VECTOR(1 downto 0);
 		 signal id_alu_slc_out     : STD_LOGIC_VECTOR(4 downto 0);
 		 signal id_dm_out          : STD_LOGIC;
-		 signal  in_port_signal    :std_logic;  
-		 signal  out_port_signal   :std_logic;
+		--  signal  in_port_signal    :std_logic;  
+		--  signal  out_port_signal   :std_logic;
+     
 		 
 		 -- EX/MEM signals
-		 signal ex_rti_out         : STD_LOGIC;
+		 signal ex_mem_rti_out         : STD_LOGIC;
 		 signal ex_mem_read_out    : STD_LOGIC;
 		 signal ex_return_sig_out  : STD_LOGIC;
 		 signal ex_mem_write_out   : STD_LOGIC;
 		 signal ex_alu_result_out  : STD_LOGIC_VECTOR(31 downto 0);
-		 signal ex_sp_load_out     : STD_LOGIC;
+		 signal ex_sp_load_out     : STD_LOGIC_VECTOR(11 downto 0);
 		 signal ex_rsrc1_out       : STD_LOGIC_VECTOR(2 downto 0);
+		 signal ex_rsrc2_out       : STD_LOGIC_VECTOR(2 downto 0);
 		 signal ex_rd_out          : STD_LOGIC_VECTOR(2 downto 0);
 		 signal ex_pc_out          : STD_LOGIC_VECTOR(31 downto 0);
 		 signal ex_set_carry_out   : STD_LOGIC;
@@ -469,50 +646,61 @@
 		 signal ex_in_port_out     : STD_LOGIC;
 		 signal ex_dm_addr_out     : STD_LOGIC;
 		 signal ex_index_out       : STD_LOGIC_VECTOR(15 downto 0);
+		 signal ex_out_port_out	   : STD_LOGIC;
+		 signal ex_interrupt_out   : STD_LOGIC;
+		 signal  ex_call_out		: STD_LOGIC;
 		 signal alu_a              : std_logic_vector(31 downto 0);
 		 signal alu_b              : std_logic_vector(31 downto 0);
-		 
-		 -- MEM/WB signals
+		 ---CCR signals
+         signal ccr_from_CCR_out            : std_logic_vector(3 downto 0);
+         signal CCR_from_Alu      : std_logic_vector(3 downto 0);
+         --Forwarding signals
+        signal D_EX_rs1        : STD_LOGIC_VECTOR(2 downto 0);
+        signal D_EX_rs2        : STD_LOGIC_VECTOR(2 downto 0);
+        signal EX_M_rd         : STD_LOGIC_VECTOR(2 downto 0);
+        signal M_WB_rd         : STD_LOGIC_VECTOR(2 downto 0);
+     
+      
+     
+        signal Rarc1_data      : STD_LOGIC_VECTOR(31 downto 0);
+        signal Rarc2_Data      : STD_LOGIC_VECTOR(31 downto 0);
+        signal Immediate       : STD_LOGIC_VECTOR(15 downto 0);
+      
+        signal Operand1        : STD_LOGIC_VECTOR(31 downto 0);
+        signal Operand2        : STD_LOGIC_VECTOR(31 downto 0);
+        
+                -- MEM/WB signals
 		 signal mw_read_data_out   : STD_LOGIC_VECTOR(31 downto 0);
 		 signal mw_alu_result_out  : STD_LOGIC_VECTOR(31 downto 0);
+		 signal mw_Rd					: STD_LOGIC_VECTOR(2 downto 0);	
 		 signal mw_reg1_addr_out   : STD_LOGIC_VECTOR(2 downto 0);
 		 signal mw_reg2_addr_out   : STD_LOGIC_VECTOR(2 downto 0);
 		 signal mw_mem_read_out    : STD_LOGIC;
 		 signal mw_reg1_data_out   : STD_LOGIC_VECTOR(31 downto 0);
+		 signal mw_reg2_data_out   : STD_LOGIC_VECTOR(31 downto 0);
 		 signal mw_swap_out        : STD_LOGIC;
 		 signal mw_in_port_out     : STD_LOGIC;
-		 signal mw_reg2_write_out  : STD_LOGIC;
-		 
-		 -- Control signals
-		 signal reg_write          : STD_LOGIC;
-		 signal alu_src1           : STD_LOGIC;
-		 signal alu_src2           : STD_LOGIC;
-		 signal alu_op             : STD_LOGIC_VECTOR(3 downto 0);
-		 signal mem_read           : STD_LOGIC;
-		 signal mem_write          : STD_LOGIC;
-		 signal mem_to_reg         : STD_LOGIC;
-		 signal sp_inc             : STD_LOGIC;
-		 signal sp_dec             : STD_LOGIC;
-		 signal sp_enable          : STD_LOGIC;
-		 signal branch             : STD_LOGIC;
-		 signal jump               : STD_LOGIC;
-		 signal call               : STD_LOGIC;
-		 signal return_sig         : STD_LOGIC;
-		 signal set_carry          : STD_LOGIC;
-		 signal update_flag        : STD_LOGIC;
-		 signal swap               : STD_LOGIC;
-		
-		 signal halt               : STD_LOGIC;
-		 signal jz                 : STD_LOGIC;
-		 signal jn                 : STD_LOGIC;
-		 signal jc                 : STD_LOGIC;
-		 signal int_ack            : STD_LOGIC;
-		 signal flags_save         : STD_LOGIC;
-		 signal flags_restore      : STD_LOGIC;
+		 signal mw_out_port_out     : STD_LOGIC;
+		 signal mw_reg_write_out  : STD_LOGIC;
+		 signal  Read_data_memory    : STD_LOGIC_VECTOR(31 downto 0);
+		 signal  Pc_plus_flags1 : STD_LOGIC_VECTOR(31 downto 0);
+		 signal  Pc_plus_flags2 : STD_LOGIC_VECTOR(31 downto 0);
+		 signal Load_or_AlU_result : STD_LOGIC_VECTOR(31 downto 0);
+		--  signal halt               : STD_LOGIC;
+		--  signal jz                 : STD_LOGIC;
+		--  signal jn                 : STD_LOGIC;
+		--  signal jc                 : STD_LOGIC;
+		--  signal int_ack            : STD_LOGIC;
+		--  signal flags_save         : STD_LOGIC;
+		--  signal flags_restore      : STD_LOGIC;
 		 
 		 -- Hazard detection signals
 		 signal stall              : STD_LOGIC_VECTOR(1 downto 0);
 		 signal flush              : STD_LOGIC_VECTOR(1 downto 0);
+         signal ex_mem_read_sig    : STD_LOGIC;
+         signal ex_mem_write_sig   : STD_LOGIC;
+         signal data_hazard_needed_sig : STD_LOGIC;
+         signal branch_taken_sig : STD_LOGIC;
 		 
 		 -- Forwarding signals
 		 signal forward_rs1        : STD_LOGIC_VECTOR(1 downto 0);
@@ -520,86 +708,287 @@
 		 
 		 -- ALU signals
 		 signal alu_result         : STD_LOGIC_VECTOR(31 downto 0);
-		 signal alu_zero           : STD_LOGIC;
-		 signal alu_neg            : STD_LOGIC;
-		 signal alu_carry          : STD_LOGIC;
-		 
+		--  signal alu_zero           : STD_LOGIC;
+		--  signal alu_neg            : STD_LOGIC;
+		--  signal alu_carry          : STD_LOGIC;
+		 signal in_J_SC           : STD_LOGIC_VECTOR(1 downto 0); 
 		 -- Register file signals
 		 signal reg_data_out1      : STD_LOGIC_VECTOR(31 downto 0);
 		 signal reg_data_out2      : STD_LOGIC_VECTOR(31 downto 0);
-		 
+		 signal rs1_addr_FD       : STD_LOGIC_VECTOR(2 downto 0);
+         signal rs2_addr_FD       : STD_LOGIC_VECTOR(2 downto 0);
 		 -- Program counter signals
 		 signal pc_in              : STD_LOGIC_VECTOR(31 downto 0);
 		 signal pc_out             : STD_LOGIC_VECTOR(31 downto 0);
 		 signal pc_enable          : STD_LOGIC;
-		 
+		 signal  PC_loaded_from_memory : STD_LOGIC_VECTOR(31 downto 0);
 		 -- Stack pointer signals
-		 signal sp_out             : STD_LOGIC_VECTOR(31 downto 0);
+		 signal sp_out             : STD_LOGIC_VECTOR(11 downto 0);
 		 
 		 -- Flag register signals
 		 signal zero_flag          : STD_LOGIC;
 		 signal neg_flag           : STD_LOGIC;
 		 signal carry_flag         : STD_LOGIC;
-
+		 
+		 
+		 
+		 --Write back and ports signals
+		 
+		--signal wr_Output_port     :  STD_LOGIC_VECTOR (31 downto 0);
+		signal wr_Write_data1     :  STD_LOGIC_VECTOR (31 downto 0);
+		signal wr_Write_data2     :  STD_LOGIC_VECTOR (31 downto 0);
+		signal wr_Write_address1  :  STD_LOGIC_VECTOR (2 downto 0);
+		signal wr_Write_address2  :  STD_LOGIC_VECTOR (2 downto 0);
+		signal wr_we1   		 	  :  STD_logic;
+		signal wr_we2_swap  		  :  STD_logic;
+		signal id_out		  :  STD_LOGIC;	
+		 --sp_enable
+		signal sp_enable_or:	std_logic;
+		 
+         --PC_new signals
+       signal branch_addr_se : STD_LOGIC_VECTOR(31 downto 0);
+       signal en2 : STD_LOGIC;
+	  --Hazard Signals
+       signal Struct_hazard_detected : STD_LOGIC;
+	   signal  enable_fetch : STD_LOGIC;
+      --Flusched signals
+        signal id_mem_read_out_flushed     : std_logic;
+		signal id_swap_out_flushed         : std_logic;
+		signal id_reg_write_out_flushed    : std_logic;
+	
+		signal id_set_carry_out_flushed    : std_logic;
+		signal id_sp_inc_out_flushed       : std_logic;
+		signal id_sp_dec_out_flushed       : std_logic;
+		signal id_sp_enable_out_flushed    : std_logic;
+		signal id_rti_out_flushed          : std_logic;
+		signal id_return_sig_out_flushed   : std_logic;
+		signal id_call_out_flushed         : std_logic;
+		signal id_alu_srcl_out_flushed     : std_logic;
+		signal id_branch_out_flushed       : std_logic;
+		signal id_update_flag_out_flushed  : std_logic;
+		signal id_mem_write_out_flushed    : std_logic;
+		signal id_j_sc_out_flushed         : std_logic_vector(1 downto 0);
+		signal id_interrupt_out_flushed    : std_logic;
+		signal id_dm_out_flushed           : std_logic;
+		signal id_out_port_out_flushed	   : std_logic;
+		signal id_in_port_out_flushed	   : std_logic;
+		signal id_alu_slc_out_flushed	   : std_logic_vector(4 downto 0);
+		signal Pc_initial : std_logic_vector(31 downto 0);
+		signal interrupt_flip_flop_out : STD_LOGIc;
+		signal stall_PC : std_logic;
+		signal stall_interrupt_handler : std_logic;
+		
+	
 	begin
+
+		ff_interrupt : flipflop
+
+		port map (
+			clk => clk,
+			rst => rst,
+			D =>INTR_IN ,  -- or use D(0) => single_bit_signal
+			Q =>interrupt_flip_flop_out
+		);
 		 --Pipeline registers
 		 -- Instruction Fetch/Decode Stage
+         branch_addr_se <= (15 downto 0 => id_imm_offset_out(15)) & id_imm_offset_out;
+        interrupt_handler_inst: interrupt_handler
+		 port map(
+			INTR_IN_HW => interrupt_flip_flop_out,
+			opcode => Read_data_memory(31 downto 27),
+			INTR_FROM_MEM_STAGE =>ex_interrupt_out ,
+			stall_PC => stall_interrupt_handler
+		);
+
+        stall_PC<= stall(0) or stall_interrupt_handler; 
+         ProgramCounter:PC_New 
+        Port map 
+        (
+        clk=>clk,
+        rst=>rst,
+		PC_initial => Pc_initial,
+        call=>id_call_out,                  
+        stall=>stall_PC,                 
+        branch=>id_branch_out,              
+        in_from_CCR=>ccr_from_CCR_out,          
+        in_J_SC=>in_J_SC,              
+        branch_addr => branch_addr_se,
+      
+        RTI=>ex_mem_rti_out,                 
+        Return_flag=>id_return_sig_out ,          
+        Interrupt=>stall_interrupt_handler,
+        PC_loaded_from_memory=>Read_data_memory,
+        PC=>pc_out,
+		branch_detected=> branch_taken_sig          
+        );
+        -- InstructionMemory_inst: InstructionMemory
+        --  port map(
+        --     PC => pc_out(11 downto 0),
+        --     data_bus => instruction_from_instruction_memory
+        -- );
+	    enable_fetch <= '1' when  stall(0) ='0'else '0';
 		 FD_Stage: FetchDecode
 		 port map(
 			  clk            => clk,
 			  rst            => rst,
-			  en             => pc_enable,
+			  en             =>  enable_fetch,
 			  Pc_in          => pc_out,
-			  Instruction_In => instr_data,
+			  Instruction_In => Read_data_memory,
 			  Interrupt_In   => '0',  -- TODO: Connect interrupt signal
 			  Pc             => if_pc_out,
-			  Rsrc1          => open,  -- Connected directly to register file
-			  Rsrc2          => open,  -- Connected directly to register file
-			  Interrupt      => if_interrupt_out,
+			  Rsrc1          => rs1_addr_FD,  -- Connected directly to register file
+			  Rsrc2          => rs2_addr_FD,  -- Connected directly to register file
+			  --Interrupt      => if_interrupt_out,
 			  Instruction    => if_instr_out
 		 );
+        PC_Plus_Flags1 <= ccr_from_CCR_out & id_pc_out(27 downto 0);
+        PC_Plus_Flags2 <=STD_LOGIC_VECTOR(UNSIGNED(Pc_plus_flags1)+1) ;
+		  
+        	UnifiedMemory_inst: UnifiedMemory
+		 port map(
+			clk => clk,
+			reset => rst,
+			INTR_iN => interrupt_flip_flop_out,
+			Mem_Read => ex_mem_read_out,
+			Mem_Write => ex_mem_write_out,
+			interrupt => ex_interrupt_out,
+			PC_From_Counter => pc_out(11 downto 0),
+			DM_address => ex_dm_addr_out,
+			ALU_result => ALU_result(11 downto 0),
+			SP_Load => ex_sp_load_out(11 downto 0),
+			SP_INC => ex_sp_inc_out,
+			Call => ex_call_out,
+			Rsrc1 => ex_reg1_data_out,
+			PC_Flag_1 =>  PC_Plus_Flags2,
+			Read_data =>Read_data_memory,
+			Struct_hazard_detected => Struct_hazard_detected,
+			PC_initial=>Pc_initial
+			
+		);
+      
+        Controller_inst : Controller
+        port map (
+            opcode => if_instr_out(31 downto 27),
+            
+            -- Execution control
+            RegWrite => Controller_Reg_Write_In,
+            immediate_Value_signal => Controller_Immediate_Value_signal,
+            
+            -- Memory control
+            MemRead => Controller_Mem_Read_In,
+            DM_address => Controller_DM_In,
+            MemWrite => Controller_Mem_Write_In,
+            MemToReg => Controller_MemToReg,
+            
+            -- Stack control
+            Sp_Inc => Controller_Sp_Inc_In,
+            Sp_Dec => Controller_Sp_Dec_In,
+            Sp_Enable => Controller_Sp_Enable_In,
+            
+            -- Flow control
+            Branch => Controller_Branch_In,
+            Jump => Controller_Jump,
+            Call => Controller_Call_In,
+            ReturnSig => Controller_Return_Signal_In,
+            
+            -- Flag control
+            Set_Carry => Controller_Set_Carry_In,
+            Update_Flag => Controller_Update_Flag_In,
+    
+            -- Special operations
+            Swap => Controller_Swap_In,
+            
+            -- I/O control
+            OutPort => Controller_OutPort,
+            InPort => Controller_IN_Port_In,
+            
+            -- System control
+            Halt => Controller_Halt,
+            
+            -- Jump conditions
+            J_SC => Controller_J_SC_In,
+            
+            -- Interrupt control
+            IntAck => Controller_IntAck,
+            FlagsSave => Controller_FlagsSave,
+            FlagsRestore => Controller_FlagsRestore
+        );
+
+
+        register_file_inst: Reg
+        generic map (
+            address_bits => 3,
+            word_width => 32
+        )
+        -- TODOs (done)
+        port map (
+            clk                => clk,
+            rst                => rst,
+            we1                => wr_we1,                  -- from WB stage 
+            address_sel_sw     => Controller_Swap_In,      -- from CU 
+            we2_swap           => wr_we2_swap,             -- from WB stage
+            write_address_1    => wr_Write_address1,       -- from WB stage
+            write_address_2    => wr_Write_address2,       -- from WB stage
+            read_address_1     => if_instr_out(26 downto 24), -- rs1
+            read_address2_1    => if_instr_out(23 downto 21), -- rs2
+            read_address2_2    => if_instr_out(20 downto 18), -- rd
+            data_in_1          => wr_Write_data1,          -- from WB stage
+            data_in_2          => wr_Write_data2,          -- from WB stage
+            data_out1          => read_data1,
+            data_out2          => read_data2
+        );
+
 
 		 -- Decode/Execute Stage
+         en2 <= not stall(1);
 		 DE_Stage: DecodeExecute
 		 port map(
-			  clk             => clk,
-			  rst             => rst,
-			  enable          => not stall(1),
-			  -- Inputs from Fetch/Decode
-			  Pc_In           => if_pc_out,
-			  Read_Addr1_In   => if_instr_out(26 downto 24),
-			  Read_Addr2_In   => if_instr_out(23 downto 21),
-			  Interrupt_In    => if_interrupt_out,
-			  Rd_Addr_In      => if_instr_out(20 downto 18),
-			  Imm_Offset_In   => if_instr_out(15 downto 0),
-			  Rsrc1_Data_In   => reg_data_out1,
-			  Rsrc2_Data_In   => reg_data_out2,
+			clk             => clk,
+			rst             => rst,
+			enable          => en2,
+
+			-- Inputs from Fetch/Decode
+			Pc_In           => if_pc_out,
+			Read_Addr1_In   => if_instr_out(26 downto 24),
+			Read_Addr2_In   => if_instr_out(23 downto 21),
+		
+			Rd_Addr_In      => if_instr_out(20 downto 18),
+			Imm_Offset_In   => if_instr_out(15 downto 0),
+			Rsrc1_Data_In   => read_data1,
+			Rsrc2_Data_In   => read_data2,
+
 			  -- Control signals in
-			  Swap_In         => swap,
-			  Set_Carry_In    => set_carry,
-			  Sp_Inc_In       => sp_inc,
-			  Sp_Dec_In       => sp_dec,
-			  Sp_Enable_In    => sp_enable,
-			  RTI_In          => '0',  -- TODO: Connect RTI
-			  Return_Signal_In=> return_sig,
-			  Call_In         => call,
-			  ALU_Srcl_In     => alu_src1,
-			  Branch_In       => branch,
-			  Mem_Read_In     => mem_read,
-			  Reg_Write_In    => reg_write,
-			  Update_Flag_In  => update_flag,
-			  IN_Port_In      => in_port_signal,
-			  Mem_Write_In    => mem_write,
-			  J_SC_In         => jz & jn,  -- Combined jump signals
-			  Opcode_In       => if_instr_out(31 downto 27),
-			  DM_In           => '0',  -- TODO: Connect DM
+			Out_Port_In 	=> id_out_port_out_flushed,        
+			Interrupt_In    => Controller_IntAck,--Should be removed
+			Swap_In         => id_swap_out_flushed,
+			Set_Carry_In    => id_set_carry_out_flushed,
+			Sp_Inc_In       => id_sp_inc_out_flushed,
+			Sp_Dec_In       => id_sp_dec_out_flushed,
+			Sp_Enable_In    => id_sp_enable_out_flushed,
+			RTI_In          => id_rti_out_flushed,
+			Return_Signal_In=> id_return_sig_out_flushed,
+			Call_In         => id_call_out_flushed,
+			ALU_Srcl_In     => id_alu_srcl_out_flushed,
+			Branch_In       => id_branch_out_flushed,
+			Mem_Read_In     => id_mem_read_out_flushed,
+			Reg_Write_In    => id_reg_write_out_flushed,
+			Update_Flag_In  => id_update_flag_out_flushed,
+			IN_Port_In      => id_in_port_out_flushed,    
+			Mem_Write_In    => id_mem_write_out_flushed,
+			J_SC_In         => id_j_sc_out_flushed,
+			Opcode_In       => id_alu_slc_out_flushed, 
+			DM_In           => id_dm_out_flushed,
+			--Signal to recover flags
+
+			  --Interrupt signal        
 			  -- Outputs to Execute/Memory
 			  Mem_Read        => id_mem_read_out,
-			  Interrupt       => open,
+			  Interrupt       => id_interrupt_out,
 			  Reg1_Data       => id_rsrc1_data_out,
 			  Reg2_Data       => id_rsrc2_data_out,
 			  Swap            => id_swap_out,
 			  Rsrc1           => id_rsrc1_out,
+			  Rsrc2           => id_rsrc2_out,
 			  Rd              => id_rd_out,
 			  Reg_Write       => id_reg_write_out,
 			  IN_Port         => id_in_port_out,
@@ -608,7 +997,7 @@
 			  Sp_Inc          => id_sp_inc_out,
 			  Sp_Dec          => id_sp_dec_out,
 			  Sp_Enable       => id_sp_enable_out,
-			  RTI             => open,
+			  RTI             => id_rti_out,
 			  Return_Signal   => id_return_sig_out,
 			  Call            => id_call_out,
 			  ALU_Srcl        => id_alu_srcl_out,
@@ -618,65 +1007,109 @@
 			  J_SC            => id_j_sc_out,
 			  ALU_SLC         => id_alu_slc_out,
 			  DM              => id_dm_out,
-			  Imm_Offset      => id_imm_offset_out
-		 );
+			  Imm_Offset      => id_imm_offset_out,
+			  Out_Port		  => ID_OUT
+		 ); 
+			------------------------------------------------FLushing Decode Stage----------------------------------------------
+		 -- if you have this
+	-- Control signal multiplexers for flushing
+		-- When flush(1) = '1' (i.e., flush = "10" or "11"), output '0'; otherwise pass through controller signal	
 
-		 -- Forwarding Unit
-		 Forward_Unit: Forwarding_Unit
-		 port map(
-			  D_EX_rs1         => id_rsrc1_out,
-			  D_EX_rs2         => id_rsrc2_out,
-			  EX_M_rd          => ex_rd_out,
-			  M_WB_rd          => mw_reg1_addr_out,
-			  Forward_array_Rs1 => forward_rs1,
-			  Forward_array_Rs2 => forward_rs2
-		 );
+		-- Single-bit signals
+		id_interrupt_out_flushed    <= '0' when flush(1) = '1' else Controller_IntAck; -- TODO: Connect interrupt signal
+		id_mem_read_out_flushed     <= '0' when flush(1) = '1' else Controller_Mem_Read_In;
+		id_swap_out_flushed         <= '0' when flush(1) = '1' else Controller_Swap_In;
+		id_reg_write_out_flushed    <= '0' when flush(1) = '1' else Controller_Reg_Write_In;
+		id_set_carry_out_flushed    <= '0' when flush(1) = '1' else Controller_Set_Carry_In;
+		id_sp_inc_out_flushed       <= '0' when flush(1) = '1' else Controller_Sp_Inc_In;
+		id_sp_dec_out_flushed       <= '0' when flush(1) = '1' else Controller_SP_DEC_IN;
+		id_sp_enable_out_flushed    <= '0' when flush(1) = '1' else Controller_Sp_Enable_In;
+		id_rti_out_flushed          <= '0' when flush(1) = '1' else '0';
+		id_return_sig_out_flushed   <= '0' when flush(1) = '1' else Controller_Return_Signal_In;
+		id_call_out_flushed         <= '0' when flush(1) = '1' else Controller_Return_Signal_In;
+		id_alu_srcl_out_flushed     <= '0' when flush(1) = '1' else Controller_ALU_Srcl_In;
+		id_branch_out_flushed       <= '0' when flush(1) = '1' else Controller_Branch_In;
+		id_update_flag_out_flushed  <= '0' when flush(1) = '1' else Controller_Update_Flag_In;
+		id_mem_write_out_flushed    <= '0' when flush(1) = '1' else Controller_Mem_Write_In;
+		id_out_port_out_flushed     <= '0' when flush(1) = '1' else Controller_OutPort;
+		id_in_port_out_flushed      <= '0' when flush(1) = '1' else Controller_IN_Port_In;
+		id_dm_out_flushed           <= '0' when flush(1) = '1' else Controller_DM_In;
+		-- Multi-bit signals
+		id_j_sc_out_flushed         <= (others => '0') when flush(1) = '1' else Controller_J_SC_In;
+		id_alu_slc_out_flushed	    <= (others => '0') when flush(1) = '1' else if_instr_out(31 downto 27);								
 
-		 -- ALU input multiplexers with forwarding
-		 process(forward_rs1, id_rsrc1_data_out, ex_alu_result_out, mw_alu_result_out)
-		 begin
-			  case forward_rs1 is
-					when "00" =>    -- No forwarding
-						 alu_a <= id_rsrc1_data_out;
-					when "01" =>    -- Forward from WB stage
-						 alu_a <= mw_alu_result_out;
-					when "10" =>    -- Forward from MEM stage
-						 alu_a <= ex_alu_result_out;
-					when others =>
-						 alu_a <= (others => '0');
-			  end case;
-		 end process;
+			---------------------------------------------------------------------------------------------------------------------
+		
+			
+			Controller_ALU_Srcl_In <= Controller_Immediate_Value_signal;
+			Load_or_AlU_result <= Read_data_memory when mw_mem_read_out = '1' else  mw_alu_result_out;
+			
+        --Execute Stage
+           Forwarding_Unit_inst: Forwarding_Unit
+            port map(
+               D_EX_rs1 => id_rsrc1_out,
+               D_EX_rs2 => id_rsrc2_out,
+				
+               EX_M_rd => ex_rd_out,
+               M_WB_rd => mw_Rd,
+               EX_M_RegWrite => ex_reg_write_out,
+               M_WB_RegWrite => mw_reg_write_out,
+               M_WB_Rd_data =>  Load_or_AlU_result ,
+               EX_M_Rd_data => ex_alu_result_out,
+               Rarc1_data => id_rsrc1_data_out,
+               Rarc2_Data => id_rsrc2_data_out,
+         
+               Immediate => id_imm_offset_out,
+               IMM_Sel =>id_alu_srcl_out ,
+               Operand1 => Operand1,
+               Operand2 => Operand2
+           );
+		
+		  
+            -- ALU
+            ALU_inst:ALU
+             port map(
+                operand1 => Operand1,
+                operand2 => Operand2,
+                ALU_OP => id_alu_slc_out,
+                offset =>Operand2(15 downto 0) ,
+                Imm => Operand2(15 downto 0), 
+                ALU_OUT => alu_result,
+                CCR => CCR_from_Alu
+            );
+        CCR_inst: CCR
+         port map(
+            clk => clk,
+            reset => rst,
+            update_flag => id_update_flag_out,
+            Carry_in => id_set_carry_out,
+            Return_flags =>Read_data_memory(3 downto 0),
+            RTI_Restore_flags =>ex_mem_rti_out,
+            CCR_out => CCR_from_CCR_out,
+            CCR_in => CCR_from_Alu
+        );
+		
+		
 
-		 process(forward_rs2, id_rsrc2_data_out, ex_alu_result_out, mw_alu_result_out, id_alu_srcl_out, id_imm_offset_out)
-		 begin
-			  if id_alu_srcl_out = '1' then
-					alu_b <= std_logic_vector(resize(signed(id_imm_offset_out), 32));
-			  else
-					case forward_rs2 is
-						 when "00" =>    -- No forwarding
-							  alu_b <= id_rsrc2_data_out;
-						 when "01" =>    -- Forward from WB stage
-							  alu_b <= mw_alu_result_out;
-						 when "10" =>    -- Forward from MEM stage
-							  alu_b <= ex_alu_result_out;
-						 when others =>
-							  alu_b <= (others => '0');
-					end case;
-			  end if;
-		 end process;    
+		 
+	      
 		 -- Execute/Memory Stage
 		 EM_Stage: ExecuteMemory
 		 port map(
 			  clk             => clk,
 			  rst             => rst,
 			  enable          => '1',
+			  call_In => id_call_out,
+			  flush_In => '0',
 			  -- Inputs from Decode/Execute
 			  Mem_Read_In     => id_mem_read_out,
-			  Interrupt_In    => '0',  -- TODO: Connect interrupt
+			  Interrupt_In    => id_interrupt_out,  -- TODO: Connect interrupt
 			  ALU_Result_In   => alu_result,
-			  Sp_Load_In      => '0',  -- TODO: Connect SP load
+			  Sp_Load_In      => SP_out,  -- TODO: Connect SP load
 			  Swap_In         => id_swap_out,
 			  Rsrc1_In        => id_rsrc1_out,
+			  Rsrc2_In        => id_rsrc2_out,
+			  Out_Port_In     => ID_OUT,
 			  Rd_In           => id_rd_out,
 			  Reg1_Data_In    => id_rsrc1_data_out,
 			  Reg2_Data_In    => id_rsrc2_data_out,
@@ -690,18 +1123,19 @@
 			  Branch_In       => id_branch_out,
 			  Update_Flag_In  => id_update_flag_out,
 			  Mem_Write_In    => id_mem_write_out,
-			  RTI_In          => '0',  -- TODO: Connect RTI
+			  RTI_In          =>  id_rti_out,  -- TODO: Connect RTI
 			  Return_Signal_In=> id_return_sig_out,
 			  DM_IN           => id_dm_out,
 			  Imm_Offset_In   => id_imm_offset_out,
 			  -- Outputs to Memory/Writeback
-			  RTI             => ex_rti_out,
+			  RTI             => ex_mem_rti_out,
 			  Mem_Read        => ex_mem_read_out,
 			  Return_Signal   => ex_return_sig_out,
 			  Mem_Write       => ex_mem_write_out,
 			  ALU_Result      => ex_alu_result_out,
 			  Sp_Load         => ex_sp_load_out,
 			  Rsrc1           => ex_rsrc1_out,
+			   Rsrc2          => ex_rsrc2_out,
 			  Rd              => ex_rd_out,
 			  Pc              => ex_pc_out,
 			  Set_Carry       => ex_set_carry_out,
@@ -716,39 +1150,137 @@
 			  Reg_Write       => ex_reg_write_out,
 			  IN_Port         => ex_in_port_out,
 			  DM_Addr         => ex_dm_addr_out,
-			  Index           => ex_index_out
+			  Index           => ex_index_out,
+			  Out_Port 	   => ex_out_port_out,
+			  call_out => ex_call_out,
+			  Interrupt_out => ex_interrupt_out
 		 );
 		 -- Memory/Writeback Stage
+		  sp_enable_or<= id_sp_enable_out or ex_sp_enable_out;
+		 stack_pointer_inst: stack_pointer
+		  port map(
+			 clk => clk,
+			 rst => rst,
+			 SP_enable =>sp_enable_or,
+			 SP_INC => id_sp_inc_out,
+			 SP_DEC => ex_sp_dec_out,
+			 SP_mem => ex_sp_load_out,
+			 SP_out => SP_out
+		 );
+		
+		--  Memory_inst:Memory
+		 
+		--   port map(
+		-- 	 clk => clk,
+		-- 	 reset => rst,
+		-- 	 Mem_Read => ex_mem_read_out,
+		-- 	 Mem_Write => ex_mem_write_out,
+		-- 	 DM_address => ex_dm_addr_out,
+		-- 	 ALU_result => ALU_result(11 downto 0),
+		-- 	 SP_Load => ex_sp_load_out,
+		-- 	 SP_INC => ex_sp_inc_out,
+		-- 	 Call => ex_call_out,
+		-- 	 Rsrc1 => ex_reg1_data_out,
+		-- 	 PC_Flag_1 => Pc_plus_flags,
+		-- 	 Read_data => Read_data_memory
+		--  );
 		 MW_Stage: MemoryWrite
 		 port map(
 			  clk          => clk,
 			  rst          => rst,
-			  enable       => '1',
+			  en       => '1',
 			  -- Inputs from Execute/Memory
-			  Read_Data_In     => data_in,
+			  Read_Data_In     => Read_data_memory,
 			  ALU_Result_In    => ex_alu_result_out,
 			  Mem_Read_In      => ex_mem_read_out,
 			  Rsrc1_In         => ex_rsrc1_out,
+			  Out_Port_In 	   => ex_out_port_out  ,
+     		  Rsrc2_In			 => ex_rsrc2_out,	
 			  Rd_In            => ex_rd_out,
 			  Reg1_Data_In     => ex_reg1_data_out,
 			  Reg2_Data_In     => ex_reg2_data_out,
 			  Swap_In          => ex_swap_out,
 			  Reg_Write_In     => ex_reg_write_out,
 			  IN_Port_In       => ex_in_port_out,
+--			 
 			  -- Outputs to Writeback
 			  Read_Data     => mw_read_data_out,
 			  ALU_Result    => mw_alu_result_out,
-			  Reg1_Addr     => mw_reg1_addr_out,
-			  Reg2_Addr     => mw_reg2_addr_out,
+			  Rsrc1     => mw_reg1_addr_out,
+			  Rsrc2     => mw_reg2_addr_out,
+			  Rd => mw_Rd,
 			  Mem_Read      => mw_mem_read_out,
 			  Reg1_Data     => mw_reg1_data_out,
+			  Reg2_Data     => mw_reg2_data_out,
 			  Swap          => mw_swap_out,
 			  IN_Port       => mw_in_port_out,
-			  Reg2_Write    => mw_reg2_write_out
+			  Out_Port => mw_out_port_out,
+			  Reg_Write    => mw_reg_write_out
 		 );
+		 
+ 
+		 -- Writeback_ports
+		 
+		  WB_Ports_Inst : Writeback_ports
+        port map (
+		  
+			  clk => clk,
+			  In_port  	=> in_port,
+			  Memory_data  => mw_read_data_out,
+			  Alu_result  	=> mw_alu_result_out,
+			  Memory_read_flag => mw_mem_read_out,
+			  
+			  
 
-		 -- Hazard Detection Unit
-		 -- Next PC Logic
-	  
+			  read_data1  	=> mw_reg1_data_out,
+			  read_data2  	=> mw_reg2_data_out,
+			  swap_flag      => mw_swap_out,
+			  
+			  reg_write1_flag  => mw_reg_write_out,
+			   
+			  read_address1  => mw_reg1_addr_out,
+			  read_address2  => mw_reg2_addr_out,
+			  dst_address_in => mw_Rd, 
+			  
+			  in_port_flag   => mw_in_port_out,
+			  out_port_flag  => mw_out_port_out, 
+			  
+			  
+			  ----------------------------------outputs-------------------------------
+			  Output_port  	=>	out_port,
+			  
+			  Write_data1  	=>	wr_Write_data1,
+			  Write_data2  	=>	wr_Write_data2,
+			  
+			  Write_address1  => wr_Write_address1,
+			  Write_address2 => wr_Write_address2,
+			  
+			  we1   		=> wr_we1,
+			  we2_swap  => wr_we2_swap 
+        );
+		  
+		  
+		 
+		 
+		 
+		 
+		 
+
+        -- Hazard Detection Unit
+        HD_Stage: Hazard_Detection_Unit
+        port map(
+            FD_RS1 => rs1_addr_FD,
+            FD_RS2 => rs2_addr_FD,
+            D_Ex_rd => id_rd_out,
+            D_EX_Mem_Read =>ex_mem_read_out, 
+            D_EX_Mem_Write => ex_mem_write_out,
+            Data_interface_needed =>Struct_hazard_detected,
+            Branch_Taken =>branch_taken_sig,
+            Stall => stall,
+            Flush => flush
+        );
+        -- Next PC Logic
+
+	
 
 	end Structural;

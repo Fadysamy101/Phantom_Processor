@@ -33,6 +33,7 @@ entity ExecuteMemory is
         Imm_Offset_In      : in STD_LOGIC_VECTOR(15 downto 0);
         Out_Port_In        : in STD_LOGIC;
         call_In            : in STD_LOGIC;
+        flush_In           : in STD_LOGIC; 
         
         -- Outputs
         RTI                : out STD_LOGIC;
@@ -59,7 +60,8 @@ entity ExecuteMemory is
         call_out           : out STD_LOGIC;
         DM_Addr            : out STD_LOGIC;
         Index              : out STD_LOGIC_VECTOR(15 downto 0);
-        Out_Port           : out STD_LOGIC
+        Out_Port           : out STD_LOGIC;
+        Interrupt_out      : out STD_LOGIC
     );
 end ExecuteMemory;
 
@@ -156,30 +158,31 @@ begin
     end process;
 
     -- Combinational outputs (continuous assignments)
-    RTI            <= RTI_Reg;
-    Mem_Read       <= Mem_Read_Reg;
-    Return_Signal  <= Return_Signal_Reg;
-    Mem_Write      <= Mem_Write_Reg;
-    ALU_Result     <= ALU_Result_Reg;
-    Sp_Load        <= Sp_Load_Reg;
-    Rsrc1          <= Rsrc1_Reg;
-    Rsrc2          <= Rsrc2_Reg;
-    Rd             <= Rd_Reg;
-    Pc             <= Pc_Reg;
-    Set_Carry      <= Set_Carry_Reg;
-    Sp_Inc         <= Sp_Inc_Reg;
-    Sp_Dec         <= Sp_Dec_Reg;
-    Sp_Enable      <= Sp_Enable_Reg;
-    Branch         <= Branch_Reg;
-    Update_Flag    <= Update_Flag_Reg;
-    Reg1_Data      <= Reg1_Data_Reg;
-    Reg2_Data      <= Reg2_Data_Reg;
-    Swap           <= Swap_Reg;
-    Reg_Write      <= Reg_Write_Reg;
-    IN_Port        <= IN_Port_Reg;
-    DM_Addr        <= DM_Reg;
-    Index          <= Imm_Offset_Reg;
-    Out_Port       <= Out_Port_Reg;
-    call_out       <= call_Reg;
+RTI            <= '0' when flush_in = '1' else RTI_Reg;
+Mem_Read       <= '0' when flush_in = '1' else Mem_Read_Reg;
+Return_Signal  <= '0' when flush_in = '1' else Return_Signal_Reg;
+Mem_Write      <= '0' when flush_in = '1' else Mem_Write_Reg;
+ALU_Result     <= (others => '0') when flush_in = '1' else ALU_Result_Reg;
+Sp_Load        <=  (others => '0')when flush_in = '1' else Sp_Load_Reg;
+Rsrc1          <= (others => '0') when flush_in = '1' else Rsrc1_Reg;
+Rsrc2          <= (others => '0') when flush_in = '1' else Rsrc2_Reg;
+Rd             <= (others => '0') when flush_in = '1' else Rd_Reg;
+Pc             <= (others => '0') when flush_in = '1' else Pc_Reg;
+Set_Carry      <= '0' when flush_in = '1' else Set_Carry_Reg;
+Sp_Inc         <= '0' when flush_in = '1' else Sp_Inc_Reg;
+Sp_Dec         <= '0' when flush_in = '1' else Sp_Dec_Reg;
+Sp_Enable      <= '0' when flush_in = '1' else Sp_Enable_Reg;
+Branch         <= '0' when flush_in = '1' else Branch_Reg;
+Update_Flag    <= '0' when flush_in = '1' else Update_Flag_Reg;
+Reg1_Data      <= (others => '0') when flush_in = '1' else Reg1_Data_Reg;
+Reg2_Data      <= (others => '0') when flush_in = '1' else Reg2_Data_Reg;
+Swap           <= '0' when flush_in = '1' else Swap_Reg;
+Reg_Write      <= '0' when flush_in = '1' else Reg_Write_Reg;
+IN_Port        <= '0' when flush_in = '1' else IN_Port_Reg;
+DM_Addr        <= '0' when flush_in = '1' else DM_Reg;
+Index          <= (others => '0') when flush_in = '1' else Imm_Offset_Reg;
+Out_Port       <= '0' when flush_in = '1' else Out_Port_Reg;
+call_out       <= '0' when flush_in = '1' else call_Reg;
+Interrupt_out  <= '0' when flush_in = '1' else Interrupt_Reg;
 
 end Behavioral;

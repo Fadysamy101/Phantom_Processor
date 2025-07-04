@@ -6,7 +6,6 @@ entity DecodeExecute is
         clk            : in  STD_LOGIC;
         rst            : in  STD_LOGIC;
         enable         : in  STD_LOGIC;
-
         Pc_In          : in  STD_LOGIC_VECTOR(31 downto 0);
         Read_Addr1_In  : in  STD_LOGIC_VECTOR(2 downto 0);
         Read_Addr2_In  : in  STD_LOGIC_VECTOR(2 downto 0);
